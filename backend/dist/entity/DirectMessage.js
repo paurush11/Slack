@@ -24,13 +24,25 @@ __decorate([
     __metadata("design:type", String)
 ], DirectMessage.prototype, "Message", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], DirectMessage.prototype, "channelID", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], DirectMessage.prototype, "memberId", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => Channel_1.Channel),
     (0, typeorm_1.ManyToOne)(() => Channel_1.Channel, (channel) => channel.messages),
+    (0, typeorm_1.JoinColumn)({ name: "channelID" }),
     __metadata("design:type", Channel_1.Channel)
 ], DirectMessage.prototype, "channel", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => Member_1.Member),
-    (0, typeorm_1.ManyToOne)(() => Member_1.Member),
+    (0, typeorm_1.ManyToOne)(() => Member_1.Member, member => member.messages),
+    (0, typeorm_1.JoinColumn)({ name: "memberId" }),
     __metadata("design:type", Member_1.Member)
 ], DirectMessage.prototype, "sender", void 0);
 exports.DirectMessage = DirectMessage = __decorate([

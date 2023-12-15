@@ -31,6 +31,16 @@ __decorate([
     __metadata("design:type", String)
 ], Post.prototype, "description", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Post.prototype, "memberId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Post.prototype, "channelID", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => [Comment_1.Comment], { nullable: true }),
     (0, typeorm_1.OneToMany)(() => Comment_1.Comment, (comment) => comment.post, {
         onDelete: "CASCADE",
@@ -40,11 +50,13 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(() => Member_1.Member),
     (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.posts),
+    (0, typeorm_1.JoinColumn)({ name: "memberId" }),
     __metadata("design:type", Member_1.Member)
 ], Post.prototype, "creator", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => Channel_1.Channel),
     (0, typeorm_1.ManyToOne)(() => Channel_1.Channel, (channel) => channel.posts),
+    (0, typeorm_1.JoinColumn)({ name: "channelID" }),
     __metadata("design:type", Channel_1.Channel)
 ], Post.prototype, "channel", void 0);
 __decorate([

@@ -25,18 +25,36 @@ __decorate([
     __metadata("design:type", Number)
 ], Vote.prototype, "value", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Vote.prototype, "memberId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Vote.prototype, "commentId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Vote.prototype, "postId", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => Member_1.Member),
     (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.votes),
+    (0, typeorm_1.JoinColumn)({ name: "memberId" }),
     __metadata("design:type", Member_1.Member)
 ], Vote.prototype, "member", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => Post_1.Post, { nullable: true }),
     (0, typeorm_1.ManyToOne)(() => Post_1.Post, (post) => post.votes, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: "postId" }),
     __metadata("design:type", Post_1.Post)
 ], Vote.prototype, "post", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => Comment_1.Comment, { nullable: true }),
     (0, typeorm_1.ManyToOne)(() => Comment_1.Comment, (comment) => comment.votes, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: "commentId" }),
     __metadata("design:type", Comment_1.Comment)
 ], Vote.prototype, "comment", void 0);
 exports.Vote = Vote = __decorate([

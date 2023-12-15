@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { Content } from "./Content";
 import { Comment } from "./Comment";
 import { Member } from "./Member";
@@ -16,6 +16,14 @@ export class Post extends Content {
   @Column()
   description!: string;
 
+  @Field(() => String)
+  @Column()
+  memberId!: string;
+
+  @Field(() => String)
+  @Column()
+  channelID!: string;
+
   @Field(() => [Comment], { nullable: true })
   @OneToMany(() => Comment, (comment) => comment.post, {
     onDelete: "CASCADE",
@@ -24,10 +32,12 @@ export class Post extends Content {
 
   @Field(() => Member)
   @ManyToOne(() => Member, (member) => member.posts)
+  @JoinColumn({ name: "memberId" })
   creator: Member;
 
   @Field(() => Channel)
   @ManyToOne(() => Channel, (channel) => channel.posts)
+  @JoinColumn({ name: "channelID" })
   channel: Channel;
 
   @Field(() => [Vote], { nullable: true })

@@ -27,11 +27,23 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(() => Post_1.Post),
     (0, typeorm_1.ManyToOne)(() => Post_1.Post, (post) => post.comments),
+    (0, typeorm_1.JoinColumn)({ name: "postId" }),
     __metadata("design:type", Post_1.Post)
 ], Comment.prototype, "post", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Comment.prototype, "memberId", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Comment.prototype, "postId", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => Member_1.Member),
     (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.comments),
+    (0, typeorm_1.JoinColumn)({ name: "memberId" }),
     __metadata("design:type", Member_1.Member)
 ], Comment.prototype, "creator", void 0);
 __decorate([

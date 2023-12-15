@@ -15,7 +15,7 @@ const AppDataSource = new DataSource({
   database: "slack",
   synchronize: true,
   logging: true,
-  entities: [Channel,Member, Post, Vote, Comment, DirectMessage, Content],
+  entities: [Channel, Member, Post, Vote, Comment, DirectMessage, Content],
   migrations: [],
 });
 
