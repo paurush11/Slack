@@ -11,19 +11,19 @@ export class Vote extends Content {
   @Field(() => Int)
   @Column({ type: "int" })
   value!: Number;
-  
+
   @Field(() => String)
   @Column()
   memberId: string;
-  
-  @Field(() => String, {nullable: true})
+
+  @Field(() => String, { nullable: true })
   @Column()
   commentId: string;
-  
-  @Field(() => String, {nullable: true})
+
+  @Field(() => String, { nullable: true })
   @Column()
   postId: string;
-  
+
   @Field(() => Member)
   @ManyToOne(() => Member, (member) => member.votes)
   @JoinColumn({ name: "memberId" })
@@ -38,7 +38,4 @@ export class Vote extends Content {
   @ManyToOne(() => Comment, (comment) => comment.votes, { nullable: true })
   @JoinColumn({ name: "commentId" })
   comment: Comment;
-
-
-
 }

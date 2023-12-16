@@ -24,7 +24,7 @@ export class DirectMessage extends Content {
   channel!: Channel;
 
   @Field(() => Member)
-  @ManyToOne(() => Member, member=>member.messages)
+  @ManyToOne(() => Member, (member) => member.messages)
   @JoinColumn({ name: "memberId" })
   sender!: Member;
 }

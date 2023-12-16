@@ -11,6 +11,8 @@ const apollo_server_express_1 = require("apollo-server-express");
 const constants_1 = require("./utils/constants");
 const type_graphql_1 = require("type-graphql");
 const members_1 = require("./resolvers/members");
+const ioredis_1 = require("ioredis");
+const channels_1 = require("./resolvers/channels");
 const main = async () => {
     data_source_1.AppDataSource.initialize()
         .then(() => {
@@ -24,11 +26,21 @@ const main = async () => {
     }));
     app.set("trust proxy", !constants_1.__prod__);
     app.set("Access-Control-Allow-Credentials", true);
+    const redis = new ioredis_1.Redis();
+    const RedisStore = require("connect-redis").default;
+    const redisStore = new RedisStore({
+        client: redis,
+        disableTouch: true,
+    });
     const apolloServer = new apollo_server_express_1.ApolloServer({
-        context: {},
+        context: ({ req, res }) => ({
+            req,
+            res,
+            redis,
+        }),
         schema: await (0, type_graphql_1.buildSchema)({
             validate: false,
-            resolvers: [members_1.memberResolver],
+            resolvers: [members_1.memberResolver, channels_1.ChannelResolver],
         }),
     });
     await apolloServer.start();

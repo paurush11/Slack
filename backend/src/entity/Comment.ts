@@ -20,7 +20,7 @@ export class Comment extends Content {
   @Field(() => String)
   @Column()
   memberId!: string;
-  
+
   @Field(() => String)
   @Column()
   postId!: string;

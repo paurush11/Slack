@@ -7,6 +7,9 @@ import { ApolloServer } from "apollo-server-express";
 import { __prod__ } from "./utils/constants";
 import { buildSchema } from "type-graphql";
 import { memberResolver } from "./resolvers/members";
+import { myContext } from "./utils/myContext";
+import { Redis } from "ioredis";
+import { ChannelResolver } from "./resolvers/channels";
 
 const main = async () => {
   AppDataSource.initialize()
@@ -25,18 +28,22 @@ const main = async () => {
   app.set("trust proxy", !__prod__);
   app.set("Access-Control-Allow-Credentials", true);
 
-  //   const redis = new Redis();
-  //   const RedisStore = require("connect-redis").default;
-  //   const redisStore = new RedisStore({
-  //     client: redis,
-  //     disableTouch: true,
-  //   });
+  const redis = new Redis();
+  const RedisStore = require("connect-redis").default;
+  const redisStore = new RedisStore({
+    client: redis,
+    disableTouch: true,
+  });
 
   const apolloServer = new ApolloServer({
-    context: {},
+    context: ({ req, res }): myContext => ({
+      req,
+      res,
+      redis,
+    }),
     schema: await buildSchema({
       validate: false,
-      resolvers: [memberResolver],
+      resolvers: [memberResolver, ChannelResolver],
     }),
   });
   await apolloServer.start();

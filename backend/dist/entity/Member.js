@@ -33,7 +33,7 @@ __decorate([
 ], Member.prototype, "lastName", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => Boolean),
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
 ], Member.prototype, "isActive", void 0);
 __decorate([

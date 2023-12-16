@@ -18,7 +18,7 @@ export class Member extends Content {
   lastName!: string;
 
   @Field(() => Boolean)
-  @Column()
+  @Column({default: true})
   isActive: boolean;
 
   @Field(() => String)
