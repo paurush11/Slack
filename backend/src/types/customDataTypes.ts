@@ -4,3 +4,8 @@ export type resolverError = {
   detail: string;
   name: string;
 };
+
+export type notFoundError = {
+  message: string;
+  item: string;
+};

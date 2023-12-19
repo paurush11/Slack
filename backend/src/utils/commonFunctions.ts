@@ -1,4 +1,4 @@
-import { resolverError } from "../types/customDataTypes";
+import { notFoundError, resolverError } from "../types/customDataTypes";
 
 const catchError = (error: Error) => {
   console.error(error);
@@ -13,7 +13,7 @@ const throwResolverError = (error: any): resolverError => {
     detail: error.detail,
   };
 };
-const throwNotFoundError = (item: string) => {
+const throwNotFoundError = (item: string): notFoundError => {
   return {
     message: "Not found",
     item: item,

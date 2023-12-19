@@ -41,7 +41,14 @@ export class Member extends Content {
     onDelete: "CASCADE",
     cascade: true,
   })
-  messages: DirectMessage[];
+  messagesSent: DirectMessage[];
+
+  @Field(() => [DirectMessage], { nullable: true })
+  @OneToMany(() => DirectMessage, (message) => message.receiver, {
+    onDelete: "CASCADE",
+    cascade: true,
+  })
+  messagesReceived: DirectMessage[];
 
   @Field(() => [Post], { nullable: true })
   @OneToMany(() => Post, (post) => post.creator)

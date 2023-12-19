@@ -62,7 +62,15 @@ __decorate([
         cascade: true,
     }),
     __metadata("design:type", Array)
-], Member.prototype, "messages", void 0);
+], Member.prototype, "messagesSent", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [DirectMessage_1.DirectMessage], { nullable: true }),
+    (0, typeorm_1.OneToMany)(() => DirectMessage_1.DirectMessage, (message) => message.receiver, {
+        onDelete: "CASCADE",
+        cascade: true,
+    }),
+    __metadata("design:type", Array)
+], Member.prototype, "messagesReceived", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [Post_1.Post], { nullable: true }),
     (0, typeorm_1.OneToMany)(() => Post_1.Post, (post) => post.creator),

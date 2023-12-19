@@ -1,6 +1,12 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Channel } from "../entity/Channel";
 import { AppDataSource } from "../data-source";
+import { Member } from "../entity/Member";
+import {
+  throwNotFoundError,
+  throwResolverError,
+} from "../utils/commonFunctions";
+import { resolverError } from "./exports";
 
 @Resolver()
 export class ChannelResolver {
@@ -40,5 +46,92 @@ export class ChannelResolver {
     });
     await AppDataSource.manager.save(cn);
     return cn;
+  }
+
+  @Mutation(() => Boolean || resolverError)
+  async joinChannel(
+    @Arg("channelId", () => String) channelId: string,
+    @Arg("userId", () => String) userId: string,
+  ) {
+    try {
+      const channel = await Channel.findOne({
+        where: {
+          _id: channelId,
+        },
+        relations: ["members"],
+      });
+      const user = await Member.findOne({
+        where: {
+          _id: userId,
+        },
+        relations: ["channels"],
+      });
+
+      if (!channel) {
+        return throwNotFoundError("channel");
+      }
+      if (!user) {
+        return throwNotFoundError("user");
+      }
+
+      if (!channel.members) {
+        channel.members = [];
+      }
+      if (!user.channels) {
+        user.channels = [];
+      }
+      if (
+        channel.members.filter((member) => member._id === userId).length !==
+          0 &&
+        user.channels.filter((channel) => channel._id === channelId).length !==
+          0
+      ) {
+        return true;
+      }
+      channel.members.push(user);
+      await channel.save();
+      return true;
+    } catch (e) {
+      return throwResolverError(e);
+    }
+  }
+
+  @Mutation(() => Boolean || resolverError)
+  async leaveChannel(
+    @Arg("channelId", () => String) channelId: string,
+    @Arg("userId", () => String) userId: string,
+  ) {
+    try {
+      const channel = await Channel.findOne({
+        where: {
+          _id: channelId,
+        },
+        relations: ["members"],
+      });
+      const user = await Member.findOne({
+        where: {
+          _id: userId,
+        },
+        relations: ["channels"],
+      });
+      if (!channel) {
+        return throwNotFoundError("channel");
+      }
+      if (!user) {
+        return throwNotFoundError("user");
+      }
+
+      if (
+        !channel.members ||
+        channel.members.filter((member) => member._id === userId).length === 0
+      ) {
+        return throwNotFoundError("user in channel");
+      }
+      channel.members = channel.members.filter((user) => user._id !== userId);
+      await channel.save();
+      return true;
+    } catch (e) {
+      return throwResolverError(e);
+    }
   }
 }

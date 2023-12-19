@@ -9,7 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserResponse = exports.resolverError = exports.UserCreationInput = void 0;
+exports.messageStatus = exports.UserCreationInput = exports.resolverError = exports.UserResponse = exports.MESSAGE_SEEN_TOPIC = exports.MESSAGE_DELETED_TOPIC = exports.MESSAGE_UPDATED_TOPIC = exports.MESSAGE_ADDED_TOPIC = void 0;
+const DirectMessage_1 = require("../entity/DirectMessage");
 const Member_1 = require("../entity/Member");
 const type_graphql_1 = require("type-graphql");
 let UserCreationInput = class UserCreationInput {
@@ -56,6 +57,37 @@ __decorate([
 exports.resolverError = resolverError = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], resolverError);
+let notFoundErrorType = class notFoundErrorType {
+};
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], notFoundErrorType.prototype, "message", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], notFoundErrorType.prototype, "item", void 0);
+notFoundErrorType = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], notFoundErrorType);
+let messageStatus = class messageStatus {
+};
+exports.messageStatus = messageStatus;
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], messageStatus.prototype, "success", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => DirectMessage_1.DirectMessage, { nullable: true }),
+    __metadata("design:type", DirectMessage_1.DirectMessage)
+], messageStatus.prototype, "data", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [notFoundErrorType], { nullable: true }),
+    __metadata("design:type", Array)
+], messageStatus.prototype, "error", void 0);
+exports.messageStatus = messageStatus = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], messageStatus);
 let UserResponse = class UserResponse {
 };
 exports.UserResponse = UserResponse;
@@ -70,4 +102,12 @@ __decorate([
 exports.UserResponse = UserResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], UserResponse);
+const MESSAGE_ADDED_TOPIC = "MESSAGE_ADDED";
+exports.MESSAGE_ADDED_TOPIC = MESSAGE_ADDED_TOPIC;
+const MESSAGE_UPDATED_TOPIC = "MESSAGE_UPDATED";
+exports.MESSAGE_UPDATED_TOPIC = MESSAGE_UPDATED_TOPIC;
+const MESSAGE_DELETED_TOPIC = "MESSAGE_DELETED";
+exports.MESSAGE_DELETED_TOPIC = MESSAGE_DELETED_TOPIC;
+const MESSAGE_SEEN_TOPIC = "MESSAGE_SEEN";
+exports.MESSAGE_SEEN_TOPIC = MESSAGE_SEEN_TOPIC;
 //# sourceMappingURL=exports.js.map

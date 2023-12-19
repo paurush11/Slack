@@ -16,6 +16,9 @@ exports.ChannelResolver = void 0;
 const type_graphql_1 = require("type-graphql");
 const Channel_1 = require("../entity/Channel");
 const data_source_1 = require("../data-source");
+const Member_1 = require("../entity/Member");
+const commonFunctions_1 = require("../utils/commonFunctions");
+const exports_1 = require("./exports");
 let ChannelResolver = class ChannelResolver {
     channel() {
         return Channel_1.Channel.find({
@@ -39,6 +42,78 @@ let ChannelResolver = class ChannelResolver {
         });
         await data_source_1.AppDataSource.manager.save(cn);
         return cn;
+    }
+    async joinChannel(channelId, userId) {
+        try {
+            const channel = await Channel_1.Channel.findOne({
+                where: {
+                    _id: channelId,
+                },
+                relations: ["members"],
+            });
+            const user = await Member_1.Member.findOne({
+                where: {
+                    _id: userId,
+                },
+                relations: ["channels"],
+            });
+            if (!channel) {
+                return (0, commonFunctions_1.throwNotFoundError)("channel");
+            }
+            if (!user) {
+                return (0, commonFunctions_1.throwNotFoundError)("user");
+            }
+            if (!channel.members) {
+                channel.members = [];
+            }
+            if (!user.channels) {
+                user.channels = [];
+            }
+            if (channel.members.filter((member) => member._id === userId).length !==
+                0 &&
+                user.channels.filter((channel) => channel._id === channelId).length !==
+                    0) {
+                return true;
+            }
+            channel.members.push(user);
+            await channel.save();
+            return true;
+        }
+        catch (e) {
+            return (0, commonFunctions_1.throwResolverError)(e);
+        }
+    }
+    async leaveChannel(channelId, userId) {
+        try {
+            const channel = await Channel_1.Channel.findOne({
+                where: {
+                    _id: channelId,
+                },
+                relations: ["members"],
+            });
+            const user = await Member_1.Member.findOne({
+                where: {
+                    _id: userId,
+                },
+                relations: ["channels"],
+            });
+            if (!channel) {
+                return (0, commonFunctions_1.throwNotFoundError)("channel");
+            }
+            if (!user) {
+                return (0, commonFunctions_1.throwNotFoundError)("user");
+            }
+            if (!channel.members ||
+                channel.members.filter((member) => member._id === userId).length === 0) {
+                return (0, commonFunctions_1.throwNotFoundError)("user in channel");
+            }
+            channel.members = channel.members.filter((user) => user._id !== userId);
+            await channel.save();
+            return true;
+        }
+        catch (e) {
+            return (0, commonFunctions_1.throwResolverError)(e);
+        }
     }
 };
 exports.ChannelResolver = ChannelResolver;
@@ -69,6 +144,22 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ChannelResolver.prototype, "createChannel", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean || exports_1.resolverError),
+    __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
+    __param(1, (0, type_graphql_1.Arg)("userId", () => String)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ChannelResolver.prototype, "joinChannel", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean || exports_1.resolverError),
+    __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
+    __param(1, (0, type_graphql_1.Arg)("userId", () => String)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ChannelResolver.prototype, "leaveChannel", null);
 exports.ChannelResolver = ChannelResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], ChannelResolver);

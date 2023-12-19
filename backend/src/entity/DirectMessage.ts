@@ -7,8 +7,8 @@ import { Field, ObjectType } from "type-graphql";
 @Entity()
 export class DirectMessage extends Content {
   @Field(() => String)
-  @Column(() => String)
-  Message!: string;
+  @Column()
+  TextMessage: string;
 
   @Field(() => String)
   @Column()
@@ -16,7 +16,7 @@ export class DirectMessage extends Content {
 
   @Field(() => String)
   @Column()
-  memberId: string;
+  senderId: string;
 
   @Field(() => String)
   @Column()
@@ -26,13 +26,27 @@ export class DirectMessage extends Content {
   @Column(() => Channel)
   channel: Channel;
 
+  @Field(() => Boolean)
+  @Column({ default: false })
+  receiverSeen: boolean;
+
+  @Field(() => Boolean)
+  @Column({ default: true })
+  senderExists: boolean;
+
+  @Field(() => Boolean)
+  @Column({ default: true })
+  senderExistsInChannel: boolean;
+
   @Field(() => Member)
-  @ManyToOne(() => Member, (member) => member.messages)
-  @JoinColumn({ name: "memberId" })
+  @ManyToOne(() => Member, (member) => member.messagesSent)
+  @JoinColumn({ name: "senderId" })
   sender: Member;
 
   @Field(() => Member)
-  @ManyToOne(() => Member, (member) => member.messages)
+  @ManyToOne(() => Member, (member) => member.messagesReceived)
   @JoinColumn({ name: "receiverID" })
   receiver: Member;
+
+  
 }

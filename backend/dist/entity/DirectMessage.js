@@ -20,9 +20,9 @@ let DirectMessage = class DirectMessage extends Content_1.Content {
 exports.DirectMessage = DirectMessage;
 __decorate([
     (0, type_graphql_1.Field)(() => String),
-    (0, typeorm_1.Column)(() => String),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], DirectMessage.prototype, "Message", void 0);
+], DirectMessage.prototype, "TextMessage", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.Column)(),
@@ -32,7 +32,7 @@ __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], DirectMessage.prototype, "memberId", void 0);
+], DirectMessage.prototype, "senderId", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.Column)(),
@@ -44,14 +44,29 @@ __decorate([
     __metadata("design:type", Channel_1.Channel)
 ], DirectMessage.prototype, "channel", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => Boolean),
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], DirectMessage.prototype, "receiverSeen", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Boolean),
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], DirectMessage.prototype, "senderExists", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Boolean),
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], DirectMessage.prototype, "senderExistsInChannel", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => Member_1.Member),
-    (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.messages),
-    (0, typeorm_1.JoinColumn)({ name: "memberId" }),
+    (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.messagesSent),
+    (0, typeorm_1.JoinColumn)({ name: "senderId" }),
     __metadata("design:type", Member_1.Member)
 ], DirectMessage.prototype, "sender", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => Member_1.Member),
-    (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.messages),
+    (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.messagesReceived),
     (0, typeorm_1.JoinColumn)({ name: "receiverID" }),
     __metadata("design:type", Member_1.Member)
 ], DirectMessage.prototype, "receiver", void 0);
