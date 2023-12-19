@@ -18,13 +18,21 @@ export class DirectMessage extends Content {
   @Column()
   memberId: string;
 
+  @Field(() => String)
+  @Column()
+  receiverID: string;
+
   @Field(() => Channel)
-  @ManyToOne(() => Channel, (channel) => channel.messages)
-  @JoinColumn({ name: "channelID" })
-  channel!: Channel;
+  @Column(() => Channel)
+  channel: Channel;
 
   @Field(() => Member)
   @ManyToOne(() => Member, (member) => member.messages)
   @JoinColumn({ name: "memberId" })
-  sender!: Member;
+  sender: Member;
+
+  @Field(() => Member)
+  @ManyToOne(() => Member, (member) => member.messages)
+  @JoinColumn({ name: "receiverID" })
+  receiver: Member;
 }

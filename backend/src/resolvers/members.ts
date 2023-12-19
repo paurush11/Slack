@@ -1,91 +1,134 @@
 import argon2 from "argon2";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver
+} from "type-graphql";
 import { AppDataSource } from "../data-source";
 import { Channel } from "../entity/Channel";
 import { Member } from "../entity/Member";
-import { throwResolverError } from "../utils/commonFunctions";
+import {
+  throwNotFoundError,
+  throwResolverError,
+} from "../utils/commonFunctions";
 import { myContext } from "../utils/myContext";
-
-@InputType()
-class UserInput {
-  @Field()
-  firstName!: string;
-  @Field()
-  lastName!: string;
-  @Field()
-  username: string;
-  @Field()
-  email: string;
-}
-
-@ObjectType()
-class resolverError {
-  @Field()
-  message: string;
-  @Field()
-  code : string;
-  @Field()
-  detail: string;
-  @Field()
-  name: string;
-}
-
-@ObjectType()
-class UserResponse {
-  @Field(() => [resolverError], { nullable: true })
-  errors?: resolverError[];
-  @Field(() => Member, { nullable: true })
-  user?: Member;
-}
+import { UserCreationInput, UserResponse, resolverError } from "./exports";
 
 @Resolver()
 export class memberResolver {
   @Query(() => [Member])
   users(): Promise<Member[]> {
     return Member.find({
-      relations: ["channels"]
+      relations: ["channels"],
     });
   }
 
-  @Mutation(()=> Boolean)
-  async clearTable(){
-    await AppDataSource.createQueryRunner().query('TRUNCATE TABLE member CASCADE');
-    return  true;
+  @Mutation(() => Boolean)
+  async clearUsers() {
+    // await Member.clear()
+    await AppDataSource.createQueryRunner().query(
+      "TRUNCATE TABLE member CASCADE",
+    );
+    return true;
   }
 
   @Mutation(() => UserResponse)
   async createUser(
     @Ctx() ctx: myContext,
-    @Arg("channelId", ()=>String) channelId: string,
-    @Arg('data', ()=>UserInput) data: UserInput,
-    @Arg('data', ()=>String) password: string,
+    @Arg("data", () => UserCreationInput) data: UserCreationInput,
+    @Arg("password", () => String) password: string,
   ) {
-    
-    const parentChannel = await Channel.findBy({
-      _id: channelId
-    })
     const hashedPassword = await argon2.hash(password);
-    const user = await Member.create({...data, password: hashedPassword, channels:parentChannel})
-    
-    if(!parentChannel[0].members){
-    parentChannel[0].members = [];
+    const user = await Member.create({ ...data, password: hashedPassword });
+    try {
+      await user.save();
+    } catch (Error) {
+      return { errors: [throwResolverError(Error)] };
     }
-    parentChannel[0].members.push(user);
+    return { user };
+  }
 
-    console.log(parentChannel)
-  
-    try{
-
-      await user.save().then(e=>{
-        console.log(e)
+  @Mutation(() => Boolean || resolverError)
+  async joinChannel(
+    @Arg("channelId", () => String) channelId: string,
+    @Arg("userId", () => String) userId: string,
+  ) {
+    try {
+      const channel = await Channel.findOne({
+        where: {
+          _id: channelId,
+        },
+        relations:["members"]
       });
-      await parentChannel[0].save();
+      const user = await Member.findOne({
+        where: {
+          _id: userId,
+        },
+        relations:["channels"]
+      });
 
-      
-      
-    }catch(Error){
-     return {errors:[throwResolverError(Error)]};
+      if (!channel) {
+        return throwNotFoundError("channel");
+      }
+      if (!user) {
+        return throwNotFoundError("user");
+      }
+
+     
+      if (!channel.members) {
+        channel.members = [];
+      }
+      if (!user.channels) {
+        user.channels = [];
+      }
+      if(channel.members.filter((member)=>member._id ===  userId).length !== 0  &&  user.channels.filter((channel)=>channel._id ===  channelId).length !== 0){
+        return true;
+      }
+      channel.members.push(user);
+      await channel.save();
+      return true;
+    } catch (e) {
+      return throwResolverError(e);
     }
-    return {user};
+  }
+
+  @Mutation(() => Boolean || resolverError)
+  async leaveChannel(
+    @Arg("channelId", () => String) channelId: string,
+    @Arg("userId", () => String) userId: string,
+  ) {
+    try {
+      const channel = await Channel.findOne({
+        where: {
+          _id: channelId,
+        },
+        relations:["members"]
+      });
+      const user = await Member.findOne({
+        where: {
+          _id: userId,
+        },
+        relations:["channels"]
+      });
+      if (!channel) {
+        return throwNotFoundError("channel");
+      }
+      if (!user) {
+        return throwNotFoundError("user");
+      }
+
+      if (!channel.members || channel.members.filter((member)=>member._id ===  userId).length === 0) {
+        return throwNotFoundError("user in channel");
+      }
+      channel.members  = channel.members.filter((user) => user._id !== userId);
+      await channel.save();
+      return true;
+    } catch (e) {
+      return throwResolverError(e);
+    }
   }
 }
+export { resolverError };
+

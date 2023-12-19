@@ -5,12 +5,18 @@ const catchError = (error: Error) => {
   console.log(error.message);
 };
 
-const throwResolverError = (error: any) :resolverError => {
+const throwResolverError = (error: any): resolverError => {
   return {
     message: error.message,
     name: error.name,
     code: error.code,
-    detail: error.detail
-  }
-}
-export { catchError, throwResolverError };
+    detail: error.detail,
+  };
+};
+const throwNotFoundError = (item: string) => {
+  return {
+    message: "Not found",
+    item: item,
+  };
+};
+export { catchError, throwResolverError, throwNotFoundError };

@@ -13,6 +13,7 @@ const type_graphql_1 = require("type-graphql");
 const members_1 = require("./resolvers/members");
 const ioredis_1 = require("ioredis");
 const channels_1 = require("./resolvers/channels");
+const messages_1 = require("./resolvers/messages");
 const main = async () => {
     data_source_1.AppDataSource.initialize()
         .then(() => {
@@ -40,7 +41,7 @@ const main = async () => {
         }),
         schema: await (0, type_graphql_1.buildSchema)({
             validate: false,
-            resolvers: [members_1.memberResolver, channels_1.ChannelResolver],
+            resolvers: [members_1.memberResolver, channels_1.ChannelResolver, messages_1.MessageResolver],
         }),
     });
     await apolloServer.start();

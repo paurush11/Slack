@@ -19,17 +19,23 @@ const data_source_1 = require("../data-source");
 let ChannelResolver = class ChannelResolver {
     channel() {
         return Channel_1.Channel.find({
-            relations: ["members"]
+            relations: ["members"],
         });
     }
     async clearChannels() {
-        await data_source_1.AppDataSource.createQueryRunner().query('TRUNCATE TABLE channel CASCADE');
+        await data_source_1.AppDataSource.createQueryRunner().query("TRUNCATE TABLE channel CASCADE");
+        return true;
+    }
+    async deleteChannel(channelId) {
+        await Channel_1.Channel.delete({
+            _id: channelId,
+        });
         return true;
     }
     async createChannel(name, description) {
         const cn = await Channel_1.Channel.create({
             Name: name,
-            Description: description
+            Description: description,
         });
         await data_source_1.AppDataSource.manager.save(cn);
         return cn;
@@ -48,6 +54,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ChannelResolver.prototype, "clearChannels", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ChannelResolver.prototype, "deleteChannel", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Channel_1.Channel),
     __param(0, (0, type_graphql_1.Arg)("name")),

@@ -18,7 +18,7 @@ export class Member extends Content {
   lastName!: string;
 
   @Field(() => Boolean)
-  @Column({default: true})
+  @Column({ default: true })
   isActive: boolean;
 
   @Field(() => String)
@@ -37,7 +37,10 @@ export class Member extends Content {
   channels: Channel[];
 
   @Field(() => [DirectMessage], { nullable: true })
-  @OneToMany(() => DirectMessage, (message) => message.sender)
+  @OneToMany(() => DirectMessage, (message) => message.sender, {
+    onDelete: "CASCADE",
+    cascade: true,
+  })
   messages: DirectMessage[];
 
   @Field(() => [Post], { nullable: true })

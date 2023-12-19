@@ -1,6 +1,6 @@
 export type resolverError = {
-    message: string,
-    code : string,
-    detail: string
-    name: string
-}
+  message: string;
+  code: string;
+  detail: string;
+  name: string;
+};

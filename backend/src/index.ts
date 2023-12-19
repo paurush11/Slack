@@ -10,6 +10,7 @@ import { memberResolver } from "./resolvers/members";
 import { myContext } from "./utils/myContext";
 import { Redis } from "ioredis";
 import { ChannelResolver } from "./resolvers/channels";
+import { MessageResolver } from "./resolvers/messages";
 
 const main = async () => {
   AppDataSource.initialize()
@@ -43,7 +44,7 @@ const main = async () => {
     }),
     schema: await buildSchema({
       validate: false,
-      resolvers: [memberResolver, ChannelResolver],
+      resolvers: [memberResolver, ChannelResolver, MessageResolver],
     }),
   });
   await apolloServer.start();
