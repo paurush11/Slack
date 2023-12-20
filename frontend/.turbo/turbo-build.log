@@ -1,0 +1,32 @@
+warning ../../../../package.json: No license field
+$ next build
+   ▲ Next.js 14.0.4
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/7) ...
+   Generating static pages (1/7) 
+   Generating static pages (3/7) 
+   Generating static pages (5/7) 
+ ✓ Generating static pages (7/7) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (pages)                              Size     First Load JS
+┌ ○ /                                      9.29 kB         120 kB
+├   /_app                                  0 B            96.1 kB
+├ ○ /404                                   181 B          96.3 kB
+├ ○ /Login                                 1.91 kB         105 kB
+├ ○ /LoginAndRegister                      23.5 kB         136 kB
+├ ○ /Profile                               253 B          96.3 kB
+└ ○ /Register                              260 B           101 kB
++ First Load JS shared by all              96.1 kB
+  ├ chunks/framework-40e193ff9db98208.js   45.2 kB
+  ├ chunks/main-82db9c4b3a99594a.js        31.6 kB
+  ├ chunks/pages/_app-ebddc3ce53a4c6eb.js  17.6 kB
+  └ chunks/webpack-a8ba63f2417b26c7.js     1.65 kB
+
+○  (Static)  prerendered as static content
+
