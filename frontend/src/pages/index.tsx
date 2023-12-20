@@ -57,8 +57,8 @@ const Index: React.FC<IndexProps> = ({ toggleTheme }) => {
               <Button
                 size="large"
                 variant="contained"
-                color="primary"
                 sx={{
+                  backgroundColor: theme.palette.primary.dark,
                   "&:hover": {
                     backgroundColor: theme.palette.primary.light,
                   },
