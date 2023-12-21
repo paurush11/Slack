@@ -9,7 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.messageStatus = exports.UserCreationInput = exports.resolverError = exports.UserResponse = exports.MESSAGE_SEEN_TOPIC = exports.MESSAGE_DELETED_TOPIC = exports.MESSAGE_UPDATED_TOPIC = exports.MESSAGE_ADDED_TOPIC = void 0;
+exports.ChannelResponse = exports.messageStatus = exports.UserCreationInput = exports.resolverError = exports.UserResponse = exports.MESSAGE_SEEN_TOPIC = exports.MESSAGE_DELETED_TOPIC = exports.MESSAGE_UPDATED_TOPIC = exports.MESSAGE_ADDED_TOPIC = void 0;
+const Channel_1 = require("../entity/Channel");
 const DirectMessage_1 = require("../entity/DirectMessage");
 const Member_1 = require("../entity/Member");
 const type_graphql_1 = require("type-graphql");
@@ -70,6 +71,20 @@ __decorate([
 notFoundErrorType = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], notFoundErrorType);
+let ChannelResponse = class ChannelResponse {
+};
+exports.ChannelResponse = ChannelResponse;
+__decorate([
+    (0, type_graphql_1.Field)(() => Channel_1.Channel, { nullable: true }),
+    __metadata("design:type", Channel_1.Channel)
+], ChannelResponse.prototype, "channel", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [notFoundErrorType], { nullable: true }),
+    __metadata("design:type", Array)
+], ChannelResponse.prototype, "errors", void 0);
+exports.ChannelResponse = ChannelResponse = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], ChannelResponse);
 let messageStatus = class messageStatus {
 };
 exports.messageStatus = messageStatus;

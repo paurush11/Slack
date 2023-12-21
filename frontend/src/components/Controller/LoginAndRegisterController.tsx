@@ -1,13 +1,14 @@
-import { LoginController } from "@/components/Controller/LoginController";
-import { SignUpController } from "@/components/Controller/SignUpController";
-import Layout from "@/components/layout/Layout";
-import { LoginAndRegisterProps } from "@/interfaces/allProps";
-import { Box, Button, Stack, useTheme } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Stack, Button } from "@mui/material";
+import React from "react";
+import Layout from "../layout/Layout";
+import { LoginController } from "./LoginController";
+import { SignUpController } from "./SignUpController";
 
-const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ toggleTheme }) => {
-  const theme = useTheme();
-  const [selectedState, setSelectedState] = useState(1);
+interface LoginAndRegisterControllerProps {}
+
+export const LoginAndRegisterController: React.FC<
+  LoginAndRegisterControllerProps
+> = ({}) => {
   return (
     <Layout toggleTheme={toggleTheme}>
       <Box
@@ -72,5 +73,3 @@ const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ toggleTheme }) => {
     </Layout>
   );
 };
-
-export default LoginAndRegister;

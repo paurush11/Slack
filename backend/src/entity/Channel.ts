@@ -13,6 +13,10 @@ export class Channel extends Content {
 
   @Field(() => String)
   @Column()
+  IconName: string;
+
+  @Field(() => String)
+  @Column()
   Description: string;
 
   @Field(() => [Member], { nullable: true })

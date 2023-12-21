@@ -14,6 +14,7 @@ const members_1 = require("./resolvers/members");
 const ioredis_1 = require("ioredis");
 const channels_1 = require("./resolvers/channels");
 const messages_1 = require("./resolvers/messages");
+const express_session_1 = __importDefault(require("express-session"));
 const main = async () => {
     data_source_1.AppDataSource.initialize()
         .then(() => {
@@ -33,6 +34,20 @@ const main = async () => {
         client: redis,
         disableTouch: true,
     });
+    app.use((0, express_session_1.default)({
+        name: "qid",
+        store: redisStore,
+        cookie: {
+            path: "/",
+            maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        },
+        saveUninitialized: false,
+        secret: "yourSecretKey",
+        resave: false,
+    }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         context: ({ req, res }) => ({
             req,

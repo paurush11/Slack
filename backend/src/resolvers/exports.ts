@@ -1,3 +1,5 @@
+
+import { Channel } from "../entity/Channel";
 import { DirectMessage } from "../entity/DirectMessage";
 import { Member } from "../entity/Member";
 import { InputType, Field, ObjectType } from "type-graphql";
@@ -34,15 +36,22 @@ class notFoundErrorType {
 }
 
 @ObjectType()
+class ChannelResponse {
+  @Field(() => Channel, { nullable: true })
+  channel?: Channel;
+  @Field(() => [notFoundErrorType], { nullable: true })
+  errors?: notFoundErrorType[];
+}
+@ObjectType()
 class messageStatus {
   @Field()
   success: Boolean;
 
-  @Field(()=> DirectMessage, { nullable: true })
+  @Field(() => DirectMessage, { nullable: true })
   data?: DirectMessage;
 
-  @Field(() => [notFoundErrorType] , { nullable: true })
-  error?: [notFoundErrorType];
+  @Field(() => [notFoundErrorType], { nullable: true })
+  error?: notFoundErrorType[];
 }
 
 @ObjectType()
@@ -67,4 +76,5 @@ export {
   resolverError,
   UserCreationInput,
   messageStatus,
+  ChannelResponse,
 };

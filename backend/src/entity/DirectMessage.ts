@@ -47,6 +47,4 @@ export class DirectMessage extends Content {
   @ManyToOne(() => Member, (member) => member.messagesReceived)
   @JoinColumn({ name: "receiverID" })
   receiver: Member;
-
-  
 }

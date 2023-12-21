@@ -11,6 +11,7 @@ import { myContext } from "./utils/myContext";
 import { Redis } from "ioredis";
 import { ChannelResolver } from "./resolvers/channels";
 import { MessageResolver } from "./resolvers/messages";
+import session from "express-session";
 
 const main = async () => {
   AppDataSource.initialize()
@@ -35,6 +36,22 @@ const main = async () => {
     client: redis,
     disableTouch: true,
   });
+  app.use(
+    session({
+      name: "qid", // session cookie name
+      store: redisStore,
+      cookie: {
+        path: "/",
+        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, /// 10 years
+        httpOnly: true,
+        secure: true, /// cookie only works in HTTPS
+        sameSite: "none",
+      },
+      saveUninitialized: false,
+      secret: "yourSecretKey", // replace with your secret key
+      resave: false,
+    }),
+  );
 
   const apolloServer = new ApolloServer({
     context: ({ req, res }): myContext => ({

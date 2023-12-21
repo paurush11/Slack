@@ -14,8 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChannelResolver = void 0;
 const type_graphql_1 = require("type-graphql");
-const Channel_1 = require("../entity/Channel");
 const data_source_1 = require("../data-source");
+const Channel_1 = require("../entity/Channel");
 const Member_1 = require("../entity/Member");
 const commonFunctions_1 = require("../utils/commonFunctions");
 const exports_1 = require("./exports");
@@ -35,13 +35,32 @@ let ChannelResolver = class ChannelResolver {
         });
         return true;
     }
-    async createChannel(name, description) {
+    async createChannel(name, icon, description) {
+        const exists = await Channel_1.Channel.findOne({
+            where: {
+                Name: name,
+                IconName: icon,
+                Description: description,
+            },
+        });
+        if (exists) {
+            return {
+                errors: [
+                    {
+                        message: "Found",
+                        item: "channel",
+                    },
+                ],
+            };
+        }
+        console.log("jere");
         const cn = await Channel_1.Channel.create({
             Name: name,
+            IconName: icon,
             Description: description,
         });
-        await data_source_1.AppDataSource.manager.save(cn);
-        return cn;
+        await cn.save();
+        return { channel: cn };
     }
     async joinChannel(channelId, userId) {
         try {
@@ -137,11 +156,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChannelResolver.prototype, "deleteChannel", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Channel_1.Channel),
+    (0, type_graphql_1.Mutation)(() => exports_1.ChannelResponse),
     __param(0, (0, type_graphql_1.Arg)("name")),
-    __param(1, (0, type_graphql_1.Arg)("description")),
+    __param(1, (0, type_graphql_1.Arg)("iconName")),
+    __param(2, (0, type_graphql_1.Arg)("description")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], ChannelResolver.prototype, "createChannel", null);
 __decorate([

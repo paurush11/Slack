@@ -1,0 +1,20 @@
+query Me {
+  Me {
+    username
+    lastName
+    email
+    _id
+    firstName
+    channels {
+      _id
+      Name
+      IconName
+      Description
+    }
+    messagesReceived {
+      _id
+      TextMessage
+      receiverSeen
+    }
+  }
+}

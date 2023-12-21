@@ -15,14 +15,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolverError = exports.memberResolver = void 0;
+exports.memberResolver = void 0;
 const argon2_1 = __importDefault(require("argon2"));
 const type_graphql_1 = require("type-graphql");
 const data_source_1 = require("../data-source");
 const Member_1 = require("../entity/Member");
 const commonFunctions_1 = require("../utils/commonFunctions");
 const exports_1 = require("./exports");
-Object.defineProperty(exports, "resolverError", { enumerable: true, get: function () { return exports_1.resolverError; } });
 let memberResolver = class memberResolver {
     users() {
         return Member_1.Member.find({
@@ -33,11 +32,82 @@ let memberResolver = class memberResolver {
         await data_source_1.AppDataSource.createQueryRunner().query("TRUNCATE TABLE member CASCADE");
         return true;
     }
-    async createUser(data, password) {
+    async Me(ctx) {
+        if (!ctx.req.session.user) {
+            return null;
+        }
+        try {
+            const user = await Member_1.Member.findOne({
+                where: {
+                    _id: ctx.req.session.user,
+                },
+                relations: ["channels", "messagesSent", "messagesReceived"],
+            });
+            return user;
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+    async register(ctx, data, password) {
+        console.log(password);
+        const passError = (0, commonFunctions_1.validatePassword)(password);
+        if (passError) {
+            return { errors: [passError] };
+        }
+        const errors = (0, commonFunctions_1.validateUserCreationInput)(data);
+        if (errors) {
+            return { errors: [errors] };
+        }
         const hashedPassword = await argon2_1.default.hash(password);
         const user = await Member_1.Member.create(Object.assign(Object.assign({}, data), { password: hashedPassword }));
         try {
             await user.save();
+            ctx.req.session.user = user._id;
+            return { user };
+        }
+        catch (Error) {
+            return { errors: [(0, commonFunctions_1.throwResolverError)(Error)] };
+        }
+    }
+    async login(ctx, usernameOrEmail, password) {
+        const user = await Member_1.Member.findOne({
+            where: usernameOrEmail.includes("@")
+                ? {
+                    email: usernameOrEmail,
+                }
+                : {
+                    username: usernameOrEmail,
+                },
+        });
+        if (!user) {
+            return {
+                errors: [
+                    (0, commonFunctions_1.throwResolverError)({
+                        message: "No such user found",
+                        name: "User not found",
+                        code: "404",
+                        detail: "User is not found!! ",
+                    }),
+                ],
+            };
+        }
+        const validity = await argon2_1.default.verify(user.password, password);
+        if (!validity) {
+            return {
+                errors: [
+                    {
+                        message: "password",
+                        name: "Incorrect Password",
+                        code: "422",
+                        detail: "Please Enter a correct password!!",
+                    },
+                ],
+            };
+        }
+        try {
+            await user.save();
+            ctx.req.session.user = user._id;
         }
         catch (Error) {
             return { errors: [(0, commonFunctions_1.throwResolverError)(Error)] };
@@ -59,13 +129,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], memberResolver.prototype, "clearUsers", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => exports_1.UserResponse),
-    __param(0, (0, type_graphql_1.Arg)("data", () => exports_1.UserCreationInput)),
-    __param(1, (0, type_graphql_1.Arg)("password", () => String)),
+    (0, type_graphql_1.Query)(() => Member_1.Member, { nullable: true }),
+    __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [exports_1.UserCreationInput, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], memberResolver.prototype, "createUser", null);
+], memberResolver.prototype, "Me", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => exports_1.UserResponse),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)("data", () => exports_1.UserCreationInput)),
+    __param(2, (0, type_graphql_1.Arg)("password", () => String)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, exports_1.UserCreationInput, String]),
+    __metadata("design:returntype", Promise)
+], memberResolver.prototype, "register", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => exports_1.UserResponse),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)("usernameOrEmail", () => String)),
+    __param(2, (0, type_graphql_1.Arg)("password", () => String)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", Promise)
+], memberResolver.prototype, "login", null);
 exports.memberResolver = memberResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], memberResolver);

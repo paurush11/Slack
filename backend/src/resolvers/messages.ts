@@ -220,12 +220,11 @@ export class MessageResolver {
   }
 
   @Mutation(() => messageStatus || resolverError)
-  async deleteMessage(@Arg("id", () => String) message_Id: string
-    ) {
+  async deleteMessage(@Arg("id", () => String) message_Id: string) {
     try {
       const message = await DirectMessage.findOne({
         where: {
-            _id: message_Id,
+          _id: message_Id,
         },
       });
       if (!message) {
@@ -276,15 +275,14 @@ export class MessageResolver {
       }
       if (message.receiverSeen) {
         return {
-            success: false,
-            error: [
-              {
-                message: "already seen",
-                item: "message",
-              },
-            ],
-          } as messageStatus;
-        
+          success: false,
+          error: [
+            {
+              message: "already seen",
+              item: "message",
+            },
+          ],
+        } as messageStatus;
       }
       message.receiverSeen = true;
       await message.save();

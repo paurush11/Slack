@@ -27,6 +27,11 @@ __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
+], Channel.prototype, "IconName", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => String),
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], Channel.prototype, "Description", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [Member_1.Member], { nullable: true }),

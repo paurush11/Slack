@@ -77,7 +77,7 @@ const darkTheme = createTheme({
     primary: {
       main: "#2c387e", // Darker Blue
       light: "#5f5c7d", // Muted Purple
-      dark: "#2d283e", // Very Dark Purple
+      dark: "#001219", // Very Dark Purple
       contrastText: "#fff",
       "100": "#ae2012", // Since '100' should be lighter in the dark theme, use a lighter color
       "200": "#bb3e03",

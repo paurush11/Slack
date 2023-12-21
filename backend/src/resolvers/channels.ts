@@ -1,12 +1,12 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { Channel } from "../entity/Channel";
 import { AppDataSource } from "../data-source";
+import { Channel } from "../entity/Channel";
 import { Member } from "../entity/Member";
 import {
   throwNotFoundError,
   throwResolverError,
 } from "../utils/commonFunctions";
-import { resolverError } from "./exports";
+import { ChannelResponse, resolverError } from "./exports";
 
 @Resolver()
 export class ChannelResolver {
@@ -35,17 +35,37 @@ export class ChannelResolver {
     return true;
   }
 
-  @Mutation(() => Channel)
+  @Mutation(() => ChannelResponse)
   async createChannel(
     @Arg("name") name: string,
+    @Arg("iconName") icon: string,
     @Arg("description") description: string,
   ) {
+    const exists = await Channel.findOne({
+      where: {
+        Name: name,
+        IconName: icon,
+        Description: description,
+      },
+    });
+    if (exists) {
+      return {
+        errors: [
+          {
+            message: "Found",
+            item: "channel",
+          },
+        ],
+      };
+    }
+    console.log("jere");
     const cn = await Channel.create({
       Name: name,
+      IconName: icon,
       Description: description,
     });
-    await AppDataSource.manager.save(cn);
-    return cn;
+    await cn.save();
+    return { channel: cn };
   }
 
   @Mutation(() => Boolean || resolverError)
