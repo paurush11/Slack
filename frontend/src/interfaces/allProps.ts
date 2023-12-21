@@ -1,4 +1,7 @@
-export interface LayoutProps {
+export interface LayoutProps extends WrapperProps {
+  toggleTheme: () => any;
+}
+export interface WrapperProps {
   variant?: variantWrapper;
   children: any;
 }

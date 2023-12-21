@@ -8,6 +8,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React from "react";
+import SubmitAndReset from "./SubmitAndReset";
 
 interface SignUpFormProps {}
 
@@ -68,21 +69,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({}) => {
           />
         </Stack>
       </FormControl>
-      <Stack direction={"column"} alignSelf={"center"}>
-        <Button
-          sx={{
-            color: theme.palette.primary.contrastText,
-            backgroundColor: theme.palette.secondary.dark,
-            "&:hover": {
-              backgroundColor: theme.palette.primary.light,
-            },
-          }}
-        >
-          {" "}
-          Submit
-        </Button>
-        <Button> Reset</Button>
-      </Stack>
+      <SubmitAndReset />
     </Box>
   );
 };
