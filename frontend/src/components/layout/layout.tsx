@@ -4,10 +4,15 @@ import React from "react";
 import { Navbar } from "../common/Navbar";
 import Wrapper from "./wrapper";
 
-const Layout: React.FC<LayoutProps> = ({ variant, children, toggleTheme }) => {
+const Layout: React.FC<LayoutProps> = ({
+  variant,
+  children,
+  toggleTheme,
+  data,
+}) => {
   return (
     <Box display="flex" flexDirection="column" minHeight={"100vh"}>
-      <Navbar toggleTheme={toggleTheme}></Navbar>
+      <Navbar  data={data} toggleTheme={toggleTheme}></Navbar>
       <Wrapper variant={variant}>{children}</Wrapper>
     </Box>
   );

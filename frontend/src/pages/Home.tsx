@@ -13,7 +13,11 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
   const { loading, data, error } = useQuery(MeDocument);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  return <Layout toggleTheme={toggleTheme}>{!loading && data && <Sidebar data={data} />}</Layout>;
+  return (
+    <Layout toggleTheme={toggleTheme} data={data}>
+      {!loading && data && <Sidebar data={data} />}
+    </Layout>
+  );
 };
 
 export default Home;

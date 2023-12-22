@@ -1,10 +1,17 @@
 import { UseFormHandleSubmit, UseFormReset } from "react-hook-form";
 import { Request, Response } from "express";
 import Redis from "ioredis";
+import { MeQuery } from "@/generated/output/graphql";
 
 export interface LayoutProps extends WrapperProps {
   toggleTheme: () => any;
+  data?: MeQuery | undefined;
 }
+export interface NavbarProps {
+  toggleTheme: () => void;
+  data?: MeQuery | undefined;
+}
+
 export interface WrapperProps {
   variant?: variantWrapper;
   children: any;

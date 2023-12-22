@@ -3,8 +3,8 @@ import { isServer } from "./isServer";
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = new HttpLink({
-    uri: 'http://localhost:4000/graphql', // Your GraphQL endpoint
-    credentials: "include" as const,// Important for cookies
+  uri: "http://localhost:4000/graphql", // Your GraphQL endpoint
+  credentials: "include" as const, // Important for cookies
 });
 // const authLink = new HttpLink({
 //     uri: 'http://localhost:4000/graphql', // e.g., 'http://localhost:4000/graphql'

@@ -8,12 +8,12 @@ const isValidPhoneNumber = (value: string) => {
 const isValidName = (value: string) => {
   return value.length >= 3;
 };
-import AppleIcon from '@mui/icons-material/Apple';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
-import FacebookIcon from '@mui/icons-material/Facebook';
-const IconMap =  {
-    "Apple": AppleIcon,
-    "AcUnit": AcUnitIcon,
-    "Facebook": FacebookIcon
-}
-export { isValidEmail, isValidPhoneNumber, isValidName, IconMap};
+import AppleIcon from "@mui/icons-material/Apple";
+import AcUnitIcon from "@mui/icons-material/AcUnit";
+import FacebookIcon from "@mui/icons-material/Facebook";
+const IconMap = {
+  Apple: AppleIcon,
+  AcUnit: AcUnitIcon,
+  Facebook: FacebookIcon,
+};
+export { isValidEmail, isValidPhoneNumber, isValidName, IconMap };

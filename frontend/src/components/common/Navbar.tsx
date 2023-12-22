@@ -11,13 +11,11 @@ import {
 import React from "react";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 import MailIcon from "@mui/icons-material/Mail";
-interface NavbarProps {
-  toggleTheme: () => void;
-}
+import { NavbarProps } from "@/interfaces/allProps";
+import LogoutIcon from '@mui/icons-material/Logout';
 
-export const Navbar: React.FC<NavbarProps> = ({ toggleTheme }) => {
+export const Navbar: React.FC<NavbarProps> = ({ toggleTheme, data }) => {
   const theme = useTheme();
-
   return (
     <AppBar
       position="static"
@@ -48,11 +46,30 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleTheme }) => {
           toggleTheme={toggleTheme}
           themeMode={theme.palette.mode}
         />
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
+        {data && (
+          <IconButton
+            size="large"
+            aria-label="show new messages"
+            color="inherit"
+          >
+            <Badge
+              badgeContent={data.Me?.messagesReceived?.length}
+              color="error"
+            >
+              <MailIcon />
+            </Badge>
+          </IconButton>
+        )}
+        {data && (
+          <IconButton
+            size="large"
+            aria-label="logout"
+            color="inherit"
+          >
+            <LogoutIcon />
+
+          </IconButton>
+        )}
       </Toolbar>
     </AppBar>
   );
