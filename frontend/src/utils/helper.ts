@@ -11,9 +11,19 @@ const isValidName = (value: string) => {
 import AppleIcon from "@mui/icons-material/Apple";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import { ResolverError } from "../generated/output/graphql";
+
 const IconMap = {
   Apple: AppleIcon,
   AcUnit: AcUnitIcon,
   Facebook: FacebookIcon,
 };
+export const toErrorMap = (errors: ResolverError[]) => {
+  const errorMap: any = {};
+  errors.forEach(({ message, code, detail, name }) => {
+    errorMap[code] = { message, detail, name };
+  });
+  return errorMap;
+};
+
 export { isValidEmail, isValidPhoneNumber, isValidName, IconMap };

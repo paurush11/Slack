@@ -99,6 +99,9 @@ export type Member = {
 
 export type Mutation = {
   __typename?: "Mutation";
+  Login: UserResponse;
+  Logout: Scalars["Boolean"]["output"];
+  Register: UserResponse;
   clearChannels: Scalars["Boolean"]["output"];
   clearUsers: Scalars["Boolean"]["output"];
   createChannel: ChannelResponse;
@@ -108,10 +111,18 @@ export type Mutation = {
   deleteMessageTable: Scalars["Boolean"]["output"];
   joinChannel: Scalars["Boolean"]["output"];
   leaveChannel: Scalars["Boolean"]["output"];
-  login: UserResponse;
-  register: UserResponse;
   seeMessage: MessageStatus;
   updateMessage: MessageStatus;
+};
+
+export type MutationLoginArgs = {
+  password: Scalars["String"]["input"];
+  usernameOrEmail: Scalars["String"]["input"];
+};
+
+export type MutationRegisterArgs = {
+  UserCreationInput: UserCreationInput;
+  password: Scalars["String"]["input"];
 };
 
 export type MutationCreateChannelArgs = {
@@ -143,16 +154,6 @@ export type MutationJoinChannelArgs = {
 export type MutationLeaveChannelArgs = {
   channelId: Scalars["String"]["input"];
   userId: Scalars["String"]["input"];
-};
-
-export type MutationLoginArgs = {
-  password: Scalars["String"]["input"];
-  usernameOrEmail: Scalars["String"]["input"];
-};
-
-export type MutationRegisterArgs = {
-  data: UserCreationInput;
-  password: Scalars["String"]["input"];
 };
 
 export type MutationSeeMessageArgs = {
@@ -218,6 +219,7 @@ export type UserCreationInput = {
   email: Scalars["String"]["input"];
   firstName: Scalars["String"]["input"];
   lastName: Scalars["String"]["input"];
+  phoneNumber: Scalars["String"]["input"];
   username: Scalars["String"]["input"];
 };
 
@@ -262,6 +264,102 @@ export type ResolverError = {
   name: Scalars["String"]["output"];
 };
 
+export type ResolverErrorFragment = {
+  __typename?: "resolverError";
+  message: string;
+  code: string;
+  detail: string;
+  name: string;
+} & { " $fragmentName"?: "ResolverErrorFragment" };
+
+export type UserFieldsFragment = {
+  __typename?: "Member";
+  username: string;
+  lastName: string;
+  firstName: string;
+  email: string;
+  _id: string;
+  isActive: boolean;
+  createdAt: any;
+  updatedAt: any;
+  messagesReceived?: Array<{
+    __typename?: "DirectMessage";
+    _id: string;
+    TextMessage: string;
+  }> | null;
+  channels: Array<{
+    __typename?: "Channel";
+    _id: string;
+    Name: string;
+    IconName: string;
+    Description: string;
+  }>;
+} & { " $fragmentName"?: "UserFieldsFragment" };
+
+export type LoginMutationVariables = Exact<{
+  password: Scalars["String"]["input"];
+  usernameOrEmail: Scalars["String"]["input"];
+}>;
+
+export type LoginMutation = {
+  __typename?: "Mutation";
+  Login: {
+    __typename?: "UserResponse";
+    user?: {
+      __typename?: "Member";
+      _id: string;
+      createdAt: any;
+      updatedAt: any;
+      firstName: string;
+      lastName: string;
+      isActive: boolean;
+      username: string;
+      email: string;
+    } | null;
+    errors?: Array<{
+      __typename?: "resolverError";
+      message: string;
+      code: string;
+      detail: string;
+      name: string;
+    }> | null;
+  };
+};
+
+export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type LogoutMutation = { __typename?: "Mutation"; Logout: boolean };
+
+export type RegisterMutationVariables = Exact<{
+  password: Scalars["String"]["input"];
+  UserCreationInput: UserCreationInput;
+}>;
+
+export type RegisterMutation = {
+  __typename?: "Mutation";
+  Register: {
+    __typename?: "UserResponse";
+    user?: {
+      __typename?: "Member";
+      _id: string;
+      createdAt: any;
+      updatedAt: any;
+      firstName: string;
+      lastName: string;
+      isActive: boolean;
+      username: string;
+      email: string;
+    } | null;
+    errors?: Array<{
+      __typename?: "resolverError";
+      message: string;
+      code: string;
+      detail: string;
+      name: string;
+    }> | null;
+  };
+};
+
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
 export type MeQuery = {
@@ -283,10 +381,352 @@ export type MeQuery = {
     messagesReceived?: Array<{
       __typename?: "DirectMessage";
       _id: string;
+      TextMessage: string;
+      receiverSeen: boolean;
     }> | null;
   } | null;
 };
 
+export const ResolverErrorFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ResolverError" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "resolverError" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "message" } },
+          { kind: "Field", name: { kind: "Name", value: "code" } },
+          { kind: "Field", name: { kind: "Name", value: "detail" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ResolverErrorFragment, unknown>;
+export const UserFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Member" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "username" } },
+          { kind: "Field", name: { kind: "Name", value: "lastName" } },
+          { kind: "Field", name: { kind: "Name", value: "firstName" } },
+          { kind: "Field", name: { kind: "Name", value: "email" } },
+          { kind: "Field", name: { kind: "Name", value: "_id" } },
+          { kind: "Field", name: { kind: "Name", value: "isActive" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "messagesReceived" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "_id" } },
+                { kind: "Field", name: { kind: "Name", value: "TextMessage" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "channels" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "_id" } },
+                { kind: "Field", name: { kind: "Name", value: "Name" } },
+                { kind: "Field", name: { kind: "Name", value: "IconName" } },
+                { kind: "Field", name: { kind: "Name", value: "Description" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserFieldsFragment, unknown>;
+export const LoginDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "Login" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "password" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "usernameOrEmail" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "Login" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "password" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "password" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "usernameOrEmail" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "usernameOrEmail" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "user" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "_id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "updatedAt" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "firstName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "lastName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "isActive" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "email" } },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errors" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "message" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "detail" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
+export const LogoutDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "Logout" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "Logout" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
+export const RegisterDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "Register" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "password" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "UserCreationInput" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "UserCreationInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "Register" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "password" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "password" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "UserCreationInput" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "UserCreationInput" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "user" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "_id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "updatedAt" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "firstName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "lastName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "isActive" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "email" } },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errors" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "message" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "detail" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RegisterMutation, RegisterMutationVariables>;
 export const MeDocument = {
   kind: "Document",
   definitions: [
@@ -334,6 +774,14 @@ export const MeDocument = {
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "_id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "TextMessage" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "receiverSeen" },
+                      },
                     ],
                   },
                 },

@@ -28,6 +28,8 @@ export class memberResolver {
   }
   @Query(() => Member, { nullable: true })
   async Me(@Ctx() ctx: myContext) {
+    console.log("Home here");
+    console.log(ctx.req.session.user);
     if (!ctx.req.session.user) {
       return null;
     }
@@ -44,9 +46,9 @@ export class memberResolver {
     }
   }
   @Mutation(() => UserResponse)
-  async register(
+  async Register(
     @Ctx() ctx: myContext,
-    @Arg("data", () => UserCreationInput) data: UserCreationInput,
+    @Arg("UserCreationInput", () => UserCreationInput) data: UserCreationInput,
     @Arg("password", () => String) password: string,
   ) {
     console.log(password);
@@ -64,6 +66,7 @@ export class memberResolver {
 
     try {
       await user.save();
+
       ctx.req.session.user = user._id;
 
       return { user };
@@ -73,11 +76,13 @@ export class memberResolver {
   }
 
   @Mutation(() => UserResponse)
-  async login(
+  async Login(
     @Ctx() ctx: myContext,
     @Arg("usernameOrEmail", () => String) usernameOrEmail: string,
     @Arg("password", () => String) password: string,
   ) {
+    console.log("In Login");
+    console.log(usernameOrEmail);
     const user = await Member.findOne({
       where: usernameOrEmail.includes("@")
         ? {
@@ -113,11 +118,30 @@ export class memberResolver {
       };
     }
     try {
+      console.log("here");
       await user.save();
       ctx.req.session.user = user._id;
+      console.log(process.env.COOKIE_NAME);
+
+      return { user };
     } catch (Error) {
       return { errors: [throwResolverError(Error)] };
     }
-    return { user };
+  }
+
+  @Mutation(() => Boolean)
+  async Logout(@Ctx() ctx: myContext) {
+    return new Promise((resolve) => {
+      ctx.req.session.destroy((err) => {
+        ctx.res.clearCookie(process.env.COOKIE_NAME as string);
+        if (err) {
+          console.log(err);
+          resolve(err);
+          return false;
+        }
+        resolve(true);
+        return true;
+      });
+    });
   }
 }

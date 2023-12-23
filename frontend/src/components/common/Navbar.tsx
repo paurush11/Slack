@@ -8,17 +8,33 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 import MailIcon from "@mui/icons-material/Mail";
 import { NavbarProps } from "@/interfaces/allProps";
-import LogoutIcon from '@mui/icons-material/Logout';
+import LogoutIcon from "@mui/icons-material/Logout";
+import { ApolloError, useMutation } from "@apollo/client";
+import { LogoutDocument } from "@/generated/output/graphql";
+import router from "next/router";
 
-export const Navbar: React.FC<NavbarProps> = ({ toggleTheme, data }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  toggleTheme,
+  data: meData,
+}) => {
   const theme = useTheme();
+  const [Logout, { data, error, loading }] = useMutation(LogoutDocument);
+  const [logoutError, setLogoutError] = useState<ApolloError>();
+  const onClickLogout = async () => {
+    const response = await Logout();
+    if (response.data?.Logout) {
+      router.replace("/");
+    } else if (error) {
+      setLogoutError(error);
+    }
+  };
   return (
     <AppBar
-      position="static"
+      position="relative"
       sx={{
         zIndex: 1,
         backgroundColor: theme.palette.primary.dark,
@@ -46,28 +62,28 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleTheme, data }) => {
           toggleTheme={toggleTheme}
           themeMode={theme.palette.mode}
         />
-        {data && (
+        {meData?.Me && (
           <IconButton
             size="large"
             aria-label="show new messages"
             color="inherit"
           >
             <Badge
-              badgeContent={data.Me?.messagesReceived?.length}
+              badgeContent={meData?.Me?.messagesReceived?.length}
               color="error"
             >
               <MailIcon />
             </Badge>
           </IconButton>
         )}
-        {data && (
+        {meData?.Me && (
           <IconButton
             size="large"
             aria-label="logout"
             color="inherit"
+            onClick={onClickLogout}
           >
             <LogoutIcon />
-
           </IconButton>
         )}
       </Toolbar>

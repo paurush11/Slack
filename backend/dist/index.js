@@ -15,6 +15,7 @@ const ioredis_1 = require("ioredis");
 const channels_1 = require("./resolvers/channels");
 const messages_1 = require("./resolvers/messages");
 const express_session_1 = __importDefault(require("express-session"));
+require('dotenv').config();
 const main = async () => {
     data_source_1.AppDataSource.initialize()
         .then(() => {
@@ -35,7 +36,7 @@ const main = async () => {
         disableTouch: true,
     });
     app.use((0, express_session_1.default)({
-        name: "qid",
+        name: process.env.COOKIE_NAME,
         store: redisStore,
         cookie: {
             path: "/",

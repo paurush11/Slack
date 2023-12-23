@@ -13,6 +13,7 @@ import { ChannelResolver } from "./resolvers/channels";
 import { MessageResolver } from "./resolvers/messages";
 import session from "express-session";
 
+require('dotenv').config()
 const main = async () => {
   AppDataSource.initialize()
     .then(() => {
@@ -20,6 +21,7 @@ const main = async () => {
     })
     .catch((error) => catchError(error));
   const app = express();
+ 
   app.use(
     cors({
       origin: ["http://localhost:3000", "https://studio.apollographql.com"],
@@ -36,9 +38,10 @@ const main = async () => {
     client: redis,
     disableTouch: true,
   });
+ 
   app.use(
     session({
-      name: "qid", // session cookie name
+      name: process.env.COOKIE_NAME as string, // session cookie name
       store: redisStore,
       cookie: {
         path: "/",

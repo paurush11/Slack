@@ -1,0 +1,20 @@
+fragment UserFields on Member{
+    username
+      lastName
+      firstName
+      email
+      _id
+      isActive
+      createdAt
+      updatedAt
+      messagesReceived {
+        _id
+        TextMessage
+      }
+      channels {
+        _id
+        Name
+        IconName
+        Description
+      }
+}

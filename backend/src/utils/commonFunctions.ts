@@ -55,6 +55,14 @@ const validateUserCreationInput = (
       detail:
         "The username you have entered is not valid. Kindly refer message field",
     };
+  } else if (data.phoneNumber.length !== 10) {
+    return {
+      message: "Invalid phoneNumber, please length should 10",
+      name: "phoneNumber not valid",
+      code: "422",
+      detail:
+        "The phoneNumber you have entered is not valid. Kindly refer message field",
+    };
   }
   return null;
 };

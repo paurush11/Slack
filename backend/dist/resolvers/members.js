@@ -33,6 +33,8 @@ let memberResolver = class memberResolver {
         return true;
     }
     async Me(ctx) {
+        console.log("Home here");
+        console.log(ctx.req.session.user);
         if (!ctx.req.session.user) {
             return null;
         }
@@ -49,7 +51,7 @@ let memberResolver = class memberResolver {
             console.error(e);
         }
     }
-    async register(ctx, data, password) {
+    async Register(ctx, data, password) {
         console.log(password);
         const passError = (0, commonFunctions_1.validatePassword)(password);
         if (passError) {
@@ -70,7 +72,9 @@ let memberResolver = class memberResolver {
             return { errors: [(0, commonFunctions_1.throwResolverError)(Error)] };
         }
     }
-    async login(ctx, usernameOrEmail, password) {
+    async Login(ctx, usernameOrEmail, password) {
+        console.log("In Login");
+        console.log(usernameOrEmail);
         const user = await Member_1.Member.findOne({
             where: usernameOrEmail.includes("@")
                 ? {
@@ -106,13 +110,29 @@ let memberResolver = class memberResolver {
             };
         }
         try {
+            console.log("here");
             await user.save();
             ctx.req.session.user = user._id;
+            console.log(process.env.COOKIE_NAME);
+            return { user };
         }
         catch (Error) {
             return { errors: [(0, commonFunctions_1.throwResolverError)(Error)] };
         }
-        return { user };
+    }
+    async Logout(ctx) {
+        return new Promise((resolve) => {
+            ctx.req.session.destroy((err) => {
+                ctx.res.clearCookie(process.env.COOKIE_NAME);
+                if (err) {
+                    console.log(err);
+                    resolve(err);
+                    return false;
+                }
+                resolve(true);
+                return true;
+            });
+        });
     }
 };
 exports.memberResolver = memberResolver;
@@ -138,12 +158,12 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Mutation)(() => exports_1.UserResponse),
     __param(0, (0, type_graphql_1.Ctx)()),
-    __param(1, (0, type_graphql_1.Arg)("data", () => exports_1.UserCreationInput)),
+    __param(1, (0, type_graphql_1.Arg)("UserCreationInput", () => exports_1.UserCreationInput)),
     __param(2, (0, type_graphql_1.Arg)("password", () => String)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, exports_1.UserCreationInput, String]),
     __metadata("design:returntype", Promise)
-], memberResolver.prototype, "register", null);
+], memberResolver.prototype, "Register", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => exports_1.UserResponse),
     __param(0, (0, type_graphql_1.Ctx)()),
@@ -152,7 +172,14 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
-], memberResolver.prototype, "login", null);
+], memberResolver.prototype, "Login", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], memberResolver.prototype, "Logout", null);
 exports.memberResolver = memberResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], memberResolver);

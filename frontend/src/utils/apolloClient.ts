@@ -1,10 +1,22 @@
-import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  from,
+  NormalizedCacheObject,
+  ApolloProvider,
+} from "@apollo/client";
 import { isServer } from "./isServer";
 import { onError } from "@apollo/client/link/error";
+import { NextPage, NextPageContext } from "next";
+import { useMemo } from "react";
+
+let globalApolloClient: ApolloClient<NormalizedCacheObject>;
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000/graphql", // Your GraphQL endpoint
-  credentials: "include" as const, // Important for cookies
+  credentials: "include", // Important for cookies
+  headers: {"x-forwarded-proto": "https"},
 });
 // const authLink = new HttpLink({
 //     uri: 'http://localhost:4000/graphql', // e.g., 'http://localhost:4000/graphql'
@@ -22,26 +34,35 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const createClient = (ctx?: any) => {
-  let cookie;
-  if (isServer()) {
-    cookie = ctx?.req.headers.cookie;
-  }
+const ssrMode = isServer();
+const createClient = (
+  initialState?: NormalizedCacheObject,
+  ctx?: NextPageContext,
+) => {
+  const cache = new InMemoryCache().restore(initialState || {});
 
-  const client = new ApolloClient({
+  const apolloClient = new ApolloClient({
+    ssrMode,
     link: from([errorLink, httpLink]),
-    cache: new InMemoryCache(),
-    headers: cookie
-      ? {
-          "x-forwarded-proto": "https", /// to set cookie in browser
-          cookie,
-        }
-      : {
-          "x-forwarded-proto": "https",
-        },
+    cache,
   });
 
-  return client;
+  return apolloClient;
 };
 
-export default createClient;
+const initApolloClient = (
+  initialState?: NormalizedCacheObject,
+  ctx?: NextPageContext,
+) => {
+  if (ssrMode) {
+    return createClient(initialState as NormalizedCacheObject, ctx);
+  }
+
+  if (!globalApolloClient) {
+    globalApolloClient = createClient(initialState as NormalizedCacheObject);
+  }
+
+  return globalApolloClient;
+};
+
+export { createClient, initApolloClient };

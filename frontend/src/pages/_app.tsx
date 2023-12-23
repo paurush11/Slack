@@ -1,10 +1,9 @@
-import { lightTheme, darkTheme } from "@/styles/theme";
-import createClient from "@/utils/apolloClient";
+import { darkTheme, lightTheme } from "@/styles/theme";
+import { createClient } from "@/utils/apolloClient";
 import { ApolloProvider } from "@apollo/client";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import type { AppProps } from "next/app";
 import { useState } from "react";
-
 function MyApp({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState("light");
   const theme = mode === "light" ? lightTheme : darkTheme;

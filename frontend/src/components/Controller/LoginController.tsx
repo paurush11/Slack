@@ -1,11 +1,19 @@
-import { TextField } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import LoginView from "../Views/LoginView";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import {
+  Controller,
+  FieldValues,
+  SubmitHandler,
+  useForm,
+} from "react-hook-form";
 import { LoginControllerProps } from "@/interfaces/allProps";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { isValidEmail, isValidPhoneNumber } from "@/utils/helper";
+import { LoginDocument, ResolverError } from "@/generated/output/graphql";
+import { useMutation } from "@apollo/client";
+import router from "next/router";
 
 const validationSchema = yup
   .object({
@@ -28,18 +36,56 @@ export const LoginController: React.FC<LoginControllerProps> = ({}) => {
     emailOrUsernameOrPhone: "",
     password: "",
   };
-  const [someState, setSomeState] = useState();
+
+  const theme = useTheme();
+  const [Login, { data: logindata, loading, error }] =
+    useMutation(LoginDocument);
   const {
     control,
-    handleSubmit,
     formState: { errors },
     reset,
+    handleSubmit,
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues,
   });
-  const onSubmit = () => {
-    // Handle form submission
+  const emptyResolverError: [ResolverError] = [
+    {
+      code: "code",
+      name: "name",
+      message: "message",
+      detail: "detail",
+    },
+  ];
+  const [responseError, setResponseError] =
+    useState<[ResolverError]>(emptyResolverError);
+
+  useEffect(() => {
+    if (responseError.length > 0) {
+      // Perform any action when responseError updates
+      console.log("Errors Updated", responseError);
+    }
+  }, [responseError]);
+  const onSubmit: SubmitHandler<{
+    emailOrUsernameOrPhone: string;
+    password: string;
+  }> = async (data) => {
+    const response = await Login({
+      variables: {
+        password: data.password,
+        usernameOrEmail: data.emailOrUsernameOrPhone,
+      },
+    });
+    if (response.data?.Login.user) {
+      console.log(response.data.Login.user._id);
+      router.push("/Home");
+      return;
+    } else if (response.data?.Login.errors) {
+      const val = response.data?.Login.errors;
+      var valueErrors: [ResolverError] = emptyResolverError;
+      val.map((e) => valueErrors.push(e));
+      setResponseError(valueErrors);
+    }
   };
 
   const emailField = (
@@ -48,16 +94,30 @@ export const LoginController: React.FC<LoginControllerProps> = ({}) => {
       control={control}
       rules={{ required: "Field can't be empty" }}
       render={({ field }) => (
-        <TextField
-          {...field}
-          color="primary"
-          required
-          id="Email"
-          label="Email, Username or Phone Number"
-          placeholder="Enter Your Email"
-          error={!!errors.root}
-          helperText={errors.root?.message || ""}
-        />
+        <>
+          <TextField
+            {...field}
+            color="primary"
+            required
+            id="Email"
+            label="Email, Username or Phone Number"
+            placeholder="Enter Your Email"
+            error={!!errors.root}
+            helperText={errors.root?.message || ""}
+          />
+          {errors && errors.emailOrUsernameOrPhone && (
+            <Box pl={4}>
+              <Typography
+                key={errors.emailOrUsernameOrPhone.message}
+                sx={{
+                  color: theme.palette.error.dark,
+                }}
+              >
+                *{errors.emailOrUsernameOrPhone.message}
+              </Typography>
+            </Box>
+          )}
+        </>
       )}
     ></Controller>
   );
@@ -66,27 +126,132 @@ export const LoginController: React.FC<LoginControllerProps> = ({}) => {
       name="password"
       control={control}
       rules={{ required: "password is required" }}
-      render={(field) => (
-        <TextField
-          {...field}
-          required
-          id="Password"
-          label="Password"
-          type="password"
-          autoComplete="Create Password"
-          error={!!errors.root}
-          helperText={errors.root?.message || ""}
-        />
+      render={({ field }) => (
+        <>
+          <TextField
+            {...field}
+            required
+            id="Password"
+            label="Password"
+            type="password"
+            autoComplete="Create Password"
+            error={!!errors.root}
+            helperText={errors.root?.message || ""}
+          />
+          {errors && errors.password && (
+            <Box pl={4}>
+              <Typography
+                key={errors.password.message}
+                sx={{
+                  color: theme.palette.error.dark,
+                }}
+              >
+                *{errors.password.message}
+              </Typography>
+            </Box>
+          )}
+        </>
       )}
     ></Controller>
+  );
+  const submitButton = (
+    <Button
+      type="submit"
+      variant="contained"
+      color="primary"
+      sx={{
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary["300"],
+        "&:hover": {
+          backgroundColor: theme.palette.primary["400"],
+        },
+      }}
+    >
+      Submit
+    </Button>
+  );
+  const resetButton = (
+    <Button
+      variant="outlined"
+      color="secondary"
+      onClick={() => {
+        setResponseError(emptyResolverError);
+        reset(defaultValues);
+      }}
+      sx={{
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary["300"],
+        "&:hover": {
+          backgroundColor: theme.palette.primary["400"],
+        },
+      }}
+    >
+      Reset
+    </Button>
+  );
+  const responseErrors = (
+    <Box p={4}>
+      {error && (
+        <Typography
+          key={error.name}
+          sx={{
+            color: theme.palette.error.dark,
+          }}
+        >
+          *{error.message}
+        </Typography>
+      )}
+      {responseError &&
+        responseError.map((e) => (
+          <>
+            <Typography
+              key={e.code}
+              sx={{
+                color: theme.palette.error.dark,
+              }}
+            >
+              {e.code !== emptyResolverError[0].code && "[code]:" && e.code}
+            </Typography>
+            <Typography
+              key={e.message}
+              sx={{
+                color: theme.palette.error.dark,
+              }}
+            >
+              {e.message !== emptyResolverError[0].message &&
+                "[message]:" &&
+                e.message}
+            </Typography>
+            <Typography
+              key={e.detail}
+              sx={{
+                color: theme.palette.error.dark,
+              }}
+            >
+              {e.detail !== emptyResolverError[0].detail &&
+                "[detail]:" &&
+                e.detail}
+            </Typography>
+            <Typography
+              key={e.name}
+              sx={{
+                color: theme.palette.error.dark,
+              }}
+            >
+              {e.name !== emptyResolverError[0].name && "[name]:" && e.name}
+            </Typography>
+          </>
+        ))}
+    </Box>
   );
   return (
     <LoginView
       emailField={emailField}
       passwordField={passwordField}
-      onSubmit={onSubmit}
-      handleSubmit={handleSubmit}
-      reset={reset}
+      submitField={submitButton}
+      resetField={resetButton}
+      onSubmit={handleSubmit((data) => onSubmit(data))}
+      responseErrors={responseErrors}
     />
   );
 };

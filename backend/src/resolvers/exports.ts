@@ -1,4 +1,3 @@
-
 import { Channel } from "../entity/Channel";
 import { DirectMessage } from "../entity/DirectMessage";
 import { Member } from "../entity/Member";
@@ -14,6 +13,8 @@ class UserCreationInput {
   username: string;
   @Field()
   email: string;
+  @Field()
+  phoneNumber: string;
 }
 
 @ObjectType()

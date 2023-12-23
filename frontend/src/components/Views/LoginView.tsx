@@ -1,23 +1,23 @@
 import { LoginViewProps } from "@/interfaces/allProps";
 import { Box, FormControl, Stack, useTheme } from "@mui/material";
 import React from "react";
-import SubmitAndResetController from "../Controller/SubmitAndResetController";
 
 const LoginView: React.FC<LoginViewProps> = ({
   emailField,
   passwordField,
+  submitField,
+  resetField,
+  responseErrors,
   onSubmit,
-  handleSubmit,
-  reset,
 }) => {
   const theme = useTheme();
-
   return (
     <Box
       component={"form"}
       bgcolor={`${theme.palette.background.paper}`}
       display={"flex"}
       flexDirection={"column"}
+      onSubmit={onSubmit}
     >
       <FormControl fullWidth margin="normal">
         <Stack spacing={2} width="80%" alignSelf="center">
@@ -25,11 +25,11 @@ const LoginView: React.FC<LoginViewProps> = ({
           {passwordField}
         </Stack>
       </FormControl>
-      <SubmitAndResetController
-        onSubmit={onSubmit}
-        handleSubmit={handleSubmit}
-        reset={reset}
-      />
+      <Stack direction={"row"} spacing={2} alignSelf={"center"} gap={2} p={2}>
+        {submitField}
+        {resetField}
+      </Stack>
+      {responseErrors}
     </Box>
   );
 };

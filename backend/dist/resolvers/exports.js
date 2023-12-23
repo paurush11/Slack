@@ -33,6 +33,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], UserCreationInput.prototype, "email", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], UserCreationInput.prototype, "phoneNumber", void 0);
 exports.UserCreationInput = UserCreationInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], UserCreationInput);

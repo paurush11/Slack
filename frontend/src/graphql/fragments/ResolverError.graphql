@@ -1,0 +1,7 @@
+fragment ResolverError on resolverError{
+     message
+      code
+      detail
+      name
+
+}
