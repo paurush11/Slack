@@ -1,0 +1,22 @@
+mutation CreateChannel($description: String!, $iconName: String!, $name: String!) {
+  createChannel(description: $description, iconName: $iconName, name: $name) {
+    errors {
+      message
+      item
+    }
+    channel {
+      _id
+    createdAt
+    updatedAt
+    Name
+    Description
+    posts {
+      _id
+    }
+    members {
+      _id
+    }
+    IconName
+  }
+  }
+}

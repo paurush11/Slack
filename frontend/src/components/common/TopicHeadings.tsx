@@ -27,19 +27,20 @@ const TopicHeadings: React.FC<TopicHeadingsProps> = ({
       width={"100%"}
       display={"flex"}
       alignItems={"center"}
+      overflow={"clip"}
       p={1}
       sx={{
         bgcolor: theme.palette.primary.light,
       }}
     >
-      <IconButton>
+      <IconButton onClick={onClickDropdown}>
         <ArrowDropDownIcon />
       </IconButton>
       <Typography key="channels" variant="h5">
         {headingName}
       </Typography>
       <Box flexGrow={1} />
-      <IconButton>
+      <IconButton onClick={onClickAdd}>
         <AddBoxIcon />
       </IconButton>
     </Box>

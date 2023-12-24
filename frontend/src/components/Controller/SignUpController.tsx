@@ -9,6 +9,7 @@ import { isValidEmail, isValidName, isValidPhoneNumber } from "@/utils/helper";
 import { useMutation } from "@apollo/client";
 import { RegisterDocument, ResolverError } from "@/generated/output/graphql";
 import router from "next/router";
+import { emptyResolverError } from "@/utils/common";
 
 const validationSchema = yup
   .object({
@@ -69,14 +70,6 @@ export const SignUpController: React.FC<SignUpControllerProps> = ({}) => {
     resolver: yupResolver(validationSchema),
     defaultValues,
   });
-  const emptyResolverError: [ResolverError] = [
-    {
-      code: "code",
-      name: "name",
-      message: "message",
-      detail: "detail",
-    },
-  ];
   const theme = useTheme();
   const [Register, { data, loading, error }] = useMutation(RegisterDocument);
   const [responseError, setResponseError] =

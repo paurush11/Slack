@@ -6,7 +6,7 @@ import Layout from "@/components/layout/Layout";
 import { MeDocument } from "@/generated/output/graphql";
 import useSessionStorage from "@/utils/useSessionStorage";
 import { useQuery } from "@apollo/client";
-import { Grid, Paper, styled } from "@mui/material";
+import { Box, Grid, Paper, styled } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 interface HomeProps {
@@ -17,6 +17,11 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
   const { loading, data, error } = useQuery(MeDocument);
   const [value, setValue, remove] = useSessionStorage("channelOpen", false);
   const [hasBeenClosed, setHasBeenClosed] = useState(false);
+  const [contentMainComponent, setContentMainComponent] =
+    useState<React.JSX.Element>(<Box></Box>);
+  const handleSideLayout = (content: React.JSX.Element) => {
+    setContentMainComponent(content);
+  };
   useEffect(() => {
     if (data?.Me?.channels.length === 0 && !hasBeenClosed) {
       setValue(true);
@@ -29,10 +34,10 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
       {!loading && data?.Me && <Sidebar data={data} />}
       <Grid container spacing={0} display={"flex"}>
         <Grid item xs={2} height={"100%"} flexDirection={"column"}>
-          <SideLayout data={data} />
+          <SideLayout data={data} handleSideLayout={handleSideLayout} />
         </Grid>
         <Grid item xs={10}>
-          <MainComponent />
+          <MainComponent contentMainComponent={contentMainComponent} />
           {
             <FindChannels
               channelOpen={value}

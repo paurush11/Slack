@@ -1,19 +1,15 @@
-import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import LoginView from "../Views/LoginView";
-import {
-  Controller,
-  FieldValues,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
-import { LoginControllerProps } from "@/interfaces/allProps";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { isValidEmail, isValidPhoneNumber } from "@/utils/helper";
 import { LoginDocument, ResolverError } from "@/generated/output/graphql";
+import { LoginControllerProps } from "@/interfaces/allProps";
+import { emptyResolverError } from "@/utils/common";
+import { isValidEmail, isValidPhoneNumber } from "@/utils/helper";
 import { useMutation } from "@apollo/client";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
 import router from "next/router";
+import React, { useEffect, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import * as yup from "yup";
+import LoginView from "../Views/LoginView";
 
 const validationSchema = yup
   .object({
@@ -49,20 +45,12 @@ export const LoginController: React.FC<LoginControllerProps> = ({}) => {
     resolver: yupResolver(validationSchema),
     defaultValues,
   });
-  const emptyResolverError: [ResolverError] = [
-    {
-      code: "code",
-      name: "name",
-      message: "message",
-      detail: "detail",
-    },
-  ];
+
   const [responseError, setResponseError] =
     useState<[ResolverError]>(emptyResolverError);
 
   useEffect(() => {
     if (responseError.length > 0) {
-      // Perform any action when responseError updates
       console.log("Errors Updated", responseError);
     }
   }, [responseError]);

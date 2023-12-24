@@ -306,6 +306,35 @@ export type UserFieldsFragment = {
   }>;
 } & { " $fragmentName"?: "UserFieldsFragment" };
 
+export type CreateChannelMutationVariables = Exact<{
+  description: Scalars["String"]["input"];
+  iconName: Scalars["String"]["input"];
+  name: Scalars["String"]["input"];
+}>;
+
+export type CreateChannelMutation = {
+  __typename?: "Mutation";
+  createChannel: {
+    __typename?: "ChannelResponse";
+    errors?: Array<{
+      __typename?: "notFoundErrorType";
+      message: string;
+      item: string;
+    }> | null;
+    channel?: {
+      __typename?: "Channel";
+      _id: string;
+      createdAt: any;
+      updatedAt: any;
+      Name: string;
+      Description: string;
+      IconName: string;
+      posts?: Array<{ __typename?: "Post"; _id: string }> | null;
+      members?: Array<{ __typename?: "Member"; _id: string }> | null;
+    } | null;
+  };
+};
+
 export type LoginMutationVariables = Exact<{
   password: Scalars["String"]["input"];
   usernameOrEmail: Scalars["String"]["input"];
@@ -499,6 +528,167 @@ export const UserFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<UserFieldsFragment, unknown>;
+export const CreateChannelDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateChannel" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "description" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "iconName" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "name" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createChannel" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "description" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "description" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "iconName" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "iconName" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "name" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "name" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errors" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "message" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "item" } },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "channel" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "_id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "updatedAt" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "Name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "Description" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "posts" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "_id" },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "members" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "_id" },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "IconName" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateChannelMutation,
+  CreateChannelMutationVariables
+>;
 export const LoginDocument = {
   kind: "Document",
   definitions: [

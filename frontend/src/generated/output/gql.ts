@@ -17,6 +17,8 @@ const documents = {
     types.ResolverErrorFragmentDoc,
   "fragment UserFields on Member {\n  username\n  lastName\n  firstName\n  email\n  _id\n  isActive\n  createdAt\n  updatedAt\n  messagesReceived {\n    _id\n    TextMessage\n  }\n  channels {\n    _id\n    Name\n    IconName\n    Description\n  }\n}":
     types.UserFieldsFragmentDoc,
+  "mutation CreateChannel($description: String!, $iconName: String!, $name: String!) {\n  createChannel(description: $description, iconName: $iconName, name: $name) {\n    errors {\n      message\n      item\n    }\n    channel {\n      _id\n      createdAt\n      updatedAt\n      Name\n      Description\n      posts {\n        _id\n      }\n      members {\n        _id\n      }\n      IconName\n    }\n  }\n}":
+    types.CreateChannelDocument,
   "mutation Login($password: String!, $usernameOrEmail: String!) {\n  Login(password: $password, usernameOrEmail: $usernameOrEmail) {\n    user {\n      _id\n      createdAt\n      updatedAt\n      firstName\n      lastName\n      isActive\n      username\n      email\n    }\n    errors {\n      message\n      code\n      detail\n      name\n    }\n  }\n}":
     types.LoginDocument,
   "mutation Logout {\n  Logout\n}": types.LogoutDocument,
@@ -56,6 +58,12 @@ export function graphql(
 export function graphql(
   source: "fragment UserFields on Member {\n  username\n  lastName\n  firstName\n  email\n  _id\n  isActive\n  createdAt\n  updatedAt\n  messagesReceived {\n    _id\n    TextMessage\n  }\n  channels {\n    _id\n    Name\n    IconName\n    Description\n  }\n}",
 ): (typeof documents)["fragment UserFields on Member {\n  username\n  lastName\n  firstName\n  email\n  _id\n  isActive\n  createdAt\n  updatedAt\n  messagesReceived {\n    _id\n    TextMessage\n  }\n  channels {\n    _id\n    Name\n    IconName\n    Description\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "mutation CreateChannel($description: String!, $iconName: String!, $name: String!) {\n  createChannel(description: $description, iconName: $iconName, name: $name) {\n    errors {\n      message\n      item\n    }\n    channel {\n      _id\n      createdAt\n      updatedAt\n      Name\n      Description\n      posts {\n        _id\n      }\n      members {\n        _id\n      }\n      IconName\n    }\n  }\n}",
+): (typeof documents)["mutation CreateChannel($description: String!, $iconName: String!, $name: String!) {\n  createChannel(description: $description, iconName: $iconName, name: $name) {\n    errors {\n      message\n      item\n    }\n    channel {\n      _id\n      createdAt\n      updatedAt\n      Name\n      Description\n      posts {\n        _id\n      }\n      members {\n        _id\n      }\n      IconName\n    }\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

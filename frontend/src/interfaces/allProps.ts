@@ -14,16 +14,36 @@ export interface NavbarProps {
 }
 export interface SideLayoutProps {
   data?: MeQuery | undefined;
+  handleSideLayout: (content: React.JSX.Element) => void;
 }
 export interface WrapperProps {
   variant?: variantWrapper;
   children: any;
   paddingSize?: number;
 }
+export interface AddChannelViewProps extends SubmitAndResetViewProps {
+  nameField: React.JSX.Element;
+  descriptionField: React.JSX.Element;
+  iconNameField: React.JSX.Element;
+}
 export interface LoginViewProps extends SubmitAndResetViewProps {
   emailField: React.JSX.Element;
   passwordField: React.JSX.Element;
 }
+export interface IconSearchProps {
+  value: string;
+  onChange: (value: any) => void;
+  name: string;
+}
+export interface IconComponentProps extends IconSearchProps {
+  firstIcon: string
+  secondIcon: string
+  thirdIcon: string
+  fourthIcon: string
+  setSelected: React.Dispatch<React.SetStateAction<string>>
+  selected: string
+}
+
 export interface SignupViewProps extends SubmitAndResetViewProps {
   firstNameField: React.JSX.Element;
   lastNameField: React.JSX.Element;
@@ -39,9 +59,9 @@ export interface SubmitAndResetViewProps {
   responseErrors: React.JSX.Element;
   onSubmit: () => void;
 }
-export interface LoginControllerProps {}
+export interface LoginControllerProps { }
+export interface SignUpControllerProps { }
 
-export interface SignUpControllerProps {}
 export interface SubmitAndResetControllerProps {
   reset: UseFormReset<any>;
   onSubmit: () => void;
