@@ -59,7 +59,24 @@ let MessageResolver = class MessageResolver {
             relations: ["sender", "receiver"],
         });
     }
-    async getAllUserMessages(channelId, userId, senderId) {
+    async getMyMessagesInChannel(channelId, ctx) {
+        const sentMessages = await DirectMessage_1.DirectMessage.find({
+            where: {
+                channelID: channelId,
+                senderId: ctx.req.session.user,
+            },
+            relations: ["sender", "receiver"],
+        });
+        const recievedMessages = await DirectMessage_1.DirectMessage.find({
+            where: {
+                channelID: channelId,
+                receiverID: ctx.req.session.user,
+            },
+            relations: ["sender", "receiver"],
+        });
+        return [...recievedMessages, ...sentMessages];
+    }
+    async getUserMessages(channelId, userId, senderId) {
         return await DirectMessage_1.DirectMessage.find({
             where: {
                 channelID: channelId,
@@ -293,12 +310,20 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => [DirectMessage_1.DirectMessage]),
     __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], MessageResolver.prototype, "getMyMessagesInChannel", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => [DirectMessage_1.DirectMessage]),
+    __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
     __param(1, (0, type_graphql_1.Arg)("userId", () => String)),
     __param(2, (0, type_graphql_1.Arg)("senderId", () => String)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
-], MessageResolver.prototype, "getAllUserMessages", null);
+], MessageResolver.prototype, "getUserMessages", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Boolean || exports_1.resolverError),
     __metadata("design:type", Function),

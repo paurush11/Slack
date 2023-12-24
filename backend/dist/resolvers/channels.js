@@ -20,8 +20,16 @@ const Member_1 = require("../entity/Member");
 const commonFunctions_1 = require("../utils/commonFunctions");
 const exports_1 = require("./exports");
 let ChannelResolver = class ChannelResolver {
-    channel() {
+    channels() {
         return Channel_1.Channel.find({
+            relations: ["members"],
+        });
+    }
+    getChannel(channelId) {
+        return Channel_1.Channel.find({
+            where: {
+                _id: channelId
+            },
             relations: ["members"],
         });
     }
@@ -53,7 +61,6 @@ let ChannelResolver = class ChannelResolver {
                 ],
             };
         }
-        console.log("jere");
         const cn = await Channel_1.Channel.create({
             Name: name,
             IconName: icon,
@@ -141,7 +148,14 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], ChannelResolver.prototype, "channel", null);
+], ChannelResolver.prototype, "channels", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => Channel_1.Channel),
+    __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ChannelResolver.prototype, "getChannel", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Boolean),
     __metadata("design:type", Function),

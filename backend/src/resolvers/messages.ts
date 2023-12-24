@@ -1,5 +1,6 @@
 import {
   Arg,
+  Ctx,
   Mutation,
   Query,
   Resolver,
@@ -22,6 +23,7 @@ import {
 import { Member } from "../entity/Member";
 import { Channel } from "../entity/Channel";
 import { PubSub } from "graphql-subscriptions";
+import { myContext } from "src/utils/myContext";
 
 const pubSub = new PubSub();
 @Resolver()
@@ -36,7 +38,6 @@ export class MessageResolver {
   ): Promise<DirectMessage> {
     return messagePayload;
   }
-
   ///Message updated
   @Subscription(() => DirectMessage, {
     topics: MESSAGE_UPDATED_TOPIC,
@@ -46,7 +47,6 @@ export class MessageResolver {
   ): Promise<DirectMessage> {
     return updatePayload;
   }
-
   ///Message deleted
   @Subscription(() => DirectMessage, {
     topics: MESSAGE_DELETED_TOPIC,
@@ -56,7 +56,6 @@ export class MessageResolver {
   ): Promise<DirectMessage> {
     return deletePayload;
   }
-
   ///Message seen
   @Subscription(() => DirectMessage, {
     topics: MESSAGE_SEEN_TOPIC,
@@ -66,7 +65,6 @@ export class MessageResolver {
   ): Promise<DirectMessage> {
     return deletePayload;
   }
-
   @Query(() => [DirectMessage])
   async getAll() {
     const messages = await DirectMessage.find({
@@ -75,7 +73,6 @@ export class MessageResolver {
     console.log(messages);
     return messages;
   }
-
   @Query(() => [DirectMessage])
   async getAllReceivedMessages(
     @Arg("channelId", () => String) channelId: string,
@@ -103,7 +100,28 @@ export class MessageResolver {
     });
   }
   @Query(() => [DirectMessage])
-  async getAllUserMessages(
+  async getMyMessagesInChannel(
+    @Arg("channelId", () => String) channelId: string,
+    @Ctx() ctx: myContext
+  ) {
+    const sentMessages = await DirectMessage.find({
+      where: {
+        channelID: channelId,
+        senderId: ctx.req.session.user,
+      },
+      relations: ["sender", "receiver"],
+    });
+    const recievedMessages = await DirectMessage.find({
+      where: {
+        channelID: channelId,
+        receiverID: ctx.req.session.user,
+      },
+      relations: ["sender", "receiver"],
+    });
+    return [...recievedMessages, ...sentMessages]
+  }
+  @Query(() => [DirectMessage])
+  async getUserMessages(
     @Arg("channelId", () => String) channelId: string,
     @Arg("userId", () => String) userId: string,
     @Arg("senderId", () => String) senderId: string,

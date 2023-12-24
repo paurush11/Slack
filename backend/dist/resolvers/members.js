@@ -28,10 +28,6 @@ let memberResolver = class memberResolver {
             relations: ["channels", "messagesSent", "messagesReceived"],
         });
     }
-    async clearUsers() {
-        await data_source_1.AppDataSource.createQueryRunner().query("TRUNCATE TABLE member CASCADE");
-        return true;
-    }
     async Me(ctx) {
         console.log("Home here");
         console.log(ctx.req.session.user);
@@ -50,6 +46,10 @@ let memberResolver = class memberResolver {
         catch (e) {
             console.error(e);
         }
+    }
+    async clearUsers() {
+        await data_source_1.AppDataSource.createQueryRunner().query("TRUNCATE TABLE member CASCADE");
+        return true;
     }
     async Register(ctx, data, password) {
         console.log(password);
@@ -143,18 +143,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], memberResolver.prototype, "users", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Boolean),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], memberResolver.prototype, "clearUsers", null);
-__decorate([
     (0, type_graphql_1.Query)(() => Member_1.Member, { nullable: true }),
     __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], memberResolver.prototype, "Me", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], memberResolver.prototype, "clearUsers", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => exports_1.UserResponse),
     __param(0, (0, type_graphql_1.Ctx)()),

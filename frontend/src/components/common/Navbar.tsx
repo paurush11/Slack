@@ -1,9 +1,11 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import {
+  Alert,
   AppBar,
   Badge,
   Box,
   IconButton,
+  Snackbar,
   Toolbar,
   Typography,
   useTheme,
@@ -16,20 +18,23 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { ApolloError, useMutation } from "@apollo/client";
 import { LogoutDocument } from "@/generated/output/graphql";
 import router from "next/router";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 export const Navbar: React.FC<NavbarProps> = ({
   toggleTheme,
   data: meData,
 }) => {
   const theme = useTheme();
-  const [Logout, { data, error, loading }] = useMutation(LogoutDocument);
+  const [Logout, { error, loading }] = useMutation(LogoutDocument);
   const [logoutError, setLogoutError] = useState<ApolloError>();
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState<boolean>(false);
   const onClickLogout = async () => {
     const response = await Logout();
     if (response.data?.Logout) {
       router.replace("/");
     } else if (error) {
       setLogoutError(error);
+      setOpenErrorSnackbar(true);
     }
   };
   return (
@@ -62,6 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           toggleTheme={toggleTheme}
           themeMode={theme.palette.mode}
         />
+        {loading && <CircularProgress color="secondary" />}
         {meData?.Me && (
           <IconButton
             size="large"
@@ -87,6 +93,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           </IconButton>
         )}
       </Toolbar>
+      <Snackbar
+        open={openErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenErrorSnackbar(false)}
+      >
+        <Alert onClose={() => setOpenErrorSnackbar(false)} severity="error">
+          {logoutError?.message}
+        </Alert>
+      </Snackbar>
     </AppBar>
   );
 };

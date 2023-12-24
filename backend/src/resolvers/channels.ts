@@ -11,10 +11,23 @@ import { ChannelResponse, resolverError } from "./exports";
 @Resolver()
 export class ChannelResolver {
   @Query(() => [Channel])
-  channel(): Promise<Channel[]> {
+  channels(): Promise<Channel[]> {
     return Channel.find({
       relations: ["members"],
     });
+  }
+
+  @Query(() => Channel)
+  getChannel(
+    @Arg("channelId", () => String) channelId: string
+  ) {
+    return Channel.find({
+      where: {
+        _id: channelId
+      },
+      relations: ["members"],
+    });
+
   }
 
   @Mutation(() => Boolean)
@@ -58,7 +71,6 @@ export class ChannelResolver {
         ],
       };
     }
-    console.log("jere");
     const cn = await Channel.create({
       Name: name,
       IconName: icon,
@@ -102,9 +114,9 @@ export class ChannelResolver {
       }
       if (
         channel.members.filter((member) => member._id === userId).length !==
-          0 &&
+        0 &&
         user.channels.filter((channel) => channel._id === channelId).length !==
-          0
+        0
       ) {
         return true;
       }
@@ -154,4 +166,7 @@ export class ChannelResolver {
       return throwResolverError(e);
     }
   }
+
+
+
 }

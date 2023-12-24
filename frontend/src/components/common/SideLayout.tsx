@@ -1,10 +1,15 @@
 import { SideLayoutProps } from "@/interfaces/allProps";
-
-import { Box, useTheme } from "@mui/material";
+import { Box, IconButton, Stack, Typography, useTheme } from "@mui/material";
 import React from "react";
+import TopicHeadings from "./TopicHeadings";
 
-const SideLayout: React.FC<SideLayoutProps> = ({ data }) => {
+export const SideLayout: React.FC<SideLayoutProps> = ({ data }) => {
   const theme = useTheme();
+  const channelOnClickDropdown = () => {};
+  const channelOnClickAdd = () => {};
+  const membersOnClickAdd = () => {};
+  const membersOnClickDropdown = () => {};
+
   return (
     <Box
       display={"flex"}
@@ -13,8 +18,18 @@ const SideLayout: React.FC<SideLayoutProps> = ({ data }) => {
         height: "100%",
       }}
     >
-      hi
+      <Stack direction={"column"} width={"100%"}>
+        <TopicHeadings
+          headingName={"My Channels"}
+          onClickAdd={channelOnClickAdd}
+          onClickDropdown={channelOnClickDropdown}
+        />
+        <TopicHeadings
+          headingName={"My Messages"}
+          onClickDropdown={membersOnClickDropdown}
+          onClickAdd={membersOnClickAdd}
+        />
+      </Stack>
     </Box>
   );
 };
-export default SideLayout;

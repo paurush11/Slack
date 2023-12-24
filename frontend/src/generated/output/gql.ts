@@ -22,6 +22,10 @@ const documents = {
   "mutation Logout {\n  Logout\n}": types.LogoutDocument,
   "mutation Register($password: String!, $UserCreationInput: UserCreationInput!) {\n  Register(password: $password, UserCreationInput: $UserCreationInput) {\n    user {\n      _id\n      createdAt\n      updatedAt\n      firstName\n      lastName\n      isActive\n      username\n      email\n    }\n    errors {\n      message\n      code\n      detail\n      name\n    }\n  }\n}":
     types.RegisterDocument,
+  "query Channels {\n  channels {\n    _id\n    Name\n    IconName\n    Description\n  }\n}":
+    types.ChannelsDocument,
+  "query GetChannel($channelId: String!) {\n  getChannel(channelId: $channelId) {\n    _id\n    Name\n    IconName\n    Description\n    members {\n      _id\n    }\n    posts {\n      _id\n    }\n  }\n}":
+    types.GetChannelDocument,
   "query Me {\n  Me {\n    username\n    lastName\n    email\n    _id\n    firstName\n    channels {\n      _id\n      Name\n      IconName\n      Description\n    }\n    messagesReceived {\n      _id\n      TextMessage\n      receiverSeen\n    }\n  }\n}":
     types.MeDocument,
 };
@@ -70,6 +74,18 @@ export function graphql(
 export function graphql(
   source: "mutation Register($password: String!, $UserCreationInput: UserCreationInput!) {\n  Register(password: $password, UserCreationInput: $UserCreationInput) {\n    user {\n      _id\n      createdAt\n      updatedAt\n      firstName\n      lastName\n      isActive\n      username\n      email\n    }\n    errors {\n      message\n      code\n      detail\n      name\n    }\n  }\n}",
 ): (typeof documents)["mutation Register($password: String!, $UserCreationInput: UserCreationInput!) {\n  Register(password: $password, UserCreationInput: $UserCreationInput) {\n    user {\n      _id\n      createdAt\n      updatedAt\n      firstName\n      lastName\n      isActive\n      username\n      email\n    }\n    errors {\n      message\n      code\n      detail\n      name\n    }\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "query Channels {\n  channels {\n    _id\n    Name\n    IconName\n    Description\n  }\n}",
+): (typeof documents)["query Channels {\n  channels {\n    _id\n    Name\n    IconName\n    Description\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "query GetChannel($channelId: String!) {\n  getChannel(channelId: $channelId) {\n    _id\n    Name\n    IconName\n    Description\n    members {\n      _id\n    }\n    posts {\n      _id\n    }\n  }\n}",
+): (typeof documents)["query GetChannel($channelId: String!) {\n  getChannel(channelId: $channelId) {\n    _id\n    Name\n    IconName\n    Description\n    members {\n      _id\n    }\n    posts {\n      _id\n    }\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -53,7 +53,7 @@ const IndexView: React.FC<IndexViewProps> = ({ toggleTheme }) => {
                 sx={{
                   backgroundColor: theme.palette.primary.dark,
                   "&:hover": {
-                    backgroundColor: theme.palette.primary.light,
+                    backgroundColor: theme.palette.primary["200"],
                   },
                 }}
               >

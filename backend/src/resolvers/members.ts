@@ -18,14 +18,6 @@ export class memberResolver {
       relations: ["channels", "messagesSent", "messagesReceived"],
     });
   }
-
-  @Mutation(() => Boolean)
-  async clearUsers() {
-    await AppDataSource.createQueryRunner().query(
-      "TRUNCATE TABLE member CASCADE",
-    );
-    return true;
-  }
   @Query(() => Member, { nullable: true })
   async Me(@Ctx() ctx: myContext) {
     console.log("Home here");
@@ -44,6 +36,15 @@ export class memberResolver {
     } catch (e) {
       console.error(e);
     }
+  }
+
+
+  @Mutation(() => Boolean)
+  async clearUsers() {
+    await AppDataSource.createQueryRunner().query(
+      "TRUNCATE TABLE member CASCADE",
+    );
+    return true;
   }
   @Mutation(() => UserResponse)
   async Register(
@@ -74,7 +75,6 @@ export class memberResolver {
       return { errors: [throwResolverError(Error)] };
     }
   }
-
   @Mutation(() => UserResponse)
   async Login(
     @Ctx() ctx: myContext,
@@ -128,7 +128,6 @@ export class memberResolver {
       return { errors: [throwResolverError(Error)] };
     }
   }
-
   @Mutation(() => Boolean)
   async Logout(@Ctx() ctx: myContext) {
     return new Promise((resolve) => {

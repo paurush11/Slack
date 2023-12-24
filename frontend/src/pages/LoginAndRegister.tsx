@@ -43,7 +43,7 @@ const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ toggleTheme }) => {
                     ? theme.palette.primary.dark
                     : theme.palette.primary.light,
                 "&:hover": {
-                  backgroundColor: theme.palette.primary.light,
+                  backgroundColor: theme.palette.primary["200"],
                 },
               }}
             >
@@ -59,7 +59,7 @@ const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ toggleTheme }) => {
                     ? theme.palette.primary.dark
                     : theme.palette.primary.light,
                 "&:hover": {
-                  backgroundColor: theme.palette.primary.light,
+                  backgroundColor: theme.palette.primary["200"],
                 },
               }}
             >

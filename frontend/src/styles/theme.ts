@@ -5,7 +5,7 @@ const lightTheme = createTheme({
     mode: "light",
     primary: {
       main: "#192a51", // Dark Blue
-      light: "#967aa1", // Light Purple
+      light: "#FAE6FA", // Light Purple
       dark: "#3f0e41", // Darker Purple
       contrastText: "#fff",
       "100": "#001219", // Darkest Blue
@@ -76,7 +76,7 @@ const darkTheme = createTheme({
     mode: "dark",
     primary: {
       main: "#2c387e", // Darker Blue
-      light: "#5f5c7d", // Muted Purple
+      light: "#386575", // Muted Purple
       dark: "#001219", // Very Dark Purple
       contrastText: "#fff",
       "100": "#ae2012", // Since '100' should be lighter in the dark theme, use a lighter color

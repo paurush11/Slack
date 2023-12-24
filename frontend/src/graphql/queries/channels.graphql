@@ -1,0 +1,8 @@
+query Channels {
+  channels {
+    _id
+    Name
+    IconName
+    Description
+  }
+}

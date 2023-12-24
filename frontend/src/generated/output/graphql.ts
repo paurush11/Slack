@@ -183,11 +183,13 @@ export type Post = {
 export type Query = {
   __typename?: "Query";
   Me?: Maybe<Member>;
-  channel: Array<Channel>;
+  channels: Array<Channel>;
   getAll: Array<DirectMessage>;
   getAllReceivedMessages: Array<DirectMessage>;
   getAllSentMessages: Array<DirectMessage>;
-  getAllUserMessages: Array<DirectMessage>;
+  getChannel: Channel;
+  getMyMessagesInChannel: Array<DirectMessage>;
+  getUserMessages: Array<DirectMessage>;
   users: Array<Member>;
 };
 
@@ -201,7 +203,15 @@ export type QueryGetAllSentMessagesArgs = {
   userId: Scalars["String"]["input"];
 };
 
-export type QueryGetAllUserMessagesArgs = {
+export type QueryGetChannelArgs = {
+  channelId: Scalars["String"]["input"];
+};
+
+export type QueryGetMyMessagesInChannelArgs = {
+  channelId: Scalars["String"]["input"];
+};
+
+export type QueryGetUserMessagesArgs = {
   channelId: Scalars["String"]["input"];
   senderId: Scalars["String"]["input"];
   userId: Scalars["String"]["input"];
@@ -357,6 +367,36 @@ export type RegisterMutation = {
       detail: string;
       name: string;
     }> | null;
+  };
+};
+
+export type ChannelsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type ChannelsQuery = {
+  __typename?: "Query";
+  channels: Array<{
+    __typename?: "Channel";
+    _id: string;
+    Name: string;
+    IconName: string;
+    Description: string;
+  }>;
+};
+
+export type GetChannelQueryVariables = Exact<{
+  channelId: Scalars["String"]["input"];
+}>;
+
+export type GetChannelQuery = {
+  __typename?: "Query";
+  getChannel: {
+    __typename?: "Channel";
+    _id: string;
+    Name: string;
+    IconName: string;
+    Description: string;
+    members?: Array<{ __typename?: "Member"; _id: string }> | null;
+    posts?: Array<{ __typename?: "Post"; _id: string }> | null;
   };
 };
 
@@ -727,6 +767,108 @@ export const RegisterDocument = {
     },
   ],
 } as unknown as DocumentNode<RegisterMutation, RegisterMutationVariables>;
+export const ChannelsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "Channels" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "channels" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "_id" } },
+                { kind: "Field", name: { kind: "Name", value: "Name" } },
+                { kind: "Field", name: { kind: "Name", value: "IconName" } },
+                { kind: "Field", name: { kind: "Name", value: "Description" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ChannelsQuery, ChannelsQueryVariables>;
+export const GetChannelDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetChannel" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "channelId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "getChannel" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "channelId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "channelId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "_id" } },
+                { kind: "Field", name: { kind: "Name", value: "Name" } },
+                { kind: "Field", name: { kind: "Name", value: "IconName" } },
+                { kind: "Field", name: { kind: "Name", value: "Description" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "members" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "_id" } },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "posts" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "_id" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetChannelQuery, GetChannelQueryVariables>;
 export const MeDocument = {
   kind: "Document",
   definitions: [

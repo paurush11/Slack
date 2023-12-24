@@ -1,0 +1,14 @@
+query GetChannel($channelId: String!) {
+  getChannel(channelId: $channelId) {
+    _id
+    Name
+    IconName
+    Description
+    members {
+      _id
+    }
+    posts {
+      _id
+    }
+  }
+}
