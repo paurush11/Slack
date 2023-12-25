@@ -18,7 +18,7 @@ export const SignupView: React.FC<SignupViewProps> = ({
   return (
     <Box
       component={"form"}
-      bgcolor={`${theme.palette.background.paper}`}
+      bgcolor={`${theme.palette.background.default}`}
       display={"flex"}
       flexDirection={"column"}
       onSubmit={onSubmit}
@@ -33,11 +33,12 @@ export const SignupView: React.FC<SignupViewProps> = ({
           {passwordField}
           {confirmPasswordField}
         </Stack>
+        {responseErrors}
         <Stack direction={"row"} spacing={2} alignSelf={"center"} gap={2} p={2}>
           {submitField}
           {resetField}
         </Stack>
-        {responseErrors}
+
       </FormControl>
     </Box>
   );

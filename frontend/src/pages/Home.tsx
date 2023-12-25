@@ -3,7 +3,11 @@ import FindChannels from "@/components/common/FindChannels";
 import MainComponent from "@/components/common/MainComponent";
 import { SideLayout } from "@/components/common/SideLayout";
 import Layout from "@/components/layout/Layout";
-import { MeDocument, NotFoundErrorType, ResolverError } from "@/generated/output/graphql";
+import {
+  MeDocument,
+  NotFoundErrorType,
+  ResolverError,
+} from "@/generated/output/graphql";
 import { notAuth } from "@/utils/notAuth";
 import useSessionStorage from "@/utils/useSessionStorage";
 import { useQuery } from "@apollo/client";
@@ -22,7 +26,9 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
     useState(false);
   const [hasBeenClosed, setHasBeenClosed] = useState(false);
   const [sideBarSize, setSideBarSize] = useState(0.8);
-  const [errors, setErrors] = useState<NotFoundErrorType[] | ResolverError[] | undefined>()
+  const [errors, setErrors] = useState<
+    NotFoundErrorType[] | ResolverError[] | undefined
+  >();
   const [useSmallLayout, setUseSmallLayout] = useState(false);
 
   const [contentMainComponent, setContentMainComponent] =
@@ -33,19 +39,19 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
 
   useEffect(() => {
     if (!loading && !data?.Me) {
-      notAuth()
+      notAuth();
     }
     if (data?.Me?.success === false) {
       if (data.Me.error) {
-        setErrors(data.Me.error as NotFoundErrorType[])
-        notAuth()
+        setErrors(data.Me.error as NotFoundErrorType[]);
+        notAuth();
       } else {
-        setErrors(data.Me.resolverError as ResolverError[])
-        notAuth()
+        setErrors(data.Me.resolverError as ResolverError[]);
+        notAuth();
       }
     }
-  }, [data])
-  console.log(errors)
+  }, [data]);
+  console.log(errors);
   useEffect(() => {
     if (
       (data?.Me?.user?.channels.length === 0 && !hasBeenClosed) ||
@@ -70,8 +76,6 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
       useSmallLayout={useSmallLayout}
       setUseSmallLayout={setUseSmallLayout}
     >
-
-
       {/* {!loading && data?.Me && <Sidebar data={data} />} */}
       {!loading && (
         <Grid container spacing={0} display={"flex"}>
@@ -89,12 +93,13 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
           </Grid>
           <Grid item xs={12 - sideBarSize}>
             <MainComponent contentMainComponent={contentMainComponent} />
-            {errors && <Alert severity="error">
-              <AlertTitle>Error</AlertTitle>
-              {errors && errors[0].message} — <strong>check it out!</strong>
-            </Alert>}
+            {errors && (
+              <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {errors && errors[0].message} — <strong>check it out!</strong>
+              </Alert>
+            )}
             {
-
               <FindChannels
                 channelOpen={findYourChannelsOpen}
                 setValue={setFindYourChannelsOpen}

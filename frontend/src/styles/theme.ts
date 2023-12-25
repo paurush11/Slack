@@ -5,7 +5,7 @@ const lightTheme = createTheme({
     mode: "light",
     primary: {
       main: "#192a51", // Dark Blue
-      light: "#FAE6FA", // Light Purple
+      light: "#78567A", // Light Purple
       dark: "#3f0e41", // Darker Purple
       contrastText: "#fff",
       "100": "#001219", // Darkest Blue
@@ -111,7 +111,7 @@ const darkTheme = createTheme({
       contrastText: "#fff",
     },
     background: {
-      default: "#aaaaaa", // Dark Grey
+      default: "#212121", // Dark Grey
       paper: "#0e0e0f", // Darker Grey
     },
     // ... other dark theme customizations

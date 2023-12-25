@@ -13,17 +13,20 @@ const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ toggleTheme }) => {
       <Box
         flexGrow={1}
         sx={{
-          backgroundColor: theme.palette.background.default,
+          backgroundColor: theme.palette.background.paper,
         }}
         justifyContent={"center"}
         alignItems={"center"}
         width={"100vw"}
         display={"flex"}
+
       >
         <Box
           width={"60%"}
+          borderRadius={10}
+          p={2}
           sx={{
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.background.default,
           }}
         >
           <Stack

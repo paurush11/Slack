@@ -27,7 +27,7 @@ const validationSchema = yup
     password: yup.string().required("Password is required"),
   })
   .required();
-export const LoginController: React.FC<LoginControllerProps> = ({}) => {
+export const LoginController: React.FC<LoginControllerProps> = ({ }) => {
   const defaultValues = {
     emailOrUsernameOrPhone: "",
     password: "",
@@ -66,7 +66,7 @@ export const LoginController: React.FC<LoginControllerProps> = ({}) => {
     });
     if (response.data?.Login.user) {
       console.log(response.data.Login.user._id);
-      router.push("/Home");
+      router.replace("/Home");
       return;
     } else if (response.data?.Login.errors) {
       const val = response.data?.Login.errors;
@@ -178,7 +178,7 @@ export const LoginController: React.FC<LoginControllerProps> = ({}) => {
     </Button>
   );
   const responseErrors = (
-    <Box p={4}>
+    <Box pt={4}>
       {error && (
         <Typography
           key={error.name}

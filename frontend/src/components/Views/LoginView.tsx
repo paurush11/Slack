@@ -14,10 +14,11 @@ const LoginView: React.FC<LoginViewProps> = ({
   return (
     <Box
       component={"form"}
-      bgcolor={`${theme.palette.background.paper}`}
+      bgcolor={`${theme.palette.background.default}`}
       display={"flex"}
       flexDirection={"column"}
       onSubmit={onSubmit}
+      borderRadius={10}
     >
       <FormControl fullWidth margin="normal">
         <Stack spacing={2} width="80%" alignSelf="center">
@@ -25,11 +26,12 @@ const LoginView: React.FC<LoginViewProps> = ({
           {passwordField}
         </Stack>
       </FormControl>
+      {responseErrors}
       <Stack direction={"row"} spacing={2} alignSelf={"center"} gap={2} p={2}>
         {submitField}
         {resetField}
       </Stack>
-      {responseErrors}
+
     </Box>
   );
 };
