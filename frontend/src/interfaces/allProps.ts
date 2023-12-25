@@ -7,23 +7,21 @@ import { Dispatch, FormEventHandler, SetStateAction } from "react";
 export interface LayoutProps extends WrapperProps {
   toggleTheme: () => any;
   data?: MeQuery | undefined;
-  setUseSmallLayout: React.Dispatch<React.SetStateAction<boolean>>
-  useSmallLayout: boolean
+  setUseSmallLayout?: React.Dispatch<React.SetStateAction<boolean>>;
+  useSmallLayout?: boolean;
 }
 export interface ChannelViewControllerProps {
-  channelId: string
+  channelId: string;
   data?: MeQuery | undefined;
 }
 export interface ChannelViewProps {
-  data: GetChannelQuery | undefined
-    
+  data: GetChannelQuery | undefined;
 }
 export interface NavbarProps {
   toggleTheme: () => void;
   data?: MeQuery | undefined;
-  setUseSmallLayout: React.Dispatch<React.SetStateAction<boolean>>
-  useSmallLayout: boolean
-
+  setUseSmallLayout: React.Dispatch<React.SetStateAction<boolean>>;
+  useSmallLayout: boolean;
 }
 export interface SideLayoutProps {
   data?: MeQuery | undefined;
@@ -82,8 +80,8 @@ export interface SubmitAndResetViewProps {
   responseErrors: React.JSX.Element;
   onSubmit: () => void;
 }
-export interface LoginControllerProps { }
-export interface SignUpControllerProps { }
+export interface LoginControllerProps {}
+export interface SignUpControllerProps {}
 
 export interface SubmitAndResetControllerProps {
   reset: UseFormReset<any>;

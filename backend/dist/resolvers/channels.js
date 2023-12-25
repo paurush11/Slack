@@ -29,7 +29,7 @@ let ChannelResolver = class ChannelResolver {
         console.log(channelId);
         return Channel_1.Channel.findOne({
             where: {
-                _id: channelId
+                _id: channelId,
             },
             relations: ["members"],
         });

@@ -75,7 +75,7 @@ const FindChannels: React.FC<FindChannelsProps> = ({
     const response = await joinChannel({
       variables: {
         channelId: id,
-        userId: meData?.Me?._id as string,
+        userId: meData?.Me?.user?._id as string,
       },
     });
     if (response.data?.joinChannel === true) {

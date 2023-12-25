@@ -25,6 +25,10 @@ export class Comment extends Content {
   @Column()
   postId!: string;
 
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  replyId?: string;
+
   @Field(() => Member)
   @ManyToOne(() => Member, (member) => member.comments)
   @JoinColumn({ name: "memberId" })
@@ -35,4 +39,14 @@ export class Comment extends Content {
     onDelete: "CASCADE",
   })
   votes: Vote[];
+
+  @Field(() => Comment, { nullable: true })
+  @ManyToOne(() => Comment, (comment) => comment.replies)
+  @JoinColumn({ name: "replyId" })
+  parentComment?: Comment;
+
+  // Add a field for replies
+  @Field(() => [Comment], { nullable: true })
+  @OneToMany(() => Comment, (comment) => comment.parentComment)
+  replies: Comment[];
 }

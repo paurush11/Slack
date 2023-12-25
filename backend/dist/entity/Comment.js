@@ -41,6 +41,11 @@ __decorate([
     __metadata("design:type", String)
 ], Comment.prototype, "postId", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Comment.prototype, "replyId", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => Member_1.Member),
     (0, typeorm_1.ManyToOne)(() => Member_1.Member, (member) => member.comments),
     (0, typeorm_1.JoinColumn)({ name: "memberId" }),
@@ -53,6 +58,17 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Comment.prototype, "votes", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Comment, { nullable: true }),
+    (0, typeorm_1.ManyToOne)(() => Comment, (comment) => comment.replies),
+    (0, typeorm_1.JoinColumn)({ name: "replyId" }),
+    __metadata("design:type", Comment)
+], Comment.prototype, "parentComment", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [Comment], { nullable: true }),
+    (0, typeorm_1.OneToMany)(() => Comment, (comment) => comment.parentComment),
+    __metadata("design:type", Array)
+], Comment.prototype, "replies", void 0);
 exports.Comment = Comment = __decorate([
     (0, type_graphql_1.ObjectType)(),
     (0, typeorm_1.Entity)()

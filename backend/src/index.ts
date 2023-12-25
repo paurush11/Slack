@@ -12,8 +12,10 @@ import { Redis } from "ioredis";
 import { ChannelResolver } from "./resolvers/channels";
 import { MessageResolver } from "./resolvers/messages";
 import session from "express-session";
+import { PostResolver } from "./resolvers/posts";
+import { VoteResolver } from "./resolvers/vote";
 
-require('dotenv').config()
+require("dotenv").config();
 const main = async () => {
   AppDataSource.initialize()
     .then(() => {
@@ -21,7 +23,7 @@ const main = async () => {
     })
     .catch((error) => catchError(error));
   const app = express();
- 
+
   app.use(
     cors({
       origin: ["http://localhost:3000", "https://studio.apollographql.com"],
@@ -38,7 +40,7 @@ const main = async () => {
     client: redis,
     disableTouch: true,
   });
- 
+
   app.use(
     session({
       name: process.env.COOKIE_NAME as string, // session cookie name
@@ -64,7 +66,13 @@ const main = async () => {
     }),
     schema: await buildSchema({
       validate: false,
-      resolvers: [memberResolver, ChannelResolver, MessageResolver],
+      resolvers: [
+        memberResolver,
+        ChannelResolver,
+        MessageResolver,
+        PostResolver,
+        VoteResolver,
+      ],
     }),
   });
   await apolloServer.start();

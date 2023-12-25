@@ -32,7 +32,7 @@ const documents = {
     types.GetChannelDocument,
   "query GetMyMessagesInChannel($channelId: String!) {\n  getMyMessagesInChannel(channelId: $channelId) {\n    _id\n    sender {\n      _id\n      lastName\n      firstName\n      isActive\n      username\n    }\n    receiver {\n      _id\n      lastName\n      firstName\n      isActive\n      username\n    }\n  }\n}":
     types.GetMyMessagesInChannelDocument,
-  "query Me {\n  Me {\n    username\n    lastName\n    email\n    _id\n    firstName\n    channels {\n      _id\n      Name\n      IconName\n      Description\n    }\n    messagesReceived {\n      _id\n      TextMessage\n      receiverSeen\n    }\n  }\n}":
+  "query Me {\n  Me {\n    user {\n      username\n      lastName\n      email\n      _id\n      firstName\n      channels {\n        _id\n        Name\n        IconName\n        Description\n      }\n      messagesReceived {\n        _id\n        TextMessage\n        receiverSeen\n      }\n      posts {\n        _id\n      }\n      comments {\n        _id\n      }\n    }\n    success\n    resolverError {\n      message\n      code\n      detail\n      name\n    }\n    error {\n      message\n      item\n    }\n  }\n}":
     types.MeDocument,
 };
 
@@ -114,8 +114,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "query Me {\n  Me {\n    username\n    lastName\n    email\n    _id\n    firstName\n    channels {\n      _id\n      Name\n      IconName\n      Description\n    }\n    messagesReceived {\n      _id\n      TextMessage\n      receiverSeen\n    }\n  }\n}",
-): (typeof documents)["query Me {\n  Me {\n    username\n    lastName\n    email\n    _id\n    firstName\n    channels {\n      _id\n      Name\n      IconName\n      Description\n    }\n    messagesReceived {\n      _id\n      TextMessage\n      receiverSeen\n    }\n  }\n}"];
+  source: "query Me {\n  Me {\n    user {\n      username\n      lastName\n      email\n      _id\n      firstName\n      channels {\n        _id\n        Name\n        IconName\n        Description\n      }\n      messagesReceived {\n        _id\n        TextMessage\n        receiverSeen\n      }\n      posts {\n        _id\n      }\n      comments {\n        _id\n      }\n    }\n    success\n    resolverError {\n      message\n      code\n      detail\n      name\n    }\n    error {\n      message\n      item\n    }\n  }\n}",
+): (typeof documents)["query Me {\n  Me {\n    user {\n      username\n      lastName\n      email\n      _id\n      firstName\n      channels {\n        _id\n        Name\n        IconName\n        Description\n      }\n      messagesReceived {\n        _id\n        TextMessage\n        receiverSeen\n      }\n      posts {\n        _id\n      }\n      comments {\n        _id\n      }\n    }\n    success\n    resolverError {\n      message\n      code\n      detail\n      name\n    }\n    error {\n      message\n      item\n    }\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

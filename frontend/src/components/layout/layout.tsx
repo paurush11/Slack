@@ -10,12 +10,10 @@ const Layout: React.FC<LayoutProps> = ({
   toggleTheme,
   data,
   useSmallLayout,
-  setUseSmallLayout
-
+  setUseSmallLayout,
 }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const navbarRef = useRef<HTMLDivElement>(null);
-
 
   useEffect(() => {
     // Measure the height of the Navbar and update state
@@ -25,7 +23,12 @@ const Layout: React.FC<LayoutProps> = ({
   }, []);
   return (
     <Box display="flex" flexDirection="column" minHeight={"100vh"}>
-      <Navbar data={data} toggleTheme={toggleTheme} useSmallLayout={useSmallLayout} setUseSmallLayout={setUseSmallLayout}></Navbar>
+      <Navbar
+        data={data}
+        toggleTheme={toggleTheme}
+        useSmallLayout={useSmallLayout}
+        setUseSmallLayout={setUseSmallLayout}
+      ></Navbar>
       <Wrapper variant={variant} paddingSize={navbarHeight}>
         {children}{" "}
       </Wrapper>

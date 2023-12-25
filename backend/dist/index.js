@@ -15,7 +15,9 @@ const ioredis_1 = require("ioredis");
 const channels_1 = require("./resolvers/channels");
 const messages_1 = require("./resolvers/messages");
 const express_session_1 = __importDefault(require("express-session"));
-require('dotenv').config();
+const posts_1 = require("./resolvers/posts");
+const vote_1 = require("./resolvers/vote");
+require("dotenv").config();
 const main = async () => {
     data_source_1.AppDataSource.initialize()
         .then(() => {
@@ -57,7 +59,13 @@ const main = async () => {
         }),
         schema: await (0, type_graphql_1.buildSchema)({
             validate: false,
-            resolvers: [members_1.memberResolver, channels_1.ChannelResolver, messages_1.MessageResolver],
+            resolvers: [
+                members_1.memberResolver,
+                channels_1.ChannelResolver,
+                messages_1.MessageResolver,
+                posts_1.PostResolver,
+                vote_1.VoteResolver,
+            ],
         }),
     });
     await apolloServer.start();

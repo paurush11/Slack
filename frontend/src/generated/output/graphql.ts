@@ -182,7 +182,7 @@ export type Post = {
 
 export type Query = {
   __typename?: "Query";
-  Me?: Maybe<Member>;
+  Me?: Maybe<UserStatus>;
   channels: Array<Channel>;
   getAll: Array<DirectMessage>;
   getAllReceivedMessages: Array<DirectMessage>;
@@ -272,6 +272,14 @@ export type ResolverError = {
   detail: Scalars["String"]["output"];
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
+};
+
+export type UserStatus = {
+  __typename?: "userStatus";
+  error?: Maybe<Array<NotFoundErrorType>>;
+  resolverError?: Maybe<Array<ResolverError>>;
+  success: Scalars["Boolean"]["output"];
+  user?: Maybe<Member>;
 };
 
 export type ResolverErrorFragment = {
@@ -472,24 +480,42 @@ export type MeQueryVariables = Exact<{ [key: string]: never }>;
 export type MeQuery = {
   __typename?: "Query";
   Me?: {
-    __typename?: "Member";
-    username: string;
-    lastName: string;
-    email: string;
-    _id: string;
-    firstName: string;
-    channels: Array<{
-      __typename?: "Channel";
+    __typename?: "userStatus";
+    success: boolean;
+    user?: {
+      __typename?: "Member";
+      username: string;
+      lastName: string;
+      email: string;
       _id: string;
-      Name: string;
-      IconName: string;
-      Description: string;
-    }>;
-    messagesReceived?: Array<{
-      __typename?: "DirectMessage";
-      _id: string;
-      TextMessage: string;
-      receiverSeen: boolean;
+      firstName: string;
+      channels: Array<{
+        __typename?: "Channel";
+        _id: string;
+        Name: string;
+        IconName: string;
+        Description: string;
+      }>;
+      messagesReceived?: Array<{
+        __typename?: "DirectMessage";
+        _id: string;
+        TextMessage: string;
+        receiverSeen: boolean;
+      }> | null;
+      posts?: Array<{ __typename?: "Post"; _id: string }> | null;
+      comments?: Array<{ __typename?: "Comment"; _id: string }> | null;
+    } | null;
+    resolverError?: Array<{
+      __typename?: "resolverError";
+      message: string;
+      code: string;
+      detail: string;
+      name: string;
+    }> | null;
+    error?: Array<{
+      __typename?: "notFoundErrorType";
+      message: string;
+      item: string;
     }> | null;
   } | null;
 };
@@ -1286,45 +1312,132 @@ export const MeDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "username" } },
-                { kind: "Field", name: { kind: "Name", value: "lastName" } },
-                { kind: "Field", name: { kind: "Name", value: "email" } },
-                { kind: "Field", name: { kind: "Name", value: "_id" } },
-                { kind: "Field", name: { kind: "Name", value: "firstName" } },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "channels" },
+                  name: { kind: "Name", value: "user" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "lastName" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "email" } },
                       { kind: "Field", name: { kind: "Name", value: "_id" } },
-                      { kind: "Field", name: { kind: "Name", value: "Name" } },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "IconName" },
+                        name: { kind: "Name", value: "firstName" },
                       },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "Description" },
+                        name: { kind: "Name", value: "channels" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "_id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "Name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "IconName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "Description" },
+                            },
+                          ],
+                        },
                       },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "messagesReceived" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "_id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "TextMessage" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "receiverSeen" },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "posts" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "_id" },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "comments" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "_id" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "resolverError" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "message" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "code" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "detail" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
                     ],
                   },
                 },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "messagesReceived" },
+                  name: { kind: "Name", value: "error" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
-                      { kind: "Field", name: { kind: "Name", value: "_id" } },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "TextMessage" },
+                        name: { kind: "Name", value: "message" },
                       },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "receiverSeen" },
-                      },
+                      { kind: "Field", name: { kind: "Name", value: "item" } },
                     ],
                   },
                 },

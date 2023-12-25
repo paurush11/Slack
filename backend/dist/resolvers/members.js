@@ -25,7 +25,14 @@ const exports_1 = require("./exports");
 let memberResolver = class memberResolver {
     users() {
         return Member_1.Member.find({
-            relations: ["channels", "messagesSent", "messagesReceived"],
+            relations: [
+                "channels",
+                "messagesSent",
+                "messagesReceived",
+                "votes",
+                "posts",
+                "comments",
+            ],
         });
     }
     async Me(ctx) {
@@ -39,12 +46,33 @@ let memberResolver = class memberResolver {
                 where: {
                     _id: ctx.req.session.user,
                 },
-                relations: ["channels", "messagesSent", "messagesReceived"],
+                relations: [
+                    "channels",
+                    "messagesSent",
+                    "messagesReceived",
+                    "votes",
+                    "posts",
+                    "comments",
+                ],
             });
-            return user;
+            if (!user) {
+                const notFoundError = (0, commonFunctions_1.throwNotFoundError)("user");
+                return {
+                    success: true,
+                    error: [notFoundError],
+                };
+            }
+            return {
+                success: true,
+                user: user,
+            };
         }
         catch (e) {
-            console.error(e);
+            const resolverError = (0, commonFunctions_1.throwResolverError)(e);
+            return {
+                success: false,
+                resolverError: [resolverError],
+            };
         }
     }
     async clearUsers() {
@@ -83,6 +111,14 @@ let memberResolver = class memberResolver {
                 : {
                     username: usernameOrEmail,
                 },
+            relations: [
+                "channels",
+                "messagesSent",
+                "messagesReceived",
+                "votes",
+                "posts",
+                "comments",
+            ],
         });
         if (!user) {
             return {
@@ -143,7 +179,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], memberResolver.prototype, "users", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => Member_1.Member, { nullable: true }),
+    (0, type_graphql_1.Query)(() => exports_1.userStatus, { nullable: true }),
     __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

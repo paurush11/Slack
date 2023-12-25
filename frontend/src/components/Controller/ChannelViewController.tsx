@@ -1,21 +1,24 @@
-import React from 'react'
-import ChannelView from '@/components/Views/ChannelView';
-import { ChannelViewControllerProps } from '@/interfaces/allProps';
-import { useMutation, useQuery } from '@apollo/client';
-import { GetChannelDocument } from '@/generated/output/graphql';
+import React from "react";
+import ChannelView from "@/components/Views/ChannelView";
+import { ChannelViewControllerProps } from "@/interfaces/allProps";
+import { useMutation, useQuery } from "@apollo/client";
+import { GetChannelDocument } from "@/generated/output/graphql";
 
+const ChannelViewController: React.FC<ChannelViewControllerProps> = ({
+  channelId,
+  data,
+}) => {
+  const {
+    data: ChannelData,
+    loading,
+    error,
+  } = useQuery(GetChannelDocument, {
+    variables: {
+      channelId: channelId,
+    },
+  });
 
-const ChannelViewController: React.FC<ChannelViewControllerProps> = ({ channelId, data }) => {
+  return loading ? null : <ChannelView data={ChannelData} />;
+};
 
-    const { data: ChannelData, loading, error } = useQuery(GetChannelDocument, {
-        variables: {
-            channelId: channelId
-        }
-    })
-
-
-
-    return (loading ? null : <ChannelView data={ChannelData} />);
-}
-
-export default ChannelViewController
+export default ChannelViewController;

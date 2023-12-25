@@ -1,6 +1,7 @@
 query Me {
   Me {
-    username
+    user {
+       username
     lastName
     email
     _id
@@ -15,6 +16,24 @@ query Me {
       _id
       TextMessage
       receiverSeen
+    }
+      posts {
+        _id
+      }
+      comments {
+        _id
+      }
+    }
+    success
+    resolverError {
+      message
+      code
+      detail
+      name
+    }
+    error {
+      message
+      item
     }
   }
 }

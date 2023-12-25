@@ -24,12 +24,21 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
   isClickedInMainComp,
 }) => {
   const theme = useTheme();
-  const [discoverChannelDropdownListOpen, setDiscoverChannelDropdownListOpen, discoverChannelDropdownListOpenRemove] =
-    useSessionStorage("channelDropdownListOpen", true);
-  const [channelDropdownListOpen, setChannelDropdownListOpen, channelDropdownListOpenRemove] =
-    useSessionStorage("channelDropdownListOpen", true);
-  const [messagesOpenDropdownListOpen, setMessagesOpenDropdownListOpen, messagesOpenDropdownListOpenRemove] =
-    useSessionStorage("messagesOpenDropdownListOpen", false);
+  const [
+    discoverChannelDropdownListOpen,
+    setDiscoverChannelDropdownListOpen,
+    discoverChannelDropdownListOpenRemove,
+  ] = useSessionStorage("channelDropdownListOpen", true);
+  const [
+    channelDropdownListOpen,
+    setChannelDropdownListOpen,
+    channelDropdownListOpenRemove,
+  ] = useSessionStorage("channelDropdownListOpen", true);
+  const [
+    messagesOpenDropdownListOpen,
+    setMessagesOpenDropdownListOpen,
+    messagesOpenDropdownListOpenRemove,
+  ] = useSessionStorage("messagesOpenDropdownListOpen", false);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const channelOnClickDropdown = () => {
     setChannelDropdownListOpen(!channelDropdownListOpen);
@@ -45,15 +54,15 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
         bgcolor={"red"}
       >
         <AddChannelController />
-      </Box>
+      </Box>,
     );
   };
-  const discoverChannelOnClickDropdown = () => { };
+  const discoverChannelOnClickDropdown = () => {};
   const discoverChannelOnClickAdd = () => {
     setIsClickedInMainComp(!isClickedInMainComp);
   };
-  const membersOnClickAdd = () => { };
-  const membersOnClickDropdown = () => { };
+  const membersOnClickAdd = () => {};
+  const membersOnClickDropdown = () => {};
 
   return (
     <Box
@@ -80,7 +89,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
           >
             <List>
               {data !== undefined &&
-                data.Me?.channels.map((c) => (
+                data.Me?.user?.channels.map((c) => (
                   <>
                     <ListItem key={c._id}>
                       <ListItemButton
@@ -106,7 +115,6 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                         }}
                       >
                         <ListItemIcon
-
                           sx={{
                             pl: 2,
                             pr: 2,
@@ -146,7 +154,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
           >
             <List>
               {data !== undefined &&
-                data.Me?.channels.map((c) => (
+                data.Me?.user?.channels.map((c) => (
                   <>
                     <ListItem key={c._id}>
                       <ListItemButton
@@ -172,7 +180,6 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                         }}
                       >
                         <ListItemIcon
-
                           sx={{
                             pl: 2,
                             pr: 2,
@@ -199,21 +206,19 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
           </Box>
         )}
 
-
         <TopicHeadings
           headingName={"My Messages"}
           onClickDropdown={membersOnClickDropdown}
           onClickAdd={membersOnClickAdd}
         />
-        {
-          messagesOpen && <Box height={"30vh"} overflow={"scroll"} display={"flex"} >
+        {messagesOpen && (
+          <Box height={"30vh"} overflow={"scroll"} display={"flex"}>
             <List>
               {data !== undefined &&
-                data.Me?.channels.map((c) => (
+                data.Me?.user?.channels.map((c) => (
                   <>
                     <ListItem key={c._id}>
                       <ListItemButton
-
                         sx={{
                           width: "100%",
                           display: "flex",
@@ -229,19 +234,17 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                               width={"100%"}
                             >
                               <AddChannelController />
-                            </Box>
+                            </Box>,
                           );
                         }}
                       >
                         <ListItemIcon
-
                           sx={{
                             p: 2,
                             minWidth: "auto", // Remove the minimum width
                             marginRight: "0px", // Remove default right margin if present
                             display: "flex",
                             justifyContent: "center",
-
                           }}
                         >
                           {IconMap[c.IconName as keyof typeof IconMap] &&
@@ -259,7 +262,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                 ))}
             </List>
           </Box>
-        }
+        )}
       </Stack>
     </Box>
   );

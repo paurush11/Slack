@@ -1,24 +1,32 @@
 import argon2 from "argon2";
-import { myContext } from "src/utils/myContext";
+import { myContext } from "../utils/myContext";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { AppDataSource } from "../data-source";
 import { Member } from "../entity/Member";
 import {
+  throwNotFoundError,
   throwResolverError,
   validatePassword,
   validateUserCreationInput,
 } from "../utils/commonFunctions";
-import { UserCreationInput, UserResponse } from "./exports";
+import { UserCreationInput, UserResponse, userStatus } from "./exports";
 
 @Resolver()
 export class memberResolver {
   @Query(() => [Member])
   users(): Promise<Member[]> {
     return Member.find({
-      relations: ["channels", "messagesSent", "messagesReceived"],
+      relations: [
+        "channels",
+        "messagesSent",
+        "messagesReceived",
+        "votes",
+        "posts",
+        "comments",
+      ],
     });
   }
-  @Query(() => Member, { nullable: true })
+  @Query(() => userStatus, { nullable: true })
   async Me(@Ctx() ctx: myContext) {
     console.log("Home here");
     console.log(ctx.req.session.user);
@@ -30,11 +38,32 @@ export class memberResolver {
         where: {
           _id: ctx.req.session.user,
         },
-        relations: ["channels", "messagesSent", "messagesReceived"],
+        relations: [
+          "channels",
+          "messagesSent",
+          "messagesReceived",
+          "votes",
+          "posts",
+          "comments",
+        ],
       });
-      return user;
+      if (!user) {
+        const notFoundError = throwNotFoundError("user");
+        return {
+          success: true,
+          error: [notFoundError],
+        } as userStatus;
+      }
+      return {
+        success: true,
+        user: user,
+      } as userStatus;
     } catch (e) {
-      console.error(e);
+      const resolverError = throwResolverError(e);
+      return {
+        success: false,
+        resolverError: [resolverError],
+      } as userStatus;
     }
   }
   @Mutation(() => Boolean)
@@ -84,11 +113,19 @@ export class memberResolver {
     const user = await Member.findOne({
       where: usernameOrEmail.includes("@")
         ? {
-          email: usernameOrEmail,
-        }
+            email: usernameOrEmail,
+          }
         : {
-          username: usernameOrEmail,
-        },
+            username: usernameOrEmail,
+          },
+      relations: [
+        "channels",
+        "messagesSent",
+        "messagesReceived",
+        "votes",
+        "posts",
+        "comments",
+      ],
     });
     if (!user) {
       return {

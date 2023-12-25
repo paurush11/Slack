@@ -1,7 +1,9 @@
+import { Post } from "../entity/Post";
 import { Channel } from "../entity/Channel";
 import { DirectMessage } from "../entity/DirectMessage";
 import { Member } from "../entity/Member";
 import { InputType, Field, ObjectType } from "type-graphql";
+import { Comment } from "../entity/Comment";
 
 @InputType()
 class UserCreationInput {
@@ -44,13 +46,51 @@ class ChannelResponse {
   errors?: notFoundErrorType[];
 }
 @ObjectType()
+class postStatus {
+  @Field()
+  success: Boolean;
+  @Field(() => Post, { nullable: true })
+  post?: Post;
+  @Field(() => [Post], { nullable: true })
+  posts?: Post[];
+  @Field(() => [notFoundErrorType], { nullable: true })
+  error?: notFoundErrorType[];
+  @Field(() => [resolverError], { nullable: true })
+  resolverError?: resolverError[];
+}
+@ObjectType()
+class userStatus {
+  @Field()
+  success: Boolean;
+  @Field(() => Member, { nullable: true })
+  user?: Member;
+  @Field(() => [notFoundErrorType], { nullable: true })
+  error?: notFoundErrorType[];
+  @Field(() => [resolverError], { nullable: true })
+  resolverError?: resolverError[];
+}
+@ObjectType()
+class voteStatus {
+  @Field()
+  success: Boolean;
+  @Field(() => Member, { nullable: true })
+  user?: Member;
+  @Field(() => [Post], { nullable: true })
+  posts?: Post[];
+  @Field(() => [Comment], { nullable: true })
+  comments?: Comment[];
+  @Field(() => [notFoundErrorType], { nullable: true })
+  error?: notFoundErrorType[];
+  @Field(() => [resolverError], { nullable: true })
+  resolverError?: resolverError[];
+}
+
+@ObjectType()
 class messageStatus {
   @Field()
   success: Boolean;
-
   @Field(() => DirectMessage, { nullable: true })
   data?: DirectMessage;
-
   @Field(() => [notFoundErrorType], { nullable: true })
   error?: notFoundErrorType[];
 }
@@ -78,4 +118,7 @@ export {
   UserCreationInput,
   messageStatus,
   ChannelResponse,
+  postStatus,
+  userStatus,
+  voteStatus,
 };

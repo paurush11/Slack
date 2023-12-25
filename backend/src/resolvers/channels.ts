@@ -18,18 +18,15 @@ export class ChannelResolver {
   }
 
   @Query(() => Channel)
-  getChannel(
-    @Arg("channelId", () => String) channelId: string
-  ) {
-    console.log(channelId)
+  getChannel(@Arg("channelId", () => String) channelId: string) {
+    console.log(channelId);
 
     return Channel.findOne({
       where: {
-        _id: channelId
+        _id: channelId,
       },
       relations: ["members"],
     });
-
   }
 
   @Mutation(() => Boolean)
@@ -116,9 +113,9 @@ export class ChannelResolver {
       }
       if (
         channel.members.filter((member) => member._id === userId).length !==
-        0 &&
+          0 &&
         user.channels.filter((channel) => channel._id === channelId).length !==
-        0
+          0
       ) {
         return true;
       }
@@ -168,7 +165,4 @@ export class ChannelResolver {
       return throwResolverError(e);
     }
   }
-
-
-
 }
