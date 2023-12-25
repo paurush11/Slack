@@ -18,11 +18,11 @@ export class Vote extends Content {
 
   @Field(() => String, { nullable: true })
   @Column()
-  commentId: string;
+  commentId?: string;
 
   @Field(() => String, { nullable: true })
   @Column()
-  postId: string;
+  postId?: string;
 
   @Field(() => Member)
   @ManyToOne(() => Member, (member) => member.votes)

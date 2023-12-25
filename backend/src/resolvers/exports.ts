@@ -4,6 +4,7 @@ import { DirectMessage } from "../entity/DirectMessage";
 import { Member } from "../entity/Member";
 import { InputType, Field, ObjectType } from "type-graphql";
 import { Comment } from "../entity/Comment";
+import { Vote } from "../entity/Vote";
 
 @InputType()
 class UserCreationInput {
@@ -73,12 +74,14 @@ class userStatus {
 class voteStatus {
   @Field()
   success: Boolean;
-  @Field(() => Member, { nullable: true })
-  user?: Member;
-  @Field(() => [Post], { nullable: true })
-  posts?: Post[];
-  @Field(() => [Comment], { nullable: true })
-  comments?: Comment[];
+  @Field(() => [Member], { nullable: true })
+  upVotedUsers?: [Member];
+  @Field(() => [Member], { nullable: true })
+  downVotedUsers?: [Member];
+  @Field(() => Vote, { nullable: true })
+  vote?: Vote;
+  @Field(() => [Vote], { nullable: true })
+  votes?: Vote[];
   @Field(() => [notFoundErrorType], { nullable: true })
   error?: notFoundErrorType[];
   @Field(() => [resolverError], { nullable: true })

@@ -16,6 +16,7 @@ const DirectMessage_1 = require("../entity/DirectMessage");
 const Member_1 = require("../entity/Member");
 const type_graphql_1 = require("type-graphql");
 const Comment_1 = require("../entity/Comment");
+const Vote_1 = require("../entity/Vote");
 let UserCreationInput = class UserCreationInput {
 };
 exports.UserCreationInput = UserCreationInput;
@@ -147,17 +148,21 @@ __decorate([
     __metadata("design:type", Boolean)
 ], voteStatus.prototype, "success", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(() => Member_1.Member, { nullable: true }),
-    __metadata("design:type", Member_1.Member)
-], voteStatus.prototype, "user", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(() => [Post_1.Post], { nullable: true }),
+    (0, type_graphql_1.Field)(() => [Member_1.Member], { nullable: true }),
     __metadata("design:type", Array)
-], voteStatus.prototype, "posts", void 0);
+], voteStatus.prototype, "upVotedUsers", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(() => [Comment_1.Comment], { nullable: true }),
+    (0, type_graphql_1.Field)(() => [Member_1.Member], { nullable: true }),
     __metadata("design:type", Array)
-], voteStatus.prototype, "comments", void 0);
+], voteStatus.prototype, "downVotedUsers", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Vote_1.Vote, { nullable: true }),
+    __metadata("design:type", Vote_1.Vote)
+], voteStatus.prototype, "vote", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [Vote_1.Vote], { nullable: true }),
+    __metadata("design:type", Array)
+], voteStatus.prototype, "votes", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [notFoundErrorType], { nullable: true }),
     __metadata("design:type", Array)
