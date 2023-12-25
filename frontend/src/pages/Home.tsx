@@ -32,7 +32,7 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
   };
 
   useEffect(() => {
-    if (!data?.Me) {
+    if (!loading && !data?.Me) {
       notAuth()
     }
     if (data?.Me?.success === false) {
