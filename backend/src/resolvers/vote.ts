@@ -256,4 +256,47 @@ export class VoteResolver {
       } as voteStatus
     }
   }
+  @Mutation(() => voteStatus)
+  async deleteVote(
+    @Arg("voteId", () => String) voteId: string,
+    @Ctx() ctx: myContext
+  ) {
+    try {
+      const vote = await Vote.findOne({
+        where: {
+          _id: voteId
+        },
+
+        relations: ["member", "comment", "post"]
+      })
+
+      if (!vote) {
+        const notFoundError = throwNotFoundError("vote")
+        return {
+          success: false,
+          error: [notFoundError]
+        } as voteStatus
+      }
+      if (vote._id === ctx.req.session.user) {
+        await Vote.delete({
+          _id: vote._id
+        })
+      } else {
+        const notFoundError = throwNotFoundError("user/creator")
+        return {
+          success: false,
+          error: [notFoundError]
+        } as voteStatus
+      }
+
+    } catch (e) {
+      const resolverError = throwResolverError(e);
+      return {
+        success: false,
+        resolverError: [resolverError]
+      } as voteStatus
+    }
+  }
+
+
 }

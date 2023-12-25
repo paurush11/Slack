@@ -236,6 +236,42 @@ let VoteResolver = class VoteResolver {
             };
         }
     }
+    async deleteVote(voteId, ctx) {
+        try {
+            const vote = await Vote_1.Vote.findOne({
+                where: {
+                    _id: voteId
+                },
+                relations: ["member", "comment", "post"]
+            });
+            if (!vote) {
+                const notFoundError = (0, commonFunctions_1.throwNotFoundError)("vote");
+                return {
+                    success: false,
+                    error: [notFoundError]
+                };
+            }
+            if (vote._id === ctx.req.session.user) {
+                await Vote_1.Vote.delete({
+                    _id: vote._id
+                });
+            }
+            else {
+                const notFoundError = (0, commonFunctions_1.throwNotFoundError)("user/creator");
+                return {
+                    success: false,
+                    error: [notFoundError]
+                };
+            }
+        }
+        catch (e) {
+            const resolverError = (0, commonFunctions_1.throwResolverError)(e);
+            return {
+                success: false,
+                resolverError: [resolverError]
+            };
+        }
+    }
 };
 exports.VoteResolver = VoteResolver;
 __decorate([
@@ -277,6 +313,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Boolean, Object]),
     __metadata("design:returntype", Promise)
 ], VoteResolver.prototype, "voteComment", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => exports_1.voteStatus),
+    __param(0, (0, type_graphql_1.Arg)("voteId", () => String)),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], VoteResolver.prototype, "deleteVote", null);
 exports.VoteResolver = VoteResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], VoteResolver);
