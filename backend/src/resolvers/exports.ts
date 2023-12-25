@@ -84,6 +84,21 @@ class voteStatus {
   @Field(() => [resolverError], { nullable: true })
   resolverError?: resolverError[];
 }
+@ObjectType()
+class commentStatus {
+  @Field()
+  success: Boolean;
+  @Field(() => Comment, { nullable: true })
+  comment?: Comment;
+  @Field(() => Post, { nullable: true })
+  posts?: Post;
+  @Field(() => [Comment], { nullable: true })
+  comments?: Comment[];
+  @Field(() => [notFoundErrorType], { nullable: true })
+  error?: notFoundErrorType[];
+  @Field(() => [resolverError], { nullable: true })
+  resolverError?: resolverError[];
+}
 
 @ObjectType()
 class messageStatus {
@@ -121,4 +136,5 @@ export {
   postStatus,
   userStatus,
   voteStatus,
+  commentStatus
 };

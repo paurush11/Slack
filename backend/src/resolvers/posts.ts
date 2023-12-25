@@ -7,7 +7,7 @@ import {
   throwResolverError,
 } from "../utils/commonFunctions";
 import { myContext } from "../utils/myContext";
-import { postStatus } from "./exports";
+import { postStatus, resolverError } from "./exports";
 
 @Resolver()
 export class PostResolver {
@@ -206,5 +206,10 @@ export class PostResolver {
         ],
       } as postStatus;
     }
+  }
+
+  @Mutation(() => Boolean || resolverError)
+  async deletePost() {
+
   }
 }

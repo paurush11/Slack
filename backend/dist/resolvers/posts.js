@@ -191,6 +191,8 @@ let PostResolver = class PostResolver {
             };
         }
     }
+    async deletePost() {
+    }
 };
 exports.PostResolver = PostResolver;
 __decorate([
@@ -229,6 +231,12 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, String, String]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "updatePost", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean || exports_1.resolverError),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "deletePost", null);
 exports.PostResolver = PostResolver = __decorate([
     (0, type_graphql_1.Resolver)()
 ], PostResolver);

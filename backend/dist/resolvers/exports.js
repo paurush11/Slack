@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.voteStatus = exports.userStatus = exports.postStatus = exports.ChannelResponse = exports.messageStatus = exports.UserCreationInput = exports.resolverError = exports.UserResponse = exports.MESSAGE_SEEN_TOPIC = exports.MESSAGE_DELETED_TOPIC = exports.MESSAGE_UPDATED_TOPIC = exports.MESSAGE_ADDED_TOPIC = void 0;
+exports.commentStatus = exports.voteStatus = exports.userStatus = exports.postStatus = exports.ChannelResponse = exports.messageStatus = exports.UserCreationInput = exports.resolverError = exports.UserResponse = exports.MESSAGE_SEEN_TOPIC = exports.MESSAGE_DELETED_TOPIC = exports.MESSAGE_UPDATED_TOPIC = exports.MESSAGE_ADDED_TOPIC = void 0;
 const Post_1 = require("../entity/Post");
 const Channel_1 = require("../entity/Channel");
 const DirectMessage_1 = require("../entity/DirectMessage");
@@ -169,6 +169,36 @@ __decorate([
 exports.voteStatus = voteStatus = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], voteStatus);
+let commentStatus = class commentStatus {
+};
+exports.commentStatus = commentStatus;
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], commentStatus.prototype, "success", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Comment_1.Comment, { nullable: true }),
+    __metadata("design:type", Comment_1.Comment)
+], commentStatus.prototype, "comment", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Post_1.Post, { nullable: true }),
+    __metadata("design:type", Post_1.Post)
+], commentStatus.prototype, "posts", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [Comment_1.Comment], { nullable: true }),
+    __metadata("design:type", Array)
+], commentStatus.prototype, "comments", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [notFoundErrorType], { nullable: true }),
+    __metadata("design:type", Array)
+], commentStatus.prototype, "error", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [resolverError], { nullable: true }),
+    __metadata("design:type", Array)
+], commentStatus.prototype, "resolverError", void 0);
+exports.commentStatus = commentStatus = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], commentStatus);
 let messageStatus = class messageStatus {
 };
 exports.messageStatus = messageStatus;
