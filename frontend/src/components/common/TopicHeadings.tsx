@@ -14,7 +14,7 @@ const TopicHeadings: React.FC<TopicHeadingsProps> = ({
   onClickDropdown,
 }) => {
   const [data, setData] = useState();
-  if (headingName === "My Channels") {
+  if (headingName === "You") {
     /// have all posts
     /// saved
     /// upvoted
@@ -30,18 +30,27 @@ const TopicHeadings: React.FC<TopicHeadingsProps> = ({
       overflow={"clip"}
       p={1}
       sx={{
-        bgcolor: theme.palette.primary.light,
+        bgcolor: theme.palette.primary.dark,
+        color: theme.palette.primary.contrastText,
       }}
     >
       <IconButton onClick={onClickDropdown}>
-        <ArrowDropDownIcon />
+        <ArrowDropDownIcon
+          style={{
+            color: theme.palette.primary.contrastText,
+          }}
+        />
       </IconButton>
-      <Typography key="channels" variant="h5">
+      <Typography key="channels" variant="subtitle1">
         {headingName}
       </Typography>
       <Box flexGrow={1} />
       <IconButton onClick={onClickAdd}>
-        <AddBoxIcon />
+        <AddBoxIcon
+          style={{
+            color: theme.palette.primary.contrastText,
+          }}
+        />
       </IconButton>
     </Box>
   );

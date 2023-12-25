@@ -21,7 +21,9 @@ export class ChannelResolver {
   getChannel(
     @Arg("channelId", () => String) channelId: string
   ) {
-    return Channel.find({
+    console.log(channelId)
+
+    return Channel.findOne({
       where: {
         _id: channelId
       },

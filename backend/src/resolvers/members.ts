@@ -37,8 +37,6 @@ export class memberResolver {
       console.error(e);
     }
   }
-
-
   @Mutation(() => Boolean)
   async clearUsers() {
     await AppDataSource.createQueryRunner().query(
@@ -86,11 +84,11 @@ export class memberResolver {
     const user = await Member.findOne({
       where: usernameOrEmail.includes("@")
         ? {
-            email: usernameOrEmail,
-          }
+          email: usernameOrEmail,
+        }
         : {
-            username: usernameOrEmail,
-          },
+          username: usernameOrEmail,
+        },
     });
     if (!user) {
       return {

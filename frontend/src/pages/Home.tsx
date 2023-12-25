@@ -1,7 +1,7 @@
+import SmallSideLayout from "@/components/Views/SmallSideLayoutView";
 import FindChannels from "@/components/common/FindChannels";
 import MainComponent from "@/components/common/MainComponent";
 import { SideLayout } from "@/components/common/SideLayout";
-import Sidebar from "@/components/common/Sidebar";
 import Layout from "@/components/layout/Layout";
 import { MeDocument } from "@/generated/output/graphql";
 import useSessionStorage from "@/utils/useSessionStorage";
@@ -15,38 +15,63 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
   const { loading, data, error } = useQuery(MeDocument);
-  const [value, setValue, remove] = useSessionStorage("channelOpen", false);
+  const [findYourChannelsOpen, setFindYourChannelsOpen, remove] =
+    useSessionStorage("findYourChannelsOpen", false);
+  const [isClickedInMainCompValue, setIsClickedInMainCompValue] =
+    useState(false);
   const [hasBeenClosed, setHasBeenClosed] = useState(false);
+  const [sideBarSize, setSideBarSize] = useState(0.8);
+  const [useSmallLayout, setUseSmallLayout] = useState(false);
+
   const [contentMainComponent, setContentMainComponent] =
     useState<React.JSX.Element>(<Box></Box>);
   const handleSideLayout = (content: React.JSX.Element) => {
     setContentMainComponent(content);
   };
   useEffect(() => {
-    if (data?.Me?.channels.length === 0 && !hasBeenClosed) {
-      setValue(true);
+    if (
+      (data?.Me?.channels.length === 0 && !hasBeenClosed) ||
+      isClickedInMainCompValue
+    ) {
+      setFindYourChannelsOpen(true);
     }
-  }, [data, setValue, hasBeenClosed]);
+  }, [data, setFindYourChannelsOpen, hasBeenClosed, isClickedInMainCompValue]);
+  useEffect(() => {
+    if (useSmallLayout) {
+      setSideBarSize(0.8)
+    } else {
+      setSideBarSize(2)
+    }
+  }, [useSmallLayout])
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :</p>;
   return (
-    <Layout toggleTheme={toggleTheme} data={data}>
-      {!loading && data?.Me && <Sidebar data={data} />}
-      <Grid container spacing={0} display={"flex"}>
-        <Grid item xs={2} height={"100%"} flexDirection={"column"}>
-          <SideLayout data={data} handleSideLayout={handleSideLayout} />
+    <Layout toggleTheme={toggleTheme} data={data} useSmallLayout={useSmallLayout} setUseSmallLayout={setUseSmallLayout}>
+      {/* {!loading && data?.Me && <Sidebar data={data} />} */}
+      {!loading && (
+        <Grid container spacing={0} display={"flex"}>
+          <Grid item xs={sideBarSize} height={"100%"} flexDirection={"column"}>
+            {sideBarSize === 0.8 ? <SmallSideLayout /> : <SideLayout
+              data={data}
+              handleSideLayout={handleSideLayout}
+              setIsClickedInMainComp={setIsClickedInMainCompValue}
+              isClickedInMainComp={isClickedInMainCompValue}
+            />}
+          </Grid>
+          <Grid item xs={12 - sideBarSize}>
+            <MainComponent contentMainComponent={contentMainComponent} />
+            {
+              <FindChannels
+                channelOpen={findYourChannelsOpen}
+                setValue={setFindYourChannelsOpen}
+                setHasBeenClosed={setHasBeenClosed}
+                setIsClickedInMainComp={setIsClickedInMainCompValue}
+                data={data}
+              />
+            }
+          </Grid>
         </Grid>
-        <Grid item xs={10}>
-          <MainComponent contentMainComponent={contentMainComponent} />
-          {
-            <FindChannels
-              channelOpen={value}
-              setValue={setValue}
-              setHasBeenClosed={setHasBeenClosed}
-            />
-          }
-        </Grid>
-      </Grid>
+      )}
     </Layout>
   );
 };

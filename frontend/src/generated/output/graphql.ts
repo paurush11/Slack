@@ -335,6 +335,16 @@ export type CreateChannelMutation = {
   };
 };
 
+export type JoinChannelMutationVariables = Exact<{
+  userId: Scalars["String"]["input"];
+  channelId: Scalars["String"]["input"];
+}>;
+
+export type JoinChannelMutation = {
+  __typename?: "Mutation";
+  joinChannel: boolean;
+};
+
 export type LoginMutationVariables = Exact<{
   password: Scalars["String"]["input"];
   usernameOrEmail: Scalars["String"]["input"];
@@ -427,6 +437,34 @@ export type GetChannelQuery = {
     members?: Array<{ __typename?: "Member"; _id: string }> | null;
     posts?: Array<{ __typename?: "Post"; _id: string }> | null;
   };
+};
+
+export type GetMyMessagesInChannelQueryVariables = Exact<{
+  channelId: Scalars["String"]["input"];
+}>;
+
+export type GetMyMessagesInChannelQuery = {
+  __typename?: "Query";
+  getMyMessagesInChannel: Array<{
+    __typename?: "DirectMessage";
+    _id: string;
+    sender: {
+      __typename?: "Member";
+      _id: string;
+      lastName: string;
+      firstName: string;
+      isActive: boolean;
+      username: string;
+    };
+    receiver: {
+      __typename?: "Member";
+      _id: string;
+      lastName: string;
+      firstName: string;
+      isActive: boolean;
+      username: string;
+    };
+  }>;
 };
 
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
@@ -689,6 +727,73 @@ export const CreateChannelDocument = {
   CreateChannelMutation,
   CreateChannelMutationVariables
 >;
+export const JoinChannelDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "joinChannel" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "userId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "channelId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "joinChannel" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "userId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "userId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "channelId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "channelId" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<JoinChannelMutation, JoinChannelMutationVariables>;
 export const LoginDocument = {
   kind: "Document",
   definitions: [
@@ -1059,6 +1164,112 @@ export const GetChannelDocument = {
     },
   ],
 } as unknown as DocumentNode<GetChannelQuery, GetChannelQueryVariables>;
+export const GetMyMessagesInChannelDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetMyMessagesInChannel" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "channelId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "getMyMessagesInChannel" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "channelId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "channelId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "_id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "sender" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "_id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "lastName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "firstName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "isActive" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "receiver" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "_id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "lastName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "firstName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "isActive" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetMyMessagesInChannelQuery,
+  GetMyMessagesInChannelQueryVariables
+>;
 export const MeDocument = {
   kind: "Document",
   definitions: [

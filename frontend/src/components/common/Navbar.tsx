@@ -23,6 +23,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 export const Navbar: React.FC<NavbarProps> = ({
   toggleTheme,
   data: meData,
+  setUseSmallLayout,
+  useSmallLayout,
 }) => {
   const theme = useTheme();
   const [Logout, { error, loading }] = useMutation(LogoutDocument);
@@ -50,12 +52,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           edge="start"
           color="inherit"
           aria-label="menu"
-          sx={{ mr: 2 }}
+          sx={{ ml: 1, mr: 3 }}
+          onClick={() => setUseSmallLayout(!useSmallLayout)}
+          size="large"
         >
           <MenuIcon />
         </IconButton>
         <Typography
-          variant="h6"
+          variant="h1"
           noWrap
           component="div"
           sx={{ display: { xs: "none", sm: "block" } }}

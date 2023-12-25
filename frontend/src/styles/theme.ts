@@ -13,7 +13,7 @@ const lightTheme = createTheme({
       "300": "#0a9396", // Persian Green
       "400": "#94d2bd", // Middle Blue Green
       "500": "#e9d8a6", // Pale Spring Bud
-      "600": "#ee9b00", // Selective Yellow
+      "600": "#3f0e41", // Selective Yellow
       "700": "#ca6702", // Windsor Tan
       "800": "#bb3e03", // Dark Orange
       "900": "#ae2012",
@@ -111,8 +111,8 @@ const darkTheme = createTheme({
       contrastText: "#fff",
     },
     background: {
-      default: "#424242", // Dark Grey
-      paper: "#303030", // Darker Grey
+      default: "#aaaaaa", // Dark Grey
+      paper: "#0e0e0f", // Darker Grey
     },
     // ... other dark theme customizations
   },
@@ -124,6 +124,18 @@ const darkTheme = createTheme({
     },
     h2: {
       fontSize: "2rem",
+    },
+    h3: {
+      fontSize: "1.5rem",
+    },
+    h4: {
+      fontSize: "1rem",
+    },
+    h5: {
+      fontSize: "0.5rem",
+    },
+    h6: {
+      fontSize: "0.75rem",
     },
     // ... other typography settings
   },

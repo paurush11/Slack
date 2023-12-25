@@ -1,0 +1,3 @@
+mutation joinChannel($userId: String!, $channelId: String!) {
+  joinChannel(userId: $userId, channelId: $channelId)
+}

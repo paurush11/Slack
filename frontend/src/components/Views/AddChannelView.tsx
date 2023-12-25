@@ -1,5 +1,14 @@
 import { AddChannelViewProps } from "@/interfaces/allProps";
-import { Box, Divider, FormControl, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Divider,
+  FormControl,
+  Snackbar,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 
 const AddChannelView: React.FC<AddChannelViewProps> = ({
@@ -10,8 +19,11 @@ const AddChannelView: React.FC<AddChannelViewProps> = ({
   submitField,
   resetField,
   responseErrors,
+  open,
+  handleClose,
 }) => {
   const theme = useTheme();
+
   return (
     <Box
       height={"100%"}
@@ -33,12 +45,24 @@ const AddChannelView: React.FC<AddChannelViewProps> = ({
           {descriptionField}
           {iconNameField}
         </Stack>
-        <Stack direction={"row"} gap={2} p={2}>
+        <Stack
+          direction={"row"}
+          gap={2}
+          p={2}
+          width={"100%"}
+          justifyContent={"center"}
+          spacing={8}
+        >
           {submitField}
           {resetField}
         </Stack>
       </FormControl>
       <Box>{responseErrors}</Box>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Channel has been created
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

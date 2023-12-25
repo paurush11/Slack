@@ -26,7 +26,8 @@ let ChannelResolver = class ChannelResolver {
         });
     }
     getChannel(channelId) {
-        return Channel_1.Channel.find({
+        console.log(channelId);
+        return Channel_1.Channel.findOne({
             where: {
                 _id: channelId
             },
