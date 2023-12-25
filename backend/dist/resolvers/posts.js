@@ -191,7 +191,55 @@ let PostResolver = class PostResolver {
             };
         }
     }
-    async deletePost() {
+    async deletePost(postId, ctx) {
+        try {
+            const post = await Post_1.Post.findOne({
+                where: {
+                    _id: postId
+                }
+            });
+            const user = Member_1.Member.findOne({
+                where: {
+                    _id: ctx.req.session.user,
+                },
+            });
+            if (!post) {
+                const errorMsg = (0, commonFunctions_1.throwNotFoundError)("channel");
+                return {
+                    success: false,
+                    error: [errorMsg],
+                };
+            }
+            if (!user) {
+                const errorMsg = (0, commonFunctions_1.throwNotFoundError)("user");
+                return {
+                    success: false,
+                    error: [errorMsg],
+                };
+            }
+            if (post.memberId === ctx.req.session.user) {
+                await Post_1.Post.delete({
+                    _id: postId
+                });
+                return {
+                    success: true,
+                };
+            }
+            else {
+                const errorMsg = (0, commonFunctions_1.throwNotFoundError)("creator");
+                return {
+                    success: false,
+                    error: [errorMsg],
+                };
+            }
+        }
+        catch (e) {
+            const errorMsg = (0, commonFunctions_1.throwResolverError)(e);
+            return {
+                success: false,
+                resolverError: [errorMsg],
+            };
+        }
     }
 };
 exports.PostResolver = PostResolver;
@@ -232,9 +280,11 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "updatePost", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Boolean || exports_1.resolverError),
+    (0, type_graphql_1.Mutation)(() => exports_1.postStatus),
+    __param(0, (0, type_graphql_1.Arg)("postId", () => String)),
+    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "deletePost", null);
 exports.PostResolver = PostResolver = __decorate([

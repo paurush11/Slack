@@ -208,8 +208,61 @@ export class PostResolver {
     }
   }
 
-  @Mutation(() => Boolean || resolverError)
-  async deletePost() {
+  @Mutation(() => postStatus)
+  async deletePost(
+    @Arg("postId", () => String) postId: string,
+    @Ctx() ctx: myContext
+  ) {
+
+    try {
+      const post = await Post.findOne({
+        where: {
+          _id: postId
+        }
+      })
+      const user = Member.findOne({
+        where: {
+          _id: ctx.req.session.user,
+        },
+      });
+      if (!post) {
+        const errorMsg = throwNotFoundError("channel");
+        return {
+          success: false,
+          error: [errorMsg],
+        } as postStatus;
+      }
+      if (!user) {
+        const errorMsg = throwNotFoundError("user");
+        return {
+          success: false,
+          error: [errorMsg],
+        } as postStatus;
+      }
+      if (post.memberId === ctx.req.session.user) {
+        await Post.delete({
+          _id: postId
+        })
+        return {
+          success: true,
+        } as postStatus;
+      } else {
+        const errorMsg = throwNotFoundError("creator");
+        return {
+          success: false,
+          error: [errorMsg],
+        } as postStatus;
+
+      }
+    } catch (e) {
+      const errorMsg = throwResolverError(e);
+      return {
+        success: false,
+        resolverError: [errorMsg],
+      } as postStatus;
+    }
+
+
 
   }
 }
