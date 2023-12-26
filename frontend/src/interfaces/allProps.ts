@@ -7,10 +7,10 @@ import { UseFormReset } from "react-hook-form";
 export interface LayoutProps extends WrapperProps {
 }
 export interface ChannelViewControllerProps {
-  channelId: string;
+
 }
 export interface ChannelViewProps {
-  data: GetChannelQuery | undefined;
+ 
 }
 export interface NavbarProps {
 
@@ -24,7 +24,7 @@ export interface SideLayoutProps {
   setSelectedChannelValue: Dispatch<SetStateAction<string>>;
 }
 export interface SmallSideLayoutProps {
-
+  
 }
 
 export interface WrapperProps {

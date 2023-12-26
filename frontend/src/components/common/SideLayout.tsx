@@ -17,9 +17,10 @@ import { IconMap } from "@/utils/helper";
 import useSessionStorage from "@/utils/useSessionStorage";
 import ChannelViewController from "@/components/Controller/ChannelViewController";
 import { MessagesController } from "../Controller/MessagesController";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { MeQuery } from "@/generated/output/graphql";
+import { setMySelectedChannel } from "@/store/meSlice";
 
 export const SideLayout: React.FC<SideLayoutProps> = ({
   handleSideLayout,
@@ -29,6 +30,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
   setSelectedChannelValue,
 }) => {
   const theme = useTheme();
+  const dispatch = useDispatch()
   const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
   const [
     discoverChannelDropdownListOpen,
@@ -128,6 +130,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           borderRadius: "10px",
                         }}
                         onClick={() => {
+                          dispatch(setMySelectedChannel(c._id))
                           handleSideLayout(
                             <Box
                               display={"flex"}
@@ -135,7 +138,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                               justifyContent={"center"}
                               width={"100%"}
                             >
-                              <ChannelViewController channelId={c._id} />
+                              <ChannelViewController />
                             </Box>,
                           );
                         }}
@@ -193,7 +196,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           borderRadius: "10px",
                         }}
                         onClick={() => {
-                          setSelectedChannelValue(c._id);
+                          dispatch(setMySelectedChannel(c._id))
                           handleSideLayout(
                             <Box
                               display={"flex"}
@@ -201,7 +204,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                               justifyContent={"center"}
                               width={"100%"}
                             >
-                              <ChannelViewController channelId={c._id} />
+                              <ChannelViewController />
                             </Box>,
                           );
                         }}
@@ -263,6 +266,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           borderRadius: "10px",
                         }}
                         onClick={() => {
+                          dispatch(setMySelectedChannel(c._id))
                           handleSideLayout(
                             <Box
                               display={"flex"}
@@ -270,7 +274,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                               justifyContent={"center"}
                               width={"100%"}
                             >
-                              <ChannelViewController channelId={c._id} />
+                              <ChannelViewController />
                             </Box>,
                           );
                         }}

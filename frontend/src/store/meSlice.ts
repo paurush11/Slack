@@ -6,6 +6,7 @@ const meSlice = createSlice({
         data: null,
         loading: true,
         error: null,
+        channelId: ""
     },
     reducers: {
         fetchUserStart: (state) => {
@@ -19,9 +20,12 @@ const meSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        setMySelectedChannel: (state, action) => {
+            state.channelId = action.payload
+        }
     },
 });
 
-export const { fetchUserStart, fetchUserSuccess, fetchUserError } =
+export const { fetchUserStart, fetchUserSuccess, fetchUserError, setMySelectedChannel } =
     meSlice.actions;
 export default meSlice.reducer;
