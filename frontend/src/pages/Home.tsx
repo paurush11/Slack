@@ -8,18 +8,22 @@ import {
   NotFoundErrorType,
   ResolverError,
 } from "@/generated/output/graphql";
+import { fetchUserError, fetchUserStart, fetchUserSuccess } from "@/store/meSlice";
+import { RootState } from "@/store/store";
 import { notAuth } from "@/utils/notAuth";
 import useSessionStorage from "@/utils/useSessionStorage";
 import { useQuery } from "@apollo/client";
 import { Alert, AlertTitle, Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 interface HomeProps {
-  toggleTheme: () => void;
+
 }
 
-const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
+const Home: React.FC<HomeProps> = ({ }) => {
   const { loading, data, error } = useQuery(MeDocument);
+  const dispatch = useDispatch();
   const [findYourChannelsOpen, setFindYourChannelsOpen, remove] =
     useSessionStorage("findYourChannelsOpen", false);
   const [isClickedInMainCompValue, setIsClickedInMainCompValue] =
@@ -29,13 +33,26 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
   const [errors, setErrors] = useState<
     NotFoundErrorType[] | ResolverError[] | undefined
   >();
-  const [useSmallLayout, setUseSmallLayout] = useState(false);
-
+  const useSmallLayout = useSelector((state: RootState) => state.smallLayout.smallLayout)
+  const [
+    selectedChannelValue,
+    setSelectedChannelValue,
+    removeSelectedChannelValue,
+  ] = useSessionStorage("selectedChannelValue", "null");
   const [contentMainComponent, setContentMainComponent] =
     useState<React.JSX.Element>(<Box></Box>);
   const handleSideLayout = (content: React.JSX.Element) => {
     setContentMainComponent(content);
   };
+
+  useEffect(() => {
+    dispatch(fetchUserStart());
+    if (data) {
+      dispatch(fetchUserSuccess(data));
+    } else if (error) {
+      dispatch(fetchUserError(error));
+    }
+  }, [data, error, dispatch]);
 
   useEffect(() => {
     if (!loading && !data?.Me) {
@@ -51,7 +68,7 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
       }
     }
   }, [data]);
-  console.log(errors);
+
   useEffect(() => {
     if (
       (data?.Me?.user?.channels.length === 0 && !hasBeenClosed) ||
@@ -67,14 +84,13 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
       setSideBarSize(2);
     }
   }, [useSmallLayout]);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :</p>;
+
   return (
     <Layout
-      toggleTheme={toggleTheme}
-      data={data}
-      useSmallLayout={useSmallLayout}
-      setUseSmallLayout={setUseSmallLayout}
+
     >
       {/* {!loading && data?.Me && <Sidebar data={data} />} */}
       {!loading && (
@@ -84,10 +100,11 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
               <SmallSideLayout />
             ) : (
               <SideLayout
-                data={data}
                 handleSideLayout={handleSideLayout}
                 setIsClickedInMainComp={setIsClickedInMainCompValue}
                 isClickedInMainComp={isClickedInMainCompValue}
+                selectedChannelValue={selectedChannelValue}
+                setSelectedChannelValue={setSelectedChannelValue}
               />
             )}
           </Grid>
@@ -105,7 +122,6 @@ const Home: React.FC<HomeProps> = ({ toggleTheme }) => {
                 setValue={setFindYourChannelsOpen}
                 setHasBeenClosed={setHasBeenClosed}
                 setIsClickedInMainComp={setIsClickedInMainCompValue}
-                data={data}
               />
             }
           </Grid>

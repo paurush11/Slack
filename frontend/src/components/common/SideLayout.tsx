@@ -16,14 +16,20 @@ import TopicHeadings from "./TopicHeadings";
 import { IconMap } from "@/utils/helper";
 import useSessionStorage from "@/utils/useSessionStorage";
 import ChannelViewController from "@/components/Controller/ChannelViewController";
+import { MessagesController } from "../Controller/MessagesController";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { MeQuery } from "@/generated/output/graphql";
 
 export const SideLayout: React.FC<SideLayoutProps> = ({
-  data,
   handleSideLayout,
   setIsClickedInMainComp,
   isClickedInMainComp,
+  selectedChannelValue,
+  setSelectedChannelValue,
 }) => {
   const theme = useTheme();
+  const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
   const [
     discoverChannelDropdownListOpen,
     setDiscoverChannelDropdownListOpen,
@@ -39,7 +45,6 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
     setMessagesOpenDropdownListOpen,
     messagesOpenDropdownListOpenRemove,
   ] = useSessionStorage("messagesOpenDropdownListOpen", false);
-  const [messagesOpen, setMessagesOpen] = useState(false);
   const channelOnClickDropdown = () => {
     setChannelDropdownListOpen(!channelDropdownListOpen);
   };
@@ -57,12 +62,32 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
       </Box>,
     );
   };
-  const discoverChannelOnClickDropdown = () => {};
+  const discoverChannelOnClickDropdown = () => {
+    setDiscoverChannelDropdownListOpen(!discoverChannelDropdownListOpen);
+  };
   const discoverChannelOnClickAdd = () => {
     setIsClickedInMainComp(!isClickedInMainComp);
   };
-  const membersOnClickAdd = () => {};
-  const membersOnClickDropdown = () => {};
+  const membersOnClickAdd = () => {
+    console.log("implemented");
+    handleSideLayout(
+      <Box
+        display={"flex"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        width={"100%"}
+        bgcolor={"red"}
+      >
+        <MessagesController
+
+          selectedChannelValue={selectedChannelValue}
+        />
+      </Box>,
+    );
+  };
+  const membersOnClickDropdown = () => {
+    setMessagesOpenDropdownListOpen(!messagesOpenDropdownListOpen);
+  };
 
   return (
     <Box
@@ -71,6 +96,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
       sx={{
         height: "100%",
       }}
+      overflow={"scroll"}
       bgcolor={theme.palette.background.paper}
     >
       <Stack direction={"column"} width={"100%"}>
@@ -80,16 +106,16 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
           onClickDropdown={discoverChannelOnClickDropdown}
         />
 
-        {channelDropdownListOpen && (
+        {discoverChannelDropdownListOpen && (
           <Box
-            height={"30vh"}
+            height={"25vh"}
             overflow={"scroll"}
             display={"flex"}
             bgcolor={theme.palette.background.paper}
           >
             <List>
-              {data !== undefined &&
-                data.Me?.user?.channels.map((c) => (
+              {userData !== null &&
+                (userData as MeQuery).Me?.user?.channels.map((c) => (
                   <>
                     <ListItem key={c._id}>
                       <ListItemButton
@@ -145,16 +171,16 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
           onClickAdd={channelOnClickAdd}
           onClickDropdown={channelOnClickDropdown}
         />
-        {discoverChannelDropdownListOpen && (
+        {channelDropdownListOpen && (
           <Box
-            height={"30vh"}
+            height={"25vh"}
             overflow={"scroll"}
             display={"flex"}
             bgcolor={theme.palette.background.paper}
           >
             <List>
-              {data !== undefined &&
-                data.Me?.user?.channels.map((c) => (
+              {userData !== null &&
+                (userData as MeQuery).Me?.user?.channels.map((c) => (
                   <>
                     <ListItem key={c._id}>
                       <ListItemButton
@@ -167,6 +193,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           borderRadius: "10px",
                         }}
                         onClick={() => {
+                          setSelectedChannelValue(c._id);
                           handleSideLayout(
                             <Box
                               display={"flex"}
@@ -211,19 +238,29 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
           onClickDropdown={membersOnClickDropdown}
           onClickAdd={membersOnClickAdd}
         />
-        {messagesOpen && (
-          <Box height={"30vh"} overflow={"scroll"} display={"flex"}>
+        {messagesOpenDropdownListOpen && (
+          <Box
+            height={"25vh"}
+            overflow={"scroll"}
+            display={"flex"}
+            bgcolor={theme.palette.background.paper}
+            sx={{
+              overflow: "scroll",
+            }}
+          >
             <List>
-              {data !== undefined &&
-                data.Me?.user?.channels.map((c) => (
+              {userData !== null &&
+                (userData as MeQuery).Me?.user?.channels.map((c) => (
                   <>
                     <ListItem key={c._id}>
                       <ListItemButton
                         sx={{
+                          p: 0,
                           width: "100%",
                           display: "flex",
                           justifyContent: "center", // Center horizontally
                           alignItems: "center", // Center vertically
+                          borderRadius: "10px",
                         }}
                         onClick={() => {
                           handleSideLayout(
@@ -233,14 +270,15 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                               justifyContent={"center"}
                               width={"100%"}
                             >
-                              <AddChannelController />
+                              <ChannelViewController channelId={c._id} />
                             </Box>,
                           );
                         }}
                       >
                         <ListItemIcon
                           sx={{
-                            p: 2,
+                            pl: 2,
+                            pr: 2,
                             minWidth: "auto", // Remove the minimum width
                             marginRight: "0px", // Remove default right margin if present
                             display: "flex",
@@ -250,7 +288,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           {IconMap[c.IconName as keyof typeof IconMap] &&
                             React.createElement(
                               IconMap[c.IconName as keyof typeof IconMap],
-                              { sx: { color: theme.palette.primary.dark } },
+                              { sx: { color: theme.palette.primary[600] } },
                             )}
                         </ListItemIcon>
 

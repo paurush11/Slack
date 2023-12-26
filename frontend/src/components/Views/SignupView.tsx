@@ -38,7 +38,6 @@ export const SignupView: React.FC<SignupViewProps> = ({
           {submitField}
           {resetField}
         </Stack>
-
       </FormControl>
     </Box>
   );

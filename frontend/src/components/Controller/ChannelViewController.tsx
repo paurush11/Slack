@@ -6,7 +6,7 @@ import { GetChannelDocument } from "@/generated/output/graphql";
 
 const ChannelViewController: React.FC<ChannelViewControllerProps> = ({
   channelId,
-  data,
+ 
 }) => {
   const {
     data: ChannelData,

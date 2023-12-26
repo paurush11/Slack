@@ -7,10 +7,6 @@ import Wrapper from "./wrapper";
 const Layout: React.FC<LayoutProps> = ({
   variant,
   children,
-  toggleTheme,
-  data,
-  useSmallLayout,
-  setUseSmallLayout,
 }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -24,10 +20,8 @@ const Layout: React.FC<LayoutProps> = ({
   return (
     <Box display="flex" flexDirection="column" minHeight={"100vh"}>
       <Navbar
-        data={data}
-        toggleTheme={toggleTheme}
-        useSmallLayout={useSmallLayout}
-        setUseSmallLayout={setUseSmallLayout}
+    
+        
       ></Navbar>
       <Wrapper variant={variant} paddingSize={navbarHeight}>
         {children}{" "}

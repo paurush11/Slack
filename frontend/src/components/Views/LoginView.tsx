@@ -31,7 +31,6 @@ const LoginView: React.FC<LoginViewProps> = ({
         {submitField}
         {resetField}
       </Stack>
-
     </Box>
   );
 };

@@ -19,7 +19,6 @@ const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ toggleTheme }) => {
         alignItems={"center"}
         width={"100vw"}
         display={"flex"}
-
       >
         <Box
           width={"60%"}

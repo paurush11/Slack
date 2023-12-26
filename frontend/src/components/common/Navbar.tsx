@@ -16,24 +16,29 @@ import MailIcon from "@mui/icons-material/Mail";
 import { NavbarProps } from "@/interfaces/allProps";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { ApolloError, useMutation } from "@apollo/client";
-import { LogoutDocument } from "@/generated/output/graphql";
+import { LogoutDocument, MeQuery } from "@/generated/output/graphql";
 import router from "next/router";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserSuccess } from "@/store/meSlice";
+import { toggleTheme } from "@/store/themeSlice";
+import { toggleLayout } from "@/store/smallLayoutSlice";
 
 export const Navbar: React.FC<NavbarProps> = ({
-  toggleTheme,
-  data: meData,
-  setUseSmallLayout,
-  useSmallLayout,
+
 }) => {
   const theme = useTheme();
   const [Logout, { error, loading }] = useMutation(LogoutDocument);
+  const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
+  const dispatch = useDispatch();
   const [logoutError, setLogoutError] = useState<ApolloError>();
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState<boolean>(false);
   const onClickLogout = async () => {
     const response = await Logout();
     if (response.data?.Logout) {
       router.replace("/");
+      dispatch(fetchUserSuccess(null));
     } else if (error) {
       setLogoutError(error);
       setOpenErrorSnackbar(true);
@@ -53,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           color="inherit"
           aria-label="menu"
           sx={{ ml: 1, mr: 3 }}
-          onClick={() => setUseSmallLayout(!useSmallLayout)}
+          onClick={() => dispatch(toggleLayout())}
           size="large"
         >
           <MenuIcon />
@@ -68,25 +73,27 @@ export const Navbar: React.FC<NavbarProps> = ({
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         <ThemeToggleButton
-          toggleTheme={toggleTheme}
+          toggleTheme={() => {
+            dispatch(toggleTheme())
+          }}
           themeMode={theme.palette.mode}
         />
         {loading && <CircularProgress color="secondary" />}
-        {meData?.Me && (
+        {userData && (userData as MeQuery)?.Me && (
           <IconButton
             size="large"
             aria-label="show new messages"
             color="inherit"
           >
             <Badge
-              badgeContent={meData?.Me?.messagesReceived?.length}
+              badgeContent={(userData as MeQuery)?.Me?.user?.messagesReceived?.length}
               color="error"
             >
               <MailIcon />
             </Badge>
           </IconButton>
         )}
-        {meData?.Me && (
+        {userData && (userData as MeQuery)?.Me && (
           <IconButton
             size="large"
             aria-label="logout"

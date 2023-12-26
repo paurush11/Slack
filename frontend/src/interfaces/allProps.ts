@@ -1,36 +1,30 @@
-import { UseFormHandleSubmit, UseFormReset } from "react-hook-form";
+import { GetChannelQuery, MeQuery } from "@/generated/output/graphql";
 import { Request, Response } from "express";
 import Redis from "ioredis";
-import { GetChannelQuery, MeQuery } from "@/generated/output/graphql";
-import { Dispatch, FormEventHandler, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
+import { UseFormReset } from "react-hook-form";
 
 export interface LayoutProps extends WrapperProps {
-  toggleTheme: () => any;
-  data?: MeQuery | undefined;
-  setUseSmallLayout?: React.Dispatch<React.SetStateAction<boolean>>;
-  useSmallLayout?: boolean;
 }
 export interface ChannelViewControllerProps {
   channelId: string;
-  data?: MeQuery | undefined;
 }
 export interface ChannelViewProps {
   data: GetChannelQuery | undefined;
 }
 export interface NavbarProps {
-  toggleTheme: () => void;
-  data?: MeQuery | undefined;
-  setUseSmallLayout: React.Dispatch<React.SetStateAction<boolean>>;
-  useSmallLayout: boolean;
+
 }
 export interface SideLayoutProps {
-  data?: MeQuery | undefined;
+
   handleSideLayout: (content: React.JSX.Element) => void;
   setIsClickedInMainComp: Dispatch<SetStateAction<boolean>>;
   isClickedInMainComp: boolean;
+  selectedChannelValue: string;
+  setSelectedChannelValue: Dispatch<SetStateAction<string>>;
 }
 export interface SmallSideLayoutProps {
-  data?: MeQuery | undefined;
+
 }
 
 export interface WrapperProps {
@@ -80,15 +74,14 @@ export interface SubmitAndResetViewProps {
   responseErrors: React.JSX.Element;
   onSubmit: () => void;
 }
-export interface LoginControllerProps {}
-export interface SignUpControllerProps {}
+export interface LoginControllerProps { }
+export interface SignUpControllerProps { }
 
 export interface SubmitAndResetControllerProps {
   reset: UseFormReset<any>;
   onSubmit: () => void;
 }
 export interface LoginAndRegisterProps {
-  toggleTheme: () => void;
 }
 export type variantWrapper = "small" | "regular" | "Large";
 

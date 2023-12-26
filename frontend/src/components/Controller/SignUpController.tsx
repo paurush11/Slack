@@ -50,7 +50,7 @@ const validationSchema = yup
       .oneOf([yup.ref("password")], "Passwords must match"),
   })
   .required();
-export const SignUpController: React.FC<SignUpControllerProps> = ({ }) => {
+export const SignUpController: React.FC<SignUpControllerProps> = ({}) => {
   const defaultValues = {
     firstName: "",
     lastName: "",

@@ -22,7 +22,6 @@ const IndexView: React.FC<IndexViewProps> = ({ toggleTheme }) => {
           backgroundColor: theme.palette.background.paper,
           flexDirection: "column",
         }}
-
       >
         <Box
           width="50vw"

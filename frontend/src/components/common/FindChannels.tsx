@@ -3,6 +3,7 @@ import {
   JoinChannelDocument,
   MeQuery,
 } from "@/generated/output/graphql";
+import { RootState } from "@/store/store";
 import { IconMap } from "@/utils/helper";
 import { useMutation, useQuery } from "@apollo/client";
 import CloseIcon from "@material-ui/icons/Close";
@@ -21,11 +22,11 @@ import {
 } from "@mui/material";
 import router from "next/router";
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 interface FindChannelsProps {
   channelOpen: boolean;
   setValue: any;
   setHasBeenClosed: any;
-  data?: MeQuery | undefined;
   setIsClickedInMainComp: any;
 }
 
@@ -33,7 +34,6 @@ const FindChannels: React.FC<FindChannelsProps> = ({
   channelOpen,
   setValue,
   setHasBeenClosed,
-  data: meData,
   setIsClickedInMainComp,
 }) => {
   const theme = useTheme();
@@ -45,6 +45,8 @@ const FindChannels: React.FC<FindChannelsProps> = ({
   const { data, error, loading } = useQuery(ChannelsDocument);
   const [openSuccess, setOpenSuccess] = React.useState(false);
   const [openFail, setOpenFail] = React.useState(false);
+  const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
+
   const handleCloseSuccess = (
     event?: React.SyntheticEvent | Event,
     reason?: string,
@@ -72,19 +74,23 @@ const FindChannels: React.FC<FindChannelsProps> = ({
     },
   ] = useMutation(JoinChannelDocument);
   const onSubmit = async (id: string) => {
-    const response = await joinChannel({
-      variables: {
-        channelId: id,
-        userId: meData?.Me?.user?._id as string,
-      },
-    });
-    if (response.data?.joinChannel === true) {
-      setOpenSuccess(true);
-      setTimeout(() => onClose(), 500);
-    } else {
-      console.error(response.errors);
-      setOpenFail(true);
+    if (userData) {
+      const response = await joinChannel({
+        variables: {
+          channelId: id,
+          userId: (userData as MeQuery)?.Me?.user?._id as string,
+        },
+      });
+      if (response.data?.joinChannel === true) {
+        setOpenSuccess(true);
+        setTimeout(() => onClose(), 500);
+      } else {
+        console.error(response.errors);
+        setOpenFail(true);
+      }
+
     }
+
   };
 
   return channelOpen ? (
