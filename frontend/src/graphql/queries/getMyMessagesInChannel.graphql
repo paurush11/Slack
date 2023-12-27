@@ -1,6 +1,6 @@
-query GetMyMessagesInChannel($channelId: String!) {
-  getMyMessagesInChannel(channelId: $channelId) {
-    _id
+query GetMyMessagesInChannel($friendId: String!, $channelId: String!) {
+  getMyMessagesInChannel(friendId: $friendId, channelId: $channelId) {
+     _id
     sender {
       _id
       lastName
@@ -15,5 +15,11 @@ query GetMyMessagesInChannel($channelId: String!) {
       isActive
       username
     }
+    TextMessage
+    createdAt
+    senderId
+    receiverSeen
+    receiverID
+    channelID
   }
-}
+  }

@@ -1,18 +1,19 @@
-import { CreateMessageDocument, MessageSeenSubscriptionDocument, MessageUpdatedSubscriptionDocument, NewMessageSubscriptionDocument, ResolverError } from '@/generated/output/graphql';
+import { CreateMessageDocument, GetMyMessagesInChannelDocument, MeQuery, MessageSeenSubscriptionDocument, MessageUpdatedSubscriptionDocument, NewMessageSubscriptionDocument, ResolverError } from '@/generated/output/graphql';
 import { RootState } from '@/store/store';
 import { emptyResolverError } from '@/utils/common';
-import { useMutation, useSubscription } from '@apollo/client';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, IconButton, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Button, IconButton, Stack, TextField, Typography, useTheme } from '@mui/material';
 import router from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from "yup";
 import ChatView from '../Views/ChatView';
 
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import { Message } from '@/interfaces/allProps';
+import { setLastMessageIndex } from '@/store/meSlice';
 interface ChatControllerProps {
 
 }
@@ -44,8 +45,45 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
     const theme = useTheme();
     const messageReceiver = useSelector((state: RootState) => state.myData.messageReceiverId)
     const channelId = useSelector((state: RootState) => state.myData.channelId);
-
+    const user = useSelector((state: RootState) => state.myData.data);
+    const lastMessageRef = useRef<HTMLDivElement | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
+    const { data: GetMyMessagesInChannelData, loading: GetMyMessagesInChannelLoading, error: GetMyMessagesInChannelError } = useQuery(GetMyMessagesInChannelDocument, {
+        variables: {
+            channelId: channelId,
+            friendId: messageReceiver
+        }
+    })
+
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(setLastMessageIndex(messages.length - 1));
+
+    }, [messages])
+    const lastMessageIndex = useSelector((state: RootState) => state.myData.lastMessageIndex)
+    console.log(lastMessageIndex)
+
+    useEffect(() => {
+        if (GetMyMessagesInChannelData && !GetMyMessagesInChannelLoading) {
+            // Fetching and sorting messages
+            // ...
+            const sortedMessages = [...GetMyMessagesInChannelData.getMyMessagesInChannel]
+                .map(msg => ({ ...msg, createdAt: new Date(msg.createdAt).getTime() }))
+                .sort((msgA, msgB) => msgA.createdAt - msgB.createdAt).map(msg => ({ ...msg, createdAt: new Date(msg.createdAt).toDateString() }));
+            setMessages(sortedMessages);
+        }
+    }, [GetMyMessagesInChannelData, GetMyMessagesInChannelLoading]);
+
+    useLayoutEffect(() => {
+        if (!GetMyMessagesInChannelLoading && lastMessageIndex >= 0) {
+            // Scroll to the last message
+            // ...
+            if (messages.length > 0 && lastMessageIndex >= 0 && messages[lastMessageIndex]) {
+                lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    }, [GetMyMessagesInChannelLoading, lastMessageIndex]);
+
 
 
     const [newMessage, { data, loading, error }] = useMutation(CreateMessageDocument)
@@ -62,7 +100,7 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
                 },
             });
             if (response.data?.createMessage.data?._id) {
-               
+                reset(defaultValues);
                 return;
             } else if (response.data?.createMessage.resolverError) {
                 const val = response.data?.createMessage.resolverError;
@@ -72,6 +110,39 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
             }
         }
     };
+
+    const { data: newMessages, loading: newMessagesLoading, error: newMessagesError } = useSubscription(NewMessageSubscriptionDocument, {
+        variables: { channelId: channelId }
+    });
+    const { data: updatedMessages, loading: updatedMessagesLoading, error: updatedMessagesError } = useSubscription(MessageUpdatedSubscriptionDocument, {
+        variables: { channelId: channelId }
+    });
+    const { data: seenMessages, loading: seenMessagesLoading, error: seenMessagesError } = useSubscription(MessageSeenSubscriptionDocument, {
+        variables: { channelId: channelId }
+    });
+
+    useEffect(() => {
+        if (!newMessagesLoading && newMessages) {
+            setMessages(prevMessages => [...prevMessages, newMessages.newMessage]);
+        }
+    }, [newMessages])
+    useEffect(() => {
+        if (updatedMessages) {
+            setMessages(prevMessages => prevMessages.map(msg =>
+                msg._id === (updatedMessages.messageUpdated as Message)._id ? (updatedMessages.messageUpdated as Message) : msg
+            ));
+        }
+    }, [updatedMessages])
+    useEffect(() => {
+        if (!seenMessagesError && seenMessages) {
+            setMessages(prevMessages => prevMessages.map(msg =>
+                msg._id === seenMessages.messageSeen._id ? { ...msg, receiverSeen: false } : msg
+            ));
+        }
+    }, [seenMessages])
+
+
+
     const messageField = (
         <Controller
             name="message"
@@ -154,6 +225,41 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
             Reset
         </Button>
     );
+
+    const chatField = (
+        user && messages ? (
+
+            <Stack spacing={2} overflow={"scroll"} p={2} display={"flex"} flexDirection={"column"} >
+                {messages.map((msg, index) => (
+                    <Box
+                        ref={index === messages.length - 1 ? lastMessageRef : null}
+
+                        display={"flex"}
+
+                        flexDirection={msg.senderId === (user as MeQuery).Me?.user?._id ? "row-reverse" : "row"}
+
+                        alignItems={"start"}
+                    >
+                        <Box
+                            width={"80%"}
+                            bgcolor={msg.senderId !== (user as MeQuery).Me?.user?._id ? theme.palette.primary.dark : theme.palette.primary.light}
+                            color={theme.palette.primary.contrastText}
+                            p={2}
+                            borderRadius={msg.senderId === (user as MeQuery).Me?.user?._id ? '16px 16px 0px 16px' : '16px 16px 16px 0px'}
+                        >
+                            <Typography>
+                                {msg.TextMessage}
+                            </Typography>
+
+                        </Box>
+
+                    </Box>
+                ))}
+
+            </Stack>
+
+        ) : <Box></Box>
+    )
     const responseErrors = (
         <Box pt={4} key={"1212"}>
             {error && (
@@ -212,13 +318,12 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
 
     return (
         <ChatView
-
+            chatField={chatField}
             messageField={messageField}
             submitButton={submitButton}
             resetButton={resetButton}
             responseErrors={responseErrors}
             onSubmit={handleSubmit((data) => onSubmit(data))}
-            data={data}
             messages={messages}
             setMessages={setMessages}
         />);

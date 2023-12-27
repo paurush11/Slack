@@ -5,14 +5,14 @@ import Image from "next/image";
 import NextLink from "next/link";
 
 interface IndexViewProps {
-  toggleTheme: () => void;
+
 }
 
-const IndexView: React.FC<IndexViewProps> = ({ toggleTheme }) => {
+const IndexView: React.FC<IndexViewProps> = ({ }) => {
   const theme = useTheme();
   const text = "Sign into Paurush's Slack Application";
   return (
-    <Layout toggleTheme={toggleTheme}>
+    <Layout>
       <Box
         flexGrow={1}
         display="flex"

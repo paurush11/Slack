@@ -58,11 +58,12 @@ let MessageResolver = class MessageResolver {
             relations: ["sender", "receiver"],
         });
     }
-    async getMyMessagesInChannel(channelId, ctx) {
+    async getMyMessagesInChannel(channelId, friendId, ctx) {
         const sentMessages = await DirectMessage_1.DirectMessage.find({
             where: {
                 channelID: channelId,
                 senderId: ctx.req.session.user,
+                receiverID: friendId
             },
             relations: ["sender", "receiver"],
         });
@@ -70,6 +71,7 @@ let MessageResolver = class MessageResolver {
             where: {
                 channelID: channelId,
                 receiverID: ctx.req.session.user,
+                senderId: friendId
             },
             relations: ["sender", "receiver"],
         });
@@ -347,9 +349,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => [DirectMessage_1.DirectMessage]),
     __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __param(1, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)("friendId", () => String)),
+    __param(2, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "getMyMessagesInChannel", null);
 __decorate([

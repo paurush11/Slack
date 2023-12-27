@@ -6,7 +6,7 @@ import ChatIcon from "@material-ui/icons/Chat";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import QueueIcon from "@material-ui/icons/Queue";
 
-const SmallSideLayout: React.FC<SmallSideLayoutProps> = ({}) => {
+const SmallSideLayout: React.FC<SmallSideLayoutProps> = ({ }) => {
   const theme = useTheme();
   return (
     <Box
@@ -15,14 +15,16 @@ const SmallSideLayout: React.FC<SmallSideLayoutProps> = ({}) => {
       alignContent={"center"}
       bgcolor={theme.palette.background.paper}
       height={"100%"}
-      p={1}
-      gap={6}
+      p={1.5}
+      gap={4}
+
     >
       <Box
         display={"flex"}
         flexDirection={"column"}
         alignItems={"center"}
         mt={2}
+
       >
         <IconButton>
           <HomeIcon

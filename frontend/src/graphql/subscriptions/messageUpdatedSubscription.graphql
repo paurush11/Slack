@@ -1,20 +1,25 @@
 subscription MessageUpdatedSubscription($channelId: String!) {
   messageUpdated(channelId: $channelId) {
-      senderId
-    receiverID
-    TextMessage
-    _id
-    channelID
-    receiverSeen
+      _id
     sender {
-      firstName
+      _id
       lastName
+      firstName
+      isActive
       username
     }
     receiver {
-      username
+       _id
       lastName
       firstName
+      isActive
+      username
     }
+    TextMessage
+    createdAt
+    senderId
+    receiverSeen
+    receiverID
+    channelID
   }
 }

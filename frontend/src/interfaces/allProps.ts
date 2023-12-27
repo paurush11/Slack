@@ -26,23 +26,23 @@ export interface AddChannelViewProps extends SubmitAndResetViewProps {
   handleClose: (event?: React.SyntheticEvent | Event, reason?: string) => void;
   open: boolean;
 }
-export interface Message {
-  senderId: string;
-  receiverID: string;
-  TextMessage: string;
+interface User {
   _id: string;
-  channelID: string;
+  lastName: string;
+  firstName: string;
+  isActive: boolean;
+  username: string;
+}
+export interface Message {
+  _id: string;
+  sender: User;
+  receiver: User;
+  TextMessage: string;
+  createdAt: string;
+  senderId: string;
   receiverSeen: boolean;
-  sender: {
-    firstName: string;
-    lastName: string;
-    username: string;
-  };
-  receiver: {
-    username: string;
-    lastName: string;
-    firstName: string;
-  };
+  receiverID: string;
+  channelID: string;
 }
 export interface LoginViewProps extends SubmitAndResetViewProps {
   emailField: React.JSX.Element;

@@ -113,12 +113,14 @@ export class MessageResolver {
   @Query(() => [DirectMessage])
   async getMyMessagesInChannel(
     @Arg("channelId", () => String) channelId: string,
+    @Arg("friendId", () => String) friendId: string,
     @Ctx() ctx: myContext,
   ) {
     const sentMessages = await DirectMessage.find({
       where: {
         channelID: channelId,
         senderId: ctx.req.session.user,
+        receiverID: friendId
       },
       relations: ["sender", "receiver"],
     });
@@ -126,6 +128,7 @@ export class MessageResolver {
       where: {
         channelID: channelId,
         receiverID: ctx.req.session.user,
+        senderId: friendId
       },
       relations: ["sender", "receiver"],
     });

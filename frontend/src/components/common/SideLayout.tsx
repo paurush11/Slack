@@ -1,7 +1,7 @@
 import ChannelViewController from "@/components/Controller/ChannelViewController";
 import { GetChannelQuery, MeQuery } from "@/generated/output/graphql";
 import { SideLayoutProps } from "@/interfaces/allProps";
-import { setMessageReceiverId, setMySelectedChannel } from "@/store/meSlice";
+import { setMessageReceiverFirstName, setMessageReceiverId, setMessageReceiverLastName, setMessageReceiverUsername, setMySelectedChannel } from "@/store/meSlice";
 import { RootState } from "@/store/store";
 import { IconMap } from "@/utils/helper";
 import useSessionStorage from "@/utils/useSessionStorage";
@@ -272,6 +272,9 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                         }}
                         onClick={() => {
                           dispatch(setMessageReceiverId(m._id))
+                          dispatch(setMessageReceiverFirstName(m.firstName))
+                          dispatch(setMessageReceiverLastName(m.lastName))
+                          dispatch(setMessageReceiverUsername(m.username))
                           handleSideLayout(
                             <Box
                               display={"flex"}

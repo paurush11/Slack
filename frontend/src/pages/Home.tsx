@@ -21,9 +21,9 @@ import { Alert, AlertTitle, Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-interface HomeProps {}
+interface HomeProps { }
 
-const Home: React.FC<HomeProps> = ({}) => {
+const Home: React.FC<HomeProps> = ({ }) => {
   const { loading, data, error } = useQuery(MeDocument);
   const dispatch = useDispatch();
   const [findYourChannelsOpen, setFindYourChannelsOpen, remove] =
@@ -83,7 +83,7 @@ const Home: React.FC<HomeProps> = ({}) => {
   }, [data, setFindYourChannelsOpen, hasBeenClosed, isClickedInMainCompValue]);
   useEffect(() => {
     if (useSmallLayout) {
-      setSideBarSize(0.8);
+      setSideBarSize(1);
     } else {
       setSideBarSize(2);
     }
@@ -98,7 +98,7 @@ const Home: React.FC<HomeProps> = ({}) => {
       {!loading && (
         <Grid container spacing={0} display={"flex"}>
           <Grid item xs={sideBarSize} height={"100%"} flexDirection={"column"}>
-            {sideBarSize === 0.8 ? (
+            {sideBarSize === 1 ? (
               <SmallSideLayout />
             ) : (
               <SideLayout
