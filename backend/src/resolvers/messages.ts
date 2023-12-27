@@ -226,6 +226,7 @@ export class MessageResolver {
           receiverID: receiverId,
           TextMessage: messageText,
         },
+        relations: ["sender", "receiver"]
       });
 
       await pubSub.publish(MESSAGE_ADDED_TOPIC, savedMessage);

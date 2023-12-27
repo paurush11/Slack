@@ -155,6 +155,7 @@ let MessageResolver = class MessageResolver {
                     receiverID: receiverId,
                     TextMessage: messageText,
                 },
+                relations: ["sender", "receiver"]
             });
             await pubSub.publish(exports_1.MESSAGE_ADDED_TOPIC, savedMessage);
             return {
