@@ -218,7 +218,11 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(() => [notFoundErrorType], { nullable: true }),
     __metadata("design:type", Array)
-], messageStatus.prototype, "error", void 0);
+], messageStatus.prototype, "notFoundError", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => [resolverError], { nullable: true }),
+    __metadata("design:type", Array)
+], messageStatus.prototype, "resolverError", void 0);
 exports.messageStatus = messageStatus = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], messageStatus);

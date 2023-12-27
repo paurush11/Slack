@@ -110,7 +110,9 @@ class messageStatus {
   @Field(() => DirectMessage, { nullable: true })
   data?: DirectMessage;
   @Field(() => [notFoundErrorType], { nullable: true })
-  error?: notFoundErrorType[];
+  notFoundError?: notFoundErrorType[];
+  @Field(() => [resolverError], { nullable: true })
+  resolverError?: resolverError[];
 }
 
 @ObjectType()

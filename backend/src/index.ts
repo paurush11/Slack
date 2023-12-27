@@ -1,20 +1,19 @@
+import cors from "cors";
+import express from "express";
 import { AppDataSource } from "./data-source";
 import { catchError } from "./utils/commonFunctions";
-import express from "express";
-import cors from "cors";
 // import Redis from "ioredis";
 import { ApolloServer } from "apollo-server-express";
-import { __prod__ } from "./utils/constants";
-import { buildSchema } from "type-graphql";
-import { memberResolver } from "./resolvers/members";
-import { myContext } from "./utils/myContext";
-import { Redis } from "ioredis";
-import { ChannelResolver } from "./resolvers/channels";
-import { MessageResolver } from "./resolvers/messages";
 import session from "express-session";
-import { PostResolver } from "./resolvers/posts";
-import { VoteResolver } from "./resolvers/vote";
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { createServer } from 'http';
+import { Redis } from "ioredis";
+import { buildSchema } from "type-graphql";
+import { WebSocketServer } from 'ws';
+import { __prod__ } from "./utils/constants";
+import { myContext } from "./utils/myContext";
 
+import resolvers from "./resolvers";
 require("dotenv").config();
 const main = async () => {
   AppDataSource.initialize()
@@ -58,28 +57,53 @@ const main = async () => {
     }),
   );
 
+  const schema = await buildSchema({
+    validate: false,
+    resolvers: resolvers
+  })
+  const httpServer = createServer(app);
+  const wsServer = new WebSocketServer({
+    // This is the `httpServer` we created in a previous step.
+    server: httpServer,
+    // Pass a different path here if app.use
+    // serves expressMiddleware at a different path
+    path: '/subscriptions',
+  });
+  const serverCleanup = useServer({ schema }, wsServer);
   const apolloServer = new ApolloServer({
     context: ({ req, res }): myContext => ({
       req,
       res,
       redis,
     }),
-    schema: await buildSchema({
-      validate: false,
-      resolvers: [
-        memberResolver,
-        ChannelResolver,
-        MessageResolver,
-        PostResolver,
-        VoteResolver,
-      ],
-    }),
+    schema: schema,
+    plugins: [
+      // Proper shutdown for the HTTP server.
+      // Proper shutdown for the WebSocket server.
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
   });
+
   await apolloServer.start();
   apolloServer.applyMiddleware({ app, cors: false });
   app.listen(4000, () => {
-    console.log("server started on localhost:4000");
+    console.log("server started on localhost:4001");
   });
+  httpServer.listen(4001, () => {
+    console.log(`🚀 Server ready at http://localhost:4001${apolloServer.graphqlPath}`);
+    console.log(`🚀 Subscriptions ready at ws://localhost:4001${apolloServer.graphqlPath}`);
+
+  })
 };
 
 main().catch((error) => catchError(error));
+
+

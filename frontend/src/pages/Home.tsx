@@ -8,7 +8,11 @@ import {
   NotFoundErrorType,
   ResolverError,
 } from "@/generated/output/graphql";
-import { fetchUserError, fetchUserStart, fetchUserSuccess } from "@/store/meSlice";
+import {
+  fetchUserError,
+  fetchUserStart,
+  fetchUserSuccess,
+} from "@/store/meSlice";
 import { RootState } from "@/store/store";
 import { notAuth } from "@/utils/notAuth";
 import useSessionStorage from "@/utils/useSessionStorage";
@@ -17,11 +21,9 @@ import { Alert, AlertTitle, Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-interface HomeProps {
+interface HomeProps {}
 
-}
-
-const Home: React.FC<HomeProps> = ({ }) => {
+const Home: React.FC<HomeProps> = ({}) => {
   const { loading, data, error } = useQuery(MeDocument);
   const dispatch = useDispatch();
   const [findYourChannelsOpen, setFindYourChannelsOpen, remove] =
@@ -33,7 +35,9 @@ const Home: React.FC<HomeProps> = ({ }) => {
   const [errors, setErrors] = useState<
     NotFoundErrorType[] | ResolverError[] | undefined
   >();
-  const useSmallLayout = useSelector((state: RootState) => state.smallLayout.smallLayout)
+  const useSmallLayout = useSelector(
+    (state: RootState) => state.smallLayout.smallLayout,
+  );
   const [
     selectedChannelValue,
     setSelectedChannelValue,
@@ -89,9 +93,7 @@ const Home: React.FC<HomeProps> = ({ }) => {
   if (error) return <p>Error :</p>;
 
   return (
-    <Layout
-
-    >
+    <Layout>
       {/* {!loading && data?.Me && <Sidebar data={data} />} */}
       {!loading && (
         <Grid container spacing={0} display={"flex"}>

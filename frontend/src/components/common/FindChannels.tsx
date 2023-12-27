@@ -3,6 +3,12 @@ import {
   JoinChannelDocument,
   MeQuery,
 } from "@/generated/output/graphql";
+import {
+  fetchMyChannelData,
+  fetchMyChannelDataError,
+  fetchMyChannelDataSuccess,
+} from "@/store/channelSlice";
+import { fetchUserSuccess } from "@/store/meSlice";
 import { RootState } from "@/store/store";
 import { IconMap } from "@/utils/helper";
 import { useMutation, useQuery } from "@apollo/client";
@@ -22,7 +28,7 @@ import {
 } from "@mui/material";
 import router from "next/router";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 interface FindChannelsProps {
   channelOpen: boolean;
   setValue: any;
@@ -45,7 +51,9 @@ const FindChannels: React.FC<FindChannelsProps> = ({
   const { data, error, loading } = useQuery(ChannelsDocument);
   const [openSuccess, setOpenSuccess] = React.useState(false);
   const [openFail, setOpenFail] = React.useState(false);
-  const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
+  const userData: MeQuery | null = useSelector(
+    (state: RootState) => state.myData.data,
+  );
 
   const handleCloseSuccess = (
     event?: React.SyntheticEvent | Event,
@@ -65,14 +73,8 @@ const FindChannels: React.FC<FindChannelsProps> = ({
     }
     setOpenFail(false);
   };
-  const [
-    joinChannel,
-    {
-      data: joinChannelData,
-      error: joinChannelError,
-      loading: joinChannelLoading,
-    },
-  ] = useMutation(JoinChannelDocument);
+  const dispatch = useDispatch();
+  const [joinChannel] = useMutation(JoinChannelDocument);
   const onSubmit = async (id: string) => {
     if (userData) {
       const response = await joinChannel({
@@ -84,13 +86,13 @@ const FindChannels: React.FC<FindChannelsProps> = ({
       if (response.data?.joinChannel === true) {
         setOpenSuccess(true);
         setTimeout(() => onClose(), 500);
+        router.reload();
       } else {
+        dispatch(fetchMyChannelDataError(response.errors));
         console.error(response.errors);
         setOpenFail(true);
       }
-
     }
-
   };
 
   return channelOpen ? (

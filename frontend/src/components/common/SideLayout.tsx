@@ -1,4 +1,10 @@
+import ChannelViewController from "@/components/Controller/ChannelViewController";
+import { GetChannelQuery, MeQuery } from "@/generated/output/graphql";
 import { SideLayoutProps } from "@/interfaces/allProps";
+import { setMessageReceiverId, setMySelectedChannel } from "@/store/meSlice";
+import { RootState } from "@/store/store";
+import { IconMap } from "@/utils/helper";
+import useSessionStorage from "@/utils/useSessionStorage";
 import {
   Box,
   Divider,
@@ -10,28 +16,28 @@ import {
   Stack,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
-import { AddChannelController } from "../Controller/AddChannelController";
-import TopicHeadings from "./TopicHeadings";
-import { IconMap } from "@/utils/helper";
-import useSessionStorage from "@/utils/useSessionStorage";
-import ChannelViewController from "@/components/Controller/ChannelViewController";
-import { MessagesController } from "../Controller/MessagesController";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { MeQuery } from "@/generated/output/graphql";
-import { setMySelectedChannel } from "@/store/meSlice";
-
+import { AddChannelController } from "../Controller/AddChannelController";
+import { MessagesController } from "../Controller/MessagesController";
+import TopicHeadings from "./TopicHeadings";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import { ChatController } from "../Controller/ChatController";
 export const SideLayout: React.FC<SideLayoutProps> = ({
   handleSideLayout,
   setIsClickedInMainComp,
   isClickedInMainComp,
-  selectedChannelValue,
-  setSelectedChannelValue,
 }) => {
   const theme = useTheme();
-  const dispatch = useDispatch()
-  const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
+  const userData: MeQuery | null = useSelector(
+    (state: RootState) => state.myData.data,
+  );
+  const channelData: GetChannelQuery | null = useSelector(
+    (state: RootState) => state.myChannelData.data,
+  );
+  const channelId = useSelector((state: RootState) => state.myData.channelId);
+  const dispatch = useDispatch();
+
   const [
     discoverChannelDropdownListOpen,
     setDiscoverChannelDropdownListOpen,
@@ -80,10 +86,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
         width={"100%"}
         bgcolor={"red"}
       >
-        <MessagesController
-
-          selectedChannelValue={selectedChannelValue}
-        />
+        <MessagesController />
       </Box>,
     );
   };
@@ -110,12 +113,12 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
 
         {discoverChannelDropdownListOpen && (
           <Box
-            height={"25vh"}
+            maxHeight={"25vh"}
             overflow={"scroll"}
             display={"flex"}
             bgcolor={theme.palette.background.paper}
           >
-            <List>
+            <List key={"123456"}>
               {userData !== null &&
                 (userData as MeQuery).Me?.user?.channels.map((c) => (
                   <>
@@ -130,7 +133,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           borderRadius: "10px",
                         }}
                         onClick={() => {
-                          dispatch(setMySelectedChannel(c._id))
+                          dispatch(setMySelectedChannel(c._id));
                           handleSideLayout(
                             <Box
                               display={"flex"}
@@ -176,12 +179,12 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
         />
         {channelDropdownListOpen && (
           <Box
-            height={"25vh"}
+            maxHeight={"25vh"}
             overflow={"scroll"}
             display={"flex"}
             bgcolor={theme.palette.background.paper}
           >
-            <List>
+            <List key={"12345"}>
               {userData !== null &&
                 (userData as MeQuery).Me?.user?.channels.map((c) => (
                   <>
@@ -196,7 +199,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           borderRadius: "10px",
                         }}
                         onClick={() => {
-                          dispatch(setMySelectedChannel(c._id))
+                          dispatch(setMySelectedChannel(c._id));
                           handleSideLayout(
                             <Box
                               display={"flex"}
@@ -243,19 +246,20 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
         />
         {messagesOpenDropdownListOpen && (
           <Box
-            height={"25vh"}
+            maxHeight={"25vh"}
             overflow={"scroll"}
             display={"flex"}
+            width={"100%"}
             bgcolor={theme.palette.background.paper}
-            sx={{
-              overflow: "scroll",
-            }}
+
           >
-            <List>
-              {userData !== null &&
-                (userData as MeQuery).Me?.user?.channels.map((c) => (
+            <List key={"1234"}>
+              {channelData !== null && userData !== null && (channelData as GetChannelQuery) !== undefined &&
+                (channelData as GetChannelQuery).getChannel.members?.filter((member) => member._id !== (userData as MeQuery).Me?.user?._id).map((m) => (
                   <>
-                    <ListItem key={c._id}>
+                    <ListItem key={m._id} sx={{
+                      width: "100%"
+                    }}>
                       <ListItemButton
                         sx={{
                           p: 0,
@@ -264,9 +268,10 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                           justifyContent: "center", // Center horizontally
                           alignItems: "center", // Center vertically
                           borderRadius: "10px",
+                          gap: 1
                         }}
                         onClick={() => {
-                          dispatch(setMySelectedChannel(c._id))
+                          dispatch(setMessageReceiverId(m._id))
                           handleSideLayout(
                             <Box
                               display={"flex"}
@@ -274,7 +279,7 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                               justifyContent={"center"}
                               width={"100%"}
                             >
-                              <ChannelViewController />
+                              <ChatController />
                             </Box>,
                           );
                         }}
@@ -286,17 +291,19 @@ export const SideLayout: React.FC<SideLayoutProps> = ({
                             minWidth: "auto", // Remove the minimum width
                             marginRight: "0px", // Remove default right margin if present
                             display: "flex",
-                            justifyContent: "center",
+                            justifyContent: "center"
                           }}
+
                         >
-                          {IconMap[c.IconName as keyof typeof IconMap] &&
-                            React.createElement(
-                              IconMap[c.IconName as keyof typeof IconMap],
-                              { sx: { color: theme.palette.primary[600] } },
-                            )}
+                          <AccountCircleIcon
+                            style={{
+                              color: theme.palette.primary[200],
+                            }}
+                          />
                         </ListItemIcon>
 
-                        <ListItemText>{c.Name}</ListItemText>
+                        <ListItemText>{m.firstName}</ListItemText>
+                        <ListItemText>{m.lastName}</ListItemText>
                       </ListItemButton>
                     </ListItem>
                     <Divider />

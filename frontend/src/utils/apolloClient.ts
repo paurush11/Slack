@@ -24,7 +24,8 @@ const httpLink = new HttpLink({
 });
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:4000/subscriptions",
+    url: "ws://localhost:4001/subscriptions",
+
   }),
 );
 const splitLink = split(

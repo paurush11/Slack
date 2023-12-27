@@ -16,7 +16,7 @@ const lightTheme = createTheme({
       "600": "#3f0e41", // Selective Yellow
       "700": "#ca6702", // Windsor Tan
       "800": "#bb3e03", // Dark Orange
-      "900": "#ae2012",
+      "900": "#A07BA2",
     },
     secondary: {
       main: "#d5c6e0", // Soft Lavender

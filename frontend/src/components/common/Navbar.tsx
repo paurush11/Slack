@@ -25,12 +25,12 @@ import { fetchUserSuccess } from "@/store/meSlice";
 import { toggleTheme } from "@/store/themeSlice";
 import { toggleLayout } from "@/store/smallLayoutSlice";
 
-export const Navbar: React.FC<NavbarProps> = ({
-
-}) => {
+export const Navbar: React.FC<NavbarProps> = ({}) => {
   const theme = useTheme();
   const [Logout, { error, loading }] = useMutation(LogoutDocument);
-  const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
+  const userData: MeQuery | null = useSelector(
+    (state: RootState) => state.myData.data,
+  );
   const dispatch = useDispatch();
   const [logoutError, setLogoutError] = useState<ApolloError>();
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState<boolean>(false);
@@ -74,7 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <Box sx={{ flexGrow: 1 }} />
         <ThemeToggleButton
           toggleTheme={() => {
-            dispatch(toggleTheme())
+            dispatch(toggleTheme());
           }}
           themeMode={theme.palette.mode}
         />
@@ -86,7 +86,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             color="inherit"
           >
             <Badge
-              badgeContent={(userData as MeQuery)?.Me?.user?.messagesReceived?.length}
+              badgeContent={
+                (userData as MeQuery)?.Me?.user?.messagesReceived?.length
+              }
               color="error"
             >
               <MailIcon />

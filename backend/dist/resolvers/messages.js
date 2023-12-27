@@ -22,16 +22,16 @@ const Channel_1 = require("../entity/Channel");
 const graphql_subscriptions_1 = require("graphql-subscriptions");
 const pubSub = new graphql_subscriptions_1.PubSub();
 let MessageResolver = class MessageResolver {
-    async newMessage(messagePayload) {
+    async newMessage(messagePayload, channelId) {
         return messagePayload;
     }
-    async messageUpdated(updatePayload) {
+    async messageUpdated(updatePayload, channelId) {
         return updatePayload;
     }
-    async messageDeleted(deletePayload) {
+    async messageDeleted(deletePayload, channelId) {
         return deletePayload;
     }
-    async messageSeen(deletePayload) {
+    async messageSeen(deletePayload, channelId) {
         return deletePayload;
     }
     async getAll() {
@@ -88,18 +88,24 @@ let MessageResolver = class MessageResolver {
     }
     async deleteMessageTable() {
         try {
-            await DirectMessage_1.DirectMessage.clear();
+            const messages = await DirectMessage_1.DirectMessage.find({});
+            messages.map(async (msg) => {
+                await DirectMessage_1.DirectMessage.delete({
+                    _id: msg._id,
+                });
+            });
             return true;
         }
         catch (e) {
             return (0, commonFunctions_1.throwResolverError)(e);
+            console.error(e);
         }
     }
-    async createMessage(channelId, receiverId, senderId, messageText) {
+    async createMessage(channelId, receiverId, ctx, messageText) {
         try {
             const sender = await Member_1.Member.findOne({
                 where: {
-                    _id: senderId,
+                    _id: ctx.req.session.user,
                 },
             });
             const receiver = await Member_1.Member.findOne({
@@ -113,20 +119,29 @@ let MessageResolver = class MessageResolver {
                 },
             });
             if (!sender) {
-                (0, commonFunctions_1.throwNotFoundError)("sender");
-                return;
+                const notFoundError = (0, commonFunctions_1.throwNotFoundError)("sender");
+                return {
+                    success: false,
+                    notFoundError: [notFoundError]
+                };
             }
             if (!channel) {
-                (0, commonFunctions_1.throwNotFoundError)("channel");
-                return;
+                const notFoundError = (0, commonFunctions_1.throwNotFoundError)("channel");
+                return {
+                    success: false,
+                    notFoundError: [notFoundError]
+                };
             }
             if (!receiver) {
-                (0, commonFunctions_1.throwNotFoundError)("receiver");
-                return;
+                const notFoundError = (0, commonFunctions_1.throwNotFoundError)("receiver");
+                return {
+                    success: false,
+                    notFoundError: [notFoundError]
+                };
             }
             const message = await DirectMessage_1.DirectMessage.create({
                 channelID: channelId,
-                senderId: senderId,
+                senderId: ctx.req.session.user,
                 receiverID: receiverId,
                 TextMessage: messageText,
                 sender: sender,
@@ -136,10 +151,17 @@ let MessageResolver = class MessageResolver {
             await message.save();
             await pubSub.publish(exports_1.MESSAGE_ADDED_TOPIC, { newMessage: message });
             console.log(message);
-            return message;
+            return {
+                success: false,
+                data: message
+            };
         }
         catch (e) {
-            return (0, commonFunctions_1.throwResolverError)(e);
+            const resolverError = (0, commonFunctions_1.throwResolverError)(e);
+            return {
+                success: false,
+                resolverError: [resolverError]
+            };
         }
     }
     async updateMessage(messageId, messageText) {
@@ -252,37 +274,45 @@ exports.MessageResolver = MessageResolver;
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_ADDED_TOPIC,
+        filter: ({ payload, args }) => payload.channelID === args.channelId
     }),
     __param(0, (0, type_graphql_1.Root)()),
+    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage]),
+    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "newMessage", null);
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_UPDATED_TOPIC,
+        filter: ({ payload, args }) => payload.channelID === args.channelId
     }),
     __param(0, (0, type_graphql_1.Root)()),
+    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage]),
+    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "messageUpdated", null);
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_DELETED_TOPIC,
+        filter: ({ payload, args }) => payload.channelID === args.channelId
     }),
     __param(0, (0, type_graphql_1.Root)()),
+    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage]),
+    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "messageDeleted", null);
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_SEEN_TOPIC,
+        filter: ({ payload, args }) => payload.channelID === args.channelId
     }),
     __param(0, (0, type_graphql_1.Root)()),
+    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage]),
+    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "messageSeen", null);
 __decorate([
@@ -331,13 +361,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "deleteMessageTable", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => DirectMessage_1.DirectMessage || exports_1.resolverError),
+    (0, type_graphql_1.Mutation)(() => exports_1.messageStatus),
     __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
     __param(1, (0, type_graphql_1.Arg)("receiverId", () => String)),
-    __param(2, (0, type_graphql_1.Arg)("senderId", () => String)),
+    __param(2, (0, type_graphql_1.Ctx)()),
     __param(3, (0, type_graphql_1.Arg)("message", () => String)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, Object, String]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "createMessage", null);
 __decorate([

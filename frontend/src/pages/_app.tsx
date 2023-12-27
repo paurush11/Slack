@@ -11,8 +11,8 @@ interface WrappedAppProps {
   pageProps: AppProps["pageProps"];
 }
 function WrappedApp({ Component, pageProps }: WrappedAppProps) {
-  const themeMode = useSelector((state: RootState) => state.myThemes.theme)
-  const theme = themeMode === 'light' ? lightTheme : darkTheme;
+  const themeMode = useSelector((state: RootState) => state.myThemes.theme);
+  const theme = themeMode === "light" ? lightTheme : darkTheme;
   const createApolloClient = createMyClient();
   return (
     <ApolloProvider client={createApolloClient}>
@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       <WrappedApp pageProps={pageProps} Component={Component} />
-    </Provider >
+    </Provider>
   );
 }
 

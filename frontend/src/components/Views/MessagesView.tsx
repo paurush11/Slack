@@ -1,4 +1,5 @@
 import {
+  GetChannelQuery,
   GetMyMessagesInChannelQuery,
   MeQuery,
 } from "@/generated/output/graphql";
@@ -7,22 +8,32 @@ import {
   Alert,
   Box,
   Divider,
+  Icon,
+  IconButton,
   Snackbar,
+  Stack,
   Tab,
   Tabs,
   Typography,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import { useSelector } from "react-redux";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+interface MessagesViewProps {}
 
-interface MessagesViewProps {
-  messageData: GetMyMessagesInChannelQuery | undefined;
-}
-
-const MessagesView: React.FC<MessagesViewProps> = ({ messageData }) => {
+const MessagesView: React.FC<MessagesViewProps> = ({}) => {
   const theme = useTheme();
-  const userData: MeQuery | null = useSelector((state: RootState) => state.myData.data);
+  const myMessagesInChannel: GetMyMessagesInChannelQuery | null = useSelector(
+    (state: RootState) => state.myMessages.data,
+  );
+  const userData: MeQuery | null = useSelector(
+    (state: RootState) => state.myData.data,
+  );
+  const channelData: GetChannelQuery | null = useSelector(
+    (state: RootState) => state.myChannelData.data,
+  );
+
   return (
     <Box
       height={"100%"}
@@ -37,9 +48,6 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messageData }) => {
         Chats
       </Typography>
       <Divider />
-      <Typography key={"FindMembersInChannel"} variant="h4" pt={2}>
-        Search for members in channels
-      </Typography>
 
       {/* <Box display={"flex"} flexGrow={1} justifyContent={"center"} p={2}>
                 <Tabs variant='fullWidth'>
@@ -49,15 +57,63 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messageData }) => {
                 </Tabs>
             </Box> */}
 
-      {messageData?.getMyMessagesInChannel.map((message) => {
-        return (
-          <Box>
-            {message._id}
-            {message.sender._id}
-            {message.receiver._id}
-          </Box>
-        );
-      })}
+      <Stack direction={"column"} gap={2}>
+        {userData &&
+          channelData &&
+          (channelData as GetChannelQuery).getChannel.members
+            ?.filter(
+              (member) => member._id !== (userData as MeQuery).Me?.user?._id,
+            )
+            .map((member) => (
+              <Box
+                display={"flex"}
+                justifyContent={"start"}
+                borderColor={"black"}
+                sx={{
+                  borderBottom: { xs: "1px solid", md: "2px solid" },
+                }}
+                alignItems={"center"}
+                p={2}
+                borderRadius={4}
+              >
+                <IconButton size="small">
+                  <AccountCircleIcon
+                    style={{
+                      color: theme.palette.primary[200],
+                    }}
+                  />
+                </IconButton>
+                <Stack
+                  display={"flex"}
+                  flexDirection={"row"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
+                  <Typography pl={2}>{member.firstName}</Typography>
+                  <Typography pl={1}>{member.lastName}</Typography>
+                </Stack>
+              </Box>
+            ))}
+      </Stack>
+
+      {userData &&
+        myMessagesInChannel &&
+        (
+          myMessagesInChannel as GetMyMessagesInChannelQuery
+        )?.getMyMessagesInChannel
+          .filter(
+            (message) =>
+              message.sender._id !== (userData as MeQuery).Me?.user?._id,
+          )
+          .map((message) => {
+            return (
+              <Box>
+                {message._id}
+                {message.sender._id}
+                {message.receiver._id}
+              </Box>
+            );
+          })}
     </Box>
   );
 };

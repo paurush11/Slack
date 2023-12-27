@@ -27,7 +27,7 @@ const validationSchema = yup
     password: yup.string().required("Password is required"),
   })
   .required();
-export const LoginController: React.FC<LoginControllerProps> = ({}) => {
+export const LoginController: React.FC<LoginControllerProps> = ({ }) => {
   const defaultValues = {
     emailOrUsernameOrPhone: "",
     password: "",

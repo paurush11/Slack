@@ -1,0 +1,33 @@
+mutation CreateMessage($message: String!, $receiverId: String!, $channelId: String!) {
+  createMessage(message: $message, receiverId: $receiverId, channelId: $channelId) {
+    success
+    data {
+      senderId
+    receiverID
+    TextMessage
+    _id
+    channelID
+    receiverSeen
+    sender {
+      firstName
+      lastName
+      username
+    }
+    receiver {
+      username
+      lastName
+      firstName
+    }
+  }
+    notFoundError {
+      message
+      item
+    }
+    resolverError {
+      message
+      code
+      detail
+      name
+    }
+  }
+}

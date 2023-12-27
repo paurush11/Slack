@@ -6,6 +6,10 @@ query GetChannel($channelId: String!) {
     Description
     members {
       _id
+      username
+      email
+      firstName
+      lastName
     }
     posts {
       _id

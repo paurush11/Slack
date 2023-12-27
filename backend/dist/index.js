@@ -3,20 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const cors_1 = __importDefault(require("cors"));
+const express_1 = __importDefault(require("express"));
 const data_source_1 = require("./data-source");
 const commonFunctions_1 = require("./utils/commonFunctions");
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
 const apollo_server_express_1 = require("apollo-server-express");
-const constants_1 = require("./utils/constants");
-const type_graphql_1 = require("type-graphql");
-const members_1 = require("./resolvers/members");
-const ioredis_1 = require("ioredis");
-const channels_1 = require("./resolvers/channels");
-const messages_1 = require("./resolvers/messages");
 const express_session_1 = __importDefault(require("express-session"));
-const posts_1 = require("./resolvers/posts");
-const vote_1 = require("./resolvers/vote");
+const ws_1 = require("graphql-ws/lib/use/ws");
+const http_1 = require("http");
+const ioredis_1 = require("ioredis");
+const type_graphql_1 = require("type-graphql");
+const ws_2 = require("ws");
+const constants_1 = require("./utils/constants");
+const resolvers_1 = __importDefault(require("./resolvers"));
 require("dotenv").config();
 const main = async () => {
     data_source_1.AppDataSource.initialize()
@@ -51,27 +50,43 @@ const main = async () => {
         secret: "yourSecretKey",
         resave: false,
     }));
+    const schema = await (0, type_graphql_1.buildSchema)({
+        validate: false,
+        resolvers: resolvers_1.default
+    });
+    const httpServer = (0, http_1.createServer)(app);
+    const wsServer = new ws_2.WebSocketServer({
+        server: httpServer,
+        path: '/subscriptions',
+    });
+    const serverCleanup = (0, ws_1.useServer)({ schema }, wsServer);
     const apolloServer = new apollo_server_express_1.ApolloServer({
         context: ({ req, res }) => ({
             req,
             res,
             redis,
         }),
-        schema: await (0, type_graphql_1.buildSchema)({
-            validate: false,
-            resolvers: [
-                members_1.memberResolver,
-                channels_1.ChannelResolver,
-                messages_1.MessageResolver,
-                posts_1.PostResolver,
-                vote_1.VoteResolver,
-            ],
-        }),
+        schema: schema,
+        plugins: [
+            {
+                async serverWillStart() {
+                    return {
+                        async drainServer() {
+                            await serverCleanup.dispose();
+                        },
+                    };
+                },
+            },
+        ],
     });
     await apolloServer.start();
     apolloServer.applyMiddleware({ app, cors: false });
     app.listen(4000, () => {
-        console.log("server started on localhost:4000");
+        console.log("server started on localhost:4001");
+    });
+    httpServer.listen(4001, () => {
+        console.log(`🚀 Server ready at http://localhost:4001${apolloServer.graphqlPath}`);
+        console.log(`🚀 Subscriptions ready at ws://localhost:4001${apolloServer.graphqlPath}`);
     });
 };
 main().catch((error) => (0, commonFunctions_1.catchError)(error));

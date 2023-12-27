@@ -4,10 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Navbar } from "../common/Navbar";
 import Wrapper from "./wrapper";
 
-const Layout: React.FC<LayoutProps> = ({
-  variant,
-  children,
-}) => {
+const Layout: React.FC<LayoutProps> = ({ variant, children }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const navbarRef = useRef<HTMLDivElement>(null);
 
@@ -19,10 +16,7 @@ const Layout: React.FC<LayoutProps> = ({
   }, []);
   return (
     <Box display="flex" flexDirection="column" minHeight={"100vh"}>
-      <Navbar
-    
-        
-      ></Navbar>
+      <Navbar></Navbar>
       <Wrapper variant={variant} paddingSize={navbarHeight}>
         {children}{" "}
       </Wrapper>

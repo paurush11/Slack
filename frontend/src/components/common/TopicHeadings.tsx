@@ -13,7 +13,6 @@ const TopicHeadings: React.FC<TopicHeadingsProps> = ({
   onClickAdd,
   onClickDropdown,
 }) => {
-  const [data, setData] = useState();
   if (headingName === "You") {
     /// have all posts
     /// saved

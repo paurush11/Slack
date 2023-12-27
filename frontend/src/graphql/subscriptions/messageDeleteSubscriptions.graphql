@@ -1,0 +1,20 @@
+subscription MessageDeleted($channelId: String!) {
+  messageDeleted(channelId: $channelId) {
+     senderId
+    receiverID
+    TextMessage
+    _id
+    channelID
+    receiverSeen
+    sender {
+      firstName
+      lastName
+      username
+    }
+    receiver {
+      username
+      lastName
+      firstName
+    }
+  }
+}
