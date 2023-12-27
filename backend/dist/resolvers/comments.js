@@ -13,20 +13,13 @@ exports.CommentResolver = void 0;
 const type_graphql_1 = require("type-graphql");
 const exports_1 = require("./exports");
 let CommentResolver = class CommentResolver {
-    async getAllPostComments() {
-    }
-    async getAllReplies() {
-    }
-    async createCommentOnPost() {
-    }
-    async editComment() {
-    }
-    async createThread() {
-    }
-    async deleteThread() {
-    }
-    async deleteComment() {
-    }
+    async getAllPostComments() { }
+    async getAllReplies() { }
+    async createCommentOnPost() { }
+    async editComment() { }
+    async createThread() { }
+    async deleteThread() { }
+    async deleteComment() { }
 };
 exports.CommentResolver = CommentResolver;
 __decorate([

@@ -2,6 +2,8 @@ import {
   Arg,
   Ctx,
   Mutation,
+  PubSub,
+  PubSubEngine,
   Query,
   Resolver,
   Root,
@@ -22,28 +24,29 @@ import {
 } from "../utils/commonFunctions";
 import { Member } from "../entity/Member";
 import { Channel } from "../entity/Channel";
-import { PubSub } from "graphql-subscriptions";
+
 import { myContext } from "../utils/myContext";
 
-const pubSub = new PubSub();
 @Resolver()
 export class MessageResolver {
   /// This is for sockets
   ///Message added
   @Subscription(() => DirectMessage, {
     topics: MESSAGE_ADDED_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId
+    filter: ({ payload, args }) => payload.channelID === args.channelId,
   })
   async newMessage(
     @Root() messagePayload: DirectMessage,
-    @Arg("channelId", () => String) channelId: string, /// for filtering
+    @Arg("channelId", () => String) channelId: string,
   ): Promise<DirectMessage> {
+    console.log('Subscription payload received:', messagePayload);
     return messagePayload;
   }
+
   ///Message updated
   @Subscription(() => DirectMessage, {
     topics: MESSAGE_UPDATED_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId
+    filter: ({ payload, args }) => payload.channelID === args.channelId,
   })
   async messageUpdated(
     @Root() updatePayload: DirectMessage,
@@ -54,7 +57,7 @@ export class MessageResolver {
   ///Message deleted
   @Subscription(() => DirectMessage, {
     topics: MESSAGE_DELETED_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId
+    filter: ({ payload, args }) => payload.channelID === args.channelId,
   })
   async messageDeleted(
     @Root() deletePayload: DirectMessage,
@@ -65,7 +68,7 @@ export class MessageResolver {
   ///Message seen
   @Subscription(() => DirectMessage, {
     topics: MESSAGE_SEEN_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId
+    filter: ({ payload, args }) => payload.channelID === args.channelId,
   })
   async messageSeen(
     @Root() deletePayload: DirectMessage,
@@ -151,16 +154,17 @@ export class MessageResolver {
         await DirectMessage.delete({
           _id: msg._id,
         });
-      })
+      });
 
       return true;
     } catch (e) {
       return throwResolverError(e);
-      console.error(e)
+      console.error(e);
     }
   }
   @Mutation(() => messageStatus)
   async createMessage(
+    @PubSub() pubSub: PubSubEngine,
     @Arg("channelId", () => String) channelId: string,
     @Arg("receiverId", () => String) receiverId: string,
     @Ctx() ctx: myContext,
@@ -186,24 +190,21 @@ export class MessageResolver {
         const notFoundError = throwNotFoundError("sender");
         return {
           success: false,
-          notFoundError: [notFoundError]
+          notFoundError: [notFoundError],
         } as messageStatus;
       }
       if (!channel) {
-
         const notFoundError = throwNotFoundError("channel");
         return {
           success: false,
-          notFoundError: [notFoundError]
+          notFoundError: [notFoundError],
         } as messageStatus;
-
       }
       if (!receiver) {
-
         const notFoundError = throwNotFoundError("receiver");
         return {
           success: false,
-          notFoundError: [notFoundError]
+          notFoundError: [notFoundError],
         } as messageStatus;
       }
 
@@ -218,18 +219,27 @@ export class MessageResolver {
       });
 
       await message.save();
-      await pubSub.publish(MESSAGE_ADDED_TOPIC, { newMessage: message });
-      console.log(message);
+      const savedMessage = await DirectMessage.findOne({
+        where: {
+          channelID: channelId,
+          senderId: ctx.req.session.user,
+          receiverID: receiverId,
+          TextMessage: messageText,
+        },
+      });
+
+      await pubSub.publish(MESSAGE_ADDED_TOPIC, savedMessage);
+
       return {
-        success: false,
-        data: message
+        success: true,
+        data: message,
       } as messageStatus;
     } catch (e) {
       const resolverError = throwResolverError(e);
       return {
         success: false,
-        resolverError: [resolverError]
-      } as messageStatus
+        resolverError: [resolverError],
+      } as messageStatus;
     }
   }
 
@@ -237,6 +247,7 @@ export class MessageResolver {
   async updateMessage(
     @Arg("channelId", () => String) messageId: string,
     @Arg("message", () => String) messageText: string,
+    @PubSub() pubSub: PubSubEngine,
   ) {
     try {
       const message = await DirectMessage.findOne({
@@ -258,7 +269,7 @@ export class MessageResolver {
       }
       message.TextMessage = messageText;
       await message.save();
-      await pubSub.publish(MESSAGE_UPDATED_TOPIC, { messageUpdated: message });
+      await pubSub.publish(MESSAGE_UPDATED_TOPIC, message);
 
       return {
         success: true,
@@ -270,7 +281,10 @@ export class MessageResolver {
   }
 
   @Mutation(() => messageStatus || resolverError)
-  async deleteMessage(@Arg("id", () => String) message_Id: string) {
+  async deleteMessage(
+    @Arg("id", () => String) message_Id: string,
+    @PubSub() pubSub: PubSubEngine,
+  ) {
     try {
       const message = await DirectMessage.findOne({
         where: {
@@ -292,7 +306,7 @@ export class MessageResolver {
       await DirectMessage.delete({
         _id: message_Id,
       });
-      await pubSub.publish(MESSAGE_DELETED_TOPIC, { messageDeleted: message });
+      await pubSub.publish(MESSAGE_DELETED_TOPIC, message);
 
       return {
         success: true,
@@ -304,7 +318,10 @@ export class MessageResolver {
   }
 
   @Mutation(() => messageStatus || resolverError)
-  async seeMessage(@Arg("id", () => String) message_Id: string) {
+  async seeMessage(
+    @Arg("id", () => String) message_Id: string,
+    @PubSub() pubSub: PubSubEngine,
+  ) {
     try {
       const message = await DirectMessage.findOne({
         where: {
@@ -336,7 +353,7 @@ export class MessageResolver {
       }
       message.receiverSeen = true;
       await message.save();
-      await pubSub.publish(MESSAGE_SEEN_TOPIC, { messageSeen: message });
+      await pubSub.publish(MESSAGE_SEEN_TOPIC, message);
       return {
         success: true,
         data: message,

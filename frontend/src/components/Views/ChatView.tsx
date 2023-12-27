@@ -1,13 +1,13 @@
-import { CreateMessageMutation, MessageSeenSubscriptionSubscription, MessageUpdatedSubscriptionSubscription, NewMessageSubscriptionSubscription } from '@/generated/output/graphql';
+import { CreateMessageMutation, MessageSeenSubscriptionDocument, MessageSeenSubscriptionSubscription, MessageUpdatedSubscriptionDocument, MessageUpdatedSubscriptionSubscription, NewMessageSubscriptionDocument, NewMessageSubscriptionSubscription } from '@/generated/output/graphql';
 import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AccountCircleSharpIcon from '@material-ui/icons/AccountCircleSharp';
 import { Message } from '@/interfaces/allProps';
+import { RootState } from '@/store/store';
+import { useSubscription } from '@apollo/client';
+import { useSelector } from 'react-redux';
 
 interface ChatViewProps {
-    seenMessages: MessageSeenSubscriptionSubscription | undefined
-    updatedMessages: MessageUpdatedSubscriptionSubscription | undefined
-    newMessages: NewMessageSubscriptionSubscription | undefined
     messageField: React.JSX.Element
     submitButton: React.JSX.Element
     resetButton: React.JSX.Element
@@ -18,8 +18,42 @@ interface ChatViewProps {
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>
 }
 
-const ChatView: React.FC<ChatViewProps> = ({ seenMessages, updatedMessages, newMessages, messageField, submitButton, resetButton, responseErrors, onSubmit, data, messages }) => {
+const ChatView: React.FC<ChatViewProps> = ({ messageField, submitButton, resetButton, responseErrors, onSubmit, data, messages, setMessages }) => {
     const theme = useTheme();
+    const channelId = useSelector((state: RootState) => state.myData.channelId);
+    console.log(channelId)
+
+    const { data: newMessages, loading: newMessagesLoading, error: newMessagesError } = useSubscription(NewMessageSubscriptionDocument, {
+        variables: { channelId: channelId }
+    });
+    const { data: updatedMessages, loading: updatedMessagesLoading, error: updatedMessagesError } = useSubscription(MessageUpdatedSubscriptionDocument, {
+        variables: { channelId: channelId }
+    });
+    const { data: seenMessages, loading: seenMessagesLoading, error: seenMessagesError } = useSubscription(MessageSeenSubscriptionDocument, {
+        variables: { channelId: channelId }
+    });
+
+    console.log(newMessages)
+    useEffect(() => {
+        if (!newMessagesLoading && newMessages) {
+            console.log("here")
+            setMessages(prevMessages => [...prevMessages, newMessages.newMessage]);
+        }
+    }, [newMessages])
+    useEffect(() => {
+        if (updatedMessages) {
+            setMessages(prevMessages => prevMessages.map(msg =>
+                msg._id === (updatedMessages.messageUpdated as Message)._id ? (updatedMessages.messageUpdated as Message) : msg
+            ));
+        }
+    }, [updatedMessages])
+    useEffect(() => {
+        if (!seenMessagesError && seenMessages) {
+            setMessages(prevMessages => prevMessages.map(msg =>
+                msg._id === seenMessages.messageSeen._id ? { ...msg, receiverSeen: false } : msg
+            ));
+        }
+    }, [seenMessages])
 
     return (
         <Box

@@ -25,26 +25,26 @@ let VoteResolver = class VoteResolver {
         try {
             const post = await Post_1.Post.findOne({
                 where: {
-                    _id: postId
-                }
+                    _id: postId,
+                },
             });
             if (!post) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("post");
                 return {
                     success: false,
-                    error: [notFoundError]
+                    error: [notFoundError],
                 };
             }
             return {
                 success: true,
-                votes: post.votes
+                votes: post.votes,
             };
         }
         catch (e) {
             const resolverError = (0, commonFunctions_1.throwResolverError)(e);
             return {
                 success: false,
-                resolverError: [resolverError]
+                resolverError: [resolverError],
             };
         }
     }
@@ -52,26 +52,26 @@ let VoteResolver = class VoteResolver {
         try {
             const comment = await Comment_1.Comment.findOne({
                 where: {
-                    _id: commentId
-                }
+                    _id: commentId,
+                },
             });
             if (!comment) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("comment");
                 return {
                     success: false,
-                    error: [notFoundError]
+                    error: [notFoundError],
                 };
             }
             return {
                 success: true,
-                votes: comment.votes
+                votes: comment.votes,
             };
         }
         catch (e) {
             const resolverError = (0, commonFunctions_1.throwResolverError)(e);
             return {
                 success: false,
-                resolverError: [resolverError]
+                resolverError: [resolverError],
             };
         }
     }
@@ -79,26 +79,26 @@ let VoteResolver = class VoteResolver {
         try {
             const user = await Member_1.Member.findOne({
                 where: {
-                    _id: ctx.req.session.user
-                }
+                    _id: ctx.req.session.user,
+                },
             });
             if (!user) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("user");
                 return {
                     success: false,
-                    error: [notFoundError]
+                    error: [notFoundError],
                 };
             }
             return {
                 success: true,
-                votes: user.votes
+                votes: user.votes,
             };
         }
         catch (e) {
             const resolverError = (0, commonFunctions_1.throwResolverError)(e);
             return {
                 success: false,
-                resolverError: [resolverError]
+                resolverError: [resolverError],
             };
         }
     }
@@ -106,31 +106,32 @@ let VoteResolver = class VoteResolver {
         try {
             const post = await Post_1.Post.findOne({
                 where: {
-                    _id: postId
-                }
+                    _id: postId,
+                },
             });
             if (!post) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("post");
                 return {
                     success: false,
-                    error: [notFoundError]
+                    error: [notFoundError],
                 };
             }
             const vote = await Vote_1.Vote.findOne({
                 where: {
                     postId: postId,
-                    memberId: ctx.req.session.user
+                    memberId: ctx.req.session.user,
                 },
-                relations: ["member", "post"]
+                relations: ["member", "post"],
             });
             if (vote) {
-                if (vote.value === 1 && isUpvote || vote.value === -1 && !isUpvote) {
+                if ((vote.value === 1 && isUpvote) ||
+                    (vote.value === -1 && !isUpvote)) {
                     await Vote_1.Vote.delete({
-                        _id: vote._id
+                        _id: vote._id,
                     });
                     return {
                         success: true,
-                        vote: vote
+                        vote: vote,
                     };
                 }
                 else {
@@ -143,7 +144,7 @@ let VoteResolver = class VoteResolver {
                     await vote.save();
                     return {
                         success: true,
-                        vote: vote
+                        vote: vote,
                     };
                 }
             }
@@ -152,12 +153,12 @@ let VoteResolver = class VoteResolver {
                 const vote = await Vote_1.Vote.create({
                     value: value,
                     memberId: ctx.req.session.user,
-                    postId: postId
+                    postId: postId,
                 });
                 await vote.save();
                 return {
                     success: true,
-                    vote: vote
+                    vote: vote,
                 };
             }
         }
@@ -165,7 +166,7 @@ let VoteResolver = class VoteResolver {
             const resolverError = (0, commonFunctions_1.throwResolverError)(e);
             return {
                 success: false,
-                resolverError: [resolverError]
+                resolverError: [resolverError],
             };
         }
     }
@@ -173,31 +174,32 @@ let VoteResolver = class VoteResolver {
         try {
             const comment = await Post_1.Post.findOne({
                 where: {
-                    _id: commentId
-                }
+                    _id: commentId,
+                },
             });
             if (!comment) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("post");
                 return {
                     success: false,
-                    error: [notFoundError]
+                    error: [notFoundError],
                 };
             }
             const vote = await Vote_1.Vote.findOne({
                 where: {
                     commentId: commentId,
-                    memberId: ctx.req.session.user
+                    memberId: ctx.req.session.user,
                 },
-                relations: ["member", "comment"]
+                relations: ["member", "comment"],
             });
             if (vote) {
-                if (vote.value === 1 && isUpvote || vote.value === -1 && !isUpvote) {
+                if ((vote.value === 1 && isUpvote) ||
+                    (vote.value === -1 && !isUpvote)) {
                     await Vote_1.Vote.delete({
-                        _id: vote._id
+                        _id: vote._id,
                     });
                     return {
                         success: true,
-                        vote: vote
+                        vote: vote,
                     };
                 }
                 else {
@@ -210,7 +212,7 @@ let VoteResolver = class VoteResolver {
                     await vote.save();
                     return {
                         success: true,
-                        vote: vote
+                        vote: vote,
                     };
                 }
             }
@@ -219,12 +221,12 @@ let VoteResolver = class VoteResolver {
                 const vote = await Vote_1.Vote.create({
                     value: value,
                     memberId: ctx.req.session.user,
-                    commentId: commentId
+                    commentId: commentId,
                 });
                 await vote.save();
                 return {
                     success: true,
-                    vote: vote
+                    vote: vote,
                 };
             }
         }
@@ -232,7 +234,7 @@ let VoteResolver = class VoteResolver {
             const resolverError = (0, commonFunctions_1.throwResolverError)(e);
             return {
                 success: false,
-                resolverError: [resolverError]
+                resolverError: [resolverError],
             };
         }
     }
@@ -240,27 +242,27 @@ let VoteResolver = class VoteResolver {
         try {
             const vote = await Vote_1.Vote.findOne({
                 where: {
-                    _id: voteId
+                    _id: voteId,
                 },
-                relations: ["member", "comment", "post"]
+                relations: ["member", "comment", "post"],
             });
             if (!vote) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("vote");
                 return {
                     success: false,
-                    error: [notFoundError]
+                    error: [notFoundError],
                 };
             }
             if (vote._id === ctx.req.session.user) {
                 await Vote_1.Vote.delete({
-                    _id: vote._id
+                    _id: vote._id,
                 });
             }
             else {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("user/creator");
                 return {
                     success: false,
-                    error: [notFoundError]
+                    error: [notFoundError],
                 };
             }
         }
@@ -268,7 +270,7 @@ let VoteResolver = class VoteResolver {
             const resolverError = (0, commonFunctions_1.throwResolverError)(e);
             return {
                 success: false,
-                resolverError: [resolverError]
+                resolverError: [resolverError],
             };
         }
     }

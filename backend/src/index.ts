@@ -3,32 +3,34 @@ import express from "express";
 import { AppDataSource } from "./data-source";
 import { catchError } from "./utils/commonFunctions";
 // import Redis from "ioredis";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import session from "express-session";
-import { useServer } from 'graphql-ws/lib/use/ws';
-import { createServer } from 'http';
+import { useServer } from "graphql-ws/lib/use/ws";
+import { createServer } from "http";
 import { Redis } from "ioredis";
 import { buildSchema } from "type-graphql";
-import { WebSocketServer } from 'ws';
-import { __prod__ } from "./utils/constants";
-import { myContext } from "./utils/myContext";
-
+import { WebSocketServer } from "ws";
 import resolvers from "./resolvers";
+import { __prod__ } from "./utils/constants";
+import { printSchema } from "graphql";
 require("dotenv").config();
+
 const main = async () => {
   AppDataSource.initialize()
     .then(() => {
       console.log("Data Source has been Initialized");
     })
     .catch((error) => catchError(error));
-  const app = express();
 
-  app.use(
-    cors({
-      origin: ["http://localhost:3000", "https://studio.apollographql.com"],
-      credentials: true,
-    }),
-  );
+  const schema = await buildSchema({
+    validate: false,
+    resolvers: resolvers,
+  });
+
+  const app = express();
+  const httpServer = createServer(app);
 
   app.set("trust proxy", !__prod__);
   app.set("Access-Control-Allow-Credentials", true);
@@ -40,7 +42,35 @@ const main = async () => {
     disableTouch: true,
   });
 
+  const wsServer = new WebSocketServer({
+    // This is the `httpServer` we created in a previous step.
+    server: httpServer,
+    // Pass a different path here if app.use
+    // serves expressMiddleware at a different path
+    path: "/subscriptions",
+  });
+  const serverCleanup = useServer({ schema }, wsServer);
+
+  const apolloServer = new ApolloServer({
+    schema: schema,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
+  });
+
+  await apolloServer.start();
+
   app.use(
+    "/graphql",
     session({
       name: process.env.COOKIE_NAME as string, // session cookie name
       store: redisStore,
@@ -55,55 +85,19 @@ const main = async () => {
       secret: "yourSecretKey", // replace with your secret key
       resave: false,
     }),
+    cors({
+      origin: ["http://localhost:3000", "https://studio.apollographql.com"],
+      credentials: true,
+    }),
+    express.json(),
+    expressMiddleware(apolloServer, {
+      context: async ({ req, res }) => ({ req, res, redis }),
+    }),
   );
 
-  const schema = await buildSchema({
-    validate: false,
-    resolvers: resolvers
-  })
-  const httpServer = createServer(app);
-  const wsServer = new WebSocketServer({
-    // This is the `httpServer` we created in a previous step.
-    server: httpServer,
-    // Pass a different path here if app.use
-    // serves expressMiddleware at a different path
-    path: '/subscriptions',
+  httpServer.listen(4000, () => {
+    console.log(`Server is now running on http://localhost:${4000}/graphql`);
   });
-  const serverCleanup = useServer({ schema }, wsServer);
-  const apolloServer = new ApolloServer({
-    context: ({ req, res }): myContext => ({
-      req,
-      res,
-      redis,
-    }),
-    schema: schema,
-    plugins: [
-      // Proper shutdown for the HTTP server.
-      // Proper shutdown for the WebSocket server.
-      {
-        async serverWillStart() {
-          return {
-            async drainServer() {
-              await serverCleanup.dispose();
-            },
-          };
-        },
-      },
-    ],
-  });
-
-  await apolloServer.start();
-  apolloServer.applyMiddleware({ app, cors: false });
-  app.listen(4000, () => {
-    console.log("server started on localhost:4001");
-  });
-  httpServer.listen(4001, () => {
-    console.log(`🚀 Server ready at http://localhost:4001${apolloServer.graphqlPath}`);
-    console.log(`🚀 Subscriptions ready at ws://localhost:4001${apolloServer.graphqlPath}`);
-
-  })
 };
 
 main().catch((error) => catchError(error));
-
-

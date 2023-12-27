@@ -19,10 +19,9 @@ const exports_1 = require("./exports");
 const commonFunctions_1 = require("../utils/commonFunctions");
 const Member_1 = require("../entity/Member");
 const Channel_1 = require("../entity/Channel");
-const graphql_subscriptions_1 = require("graphql-subscriptions");
-const pubSub = new graphql_subscriptions_1.PubSub();
 let MessageResolver = class MessageResolver {
     async newMessage(messagePayload, channelId) {
+        console.log('Subscription payload received:', messagePayload);
         return messagePayload;
     }
     async messageUpdated(updatePayload, channelId) {
@@ -101,7 +100,7 @@ let MessageResolver = class MessageResolver {
             console.error(e);
         }
     }
-    async createMessage(channelId, receiverId, ctx, messageText) {
+    async createMessage(pubSub, channelId, receiverId, ctx, messageText) {
         try {
             const sender = await Member_1.Member.findOne({
                 where: {
@@ -122,21 +121,21 @@ let MessageResolver = class MessageResolver {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("sender");
                 return {
                     success: false,
-                    notFoundError: [notFoundError]
+                    notFoundError: [notFoundError],
                 };
             }
             if (!channel) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("channel");
                 return {
                     success: false,
-                    notFoundError: [notFoundError]
+                    notFoundError: [notFoundError],
                 };
             }
             if (!receiver) {
                 const notFoundError = (0, commonFunctions_1.throwNotFoundError)("receiver");
                 return {
                     success: false,
-                    notFoundError: [notFoundError]
+                    notFoundError: [notFoundError],
                 };
             }
             const message = await DirectMessage_1.DirectMessage.create({
@@ -149,22 +148,29 @@ let MessageResolver = class MessageResolver {
                 channel: channel,
             });
             await message.save();
-            await pubSub.publish(exports_1.MESSAGE_ADDED_TOPIC, { newMessage: message });
-            console.log(message);
+            const savedMessage = await DirectMessage_1.DirectMessage.findOne({
+                where: {
+                    channelID: channelId,
+                    senderId: ctx.req.session.user,
+                    receiverID: receiverId,
+                    TextMessage: messageText,
+                },
+            });
+            await pubSub.publish(exports_1.MESSAGE_ADDED_TOPIC, savedMessage);
             return {
-                success: false,
-                data: message
+                success: true,
+                data: message,
             };
         }
         catch (e) {
             const resolverError = (0, commonFunctions_1.throwResolverError)(e);
             return {
                 success: false,
-                resolverError: [resolverError]
+                resolverError: [resolverError],
             };
         }
     }
-    async updateMessage(messageId, messageText) {
+    async updateMessage(messageId, messageText, pubSub) {
         try {
             const message = await DirectMessage_1.DirectMessage.findOne({
                 where: {
@@ -185,7 +191,7 @@ let MessageResolver = class MessageResolver {
             }
             message.TextMessage = messageText;
             await message.save();
-            await pubSub.publish(exports_1.MESSAGE_UPDATED_TOPIC, { messageUpdated: message });
+            await pubSub.publish(exports_1.MESSAGE_UPDATED_TOPIC, message);
             return {
                 success: true,
                 data: message,
@@ -195,7 +201,7 @@ let MessageResolver = class MessageResolver {
             return (0, commonFunctions_1.throwResolverError)(e);
         }
     }
-    async deleteMessage(message_Id) {
+    async deleteMessage(message_Id, pubSub) {
         try {
             const message = await DirectMessage_1.DirectMessage.findOne({
                 where: {
@@ -217,7 +223,7 @@ let MessageResolver = class MessageResolver {
             await DirectMessage_1.DirectMessage.delete({
                 _id: message_Id,
             });
-            await pubSub.publish(exports_1.MESSAGE_DELETED_TOPIC, { messageDeleted: message });
+            await pubSub.publish(exports_1.MESSAGE_DELETED_TOPIC, message);
             return {
                 success: true,
                 data: message,
@@ -227,7 +233,7 @@ let MessageResolver = class MessageResolver {
             return (0, commonFunctions_1.throwResolverError)(e);
         }
     }
-    async seeMessage(message_Id) {
+    async seeMessage(message_Id, pubSub) {
         try {
             const message = await DirectMessage_1.DirectMessage.findOne({
                 where: {
@@ -259,7 +265,7 @@ let MessageResolver = class MessageResolver {
             }
             message.receiverSeen = true;
             await message.save();
-            await pubSub.publish(exports_1.MESSAGE_SEEN_TOPIC, { messageSeen: message });
+            await pubSub.publish(exports_1.MESSAGE_SEEN_TOPIC, message);
             return {
                 success: true,
                 data: message,
@@ -274,7 +280,7 @@ exports.MessageResolver = MessageResolver;
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_ADDED_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId
+        filter: ({ payload, args }) => payload.channelID === args.channelId,
     }),
     __param(0, (0, type_graphql_1.Root)()),
     __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
@@ -285,7 +291,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_UPDATED_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId
+        filter: ({ payload, args }) => payload.channelID === args.channelId,
     }),
     __param(0, (0, type_graphql_1.Root)()),
     __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
@@ -296,7 +302,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_DELETED_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId
+        filter: ({ payload, args }) => payload.channelID === args.channelId,
     }),
     __param(0, (0, type_graphql_1.Root)()),
     __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
@@ -307,7 +313,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
         topics: exports_1.MESSAGE_SEEN_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId
+        filter: ({ payload, args }) => payload.channelID === args.channelId,
     }),
     __param(0, (0, type_graphql_1.Root)()),
     __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
@@ -362,34 +368,38 @@ __decorate([
 ], MessageResolver.prototype, "deleteMessageTable", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => exports_1.messageStatus),
-    __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __param(1, (0, type_graphql_1.Arg)("receiverId", () => String)),
-    __param(2, (0, type_graphql_1.Ctx)()),
-    __param(3, (0, type_graphql_1.Arg)("message", () => String)),
+    __param(0, (0, type_graphql_1.PubSub)()),
+    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
+    __param(2, (0, type_graphql_1.Arg)("receiverId", () => String)),
+    __param(3, (0, type_graphql_1.Ctx)()),
+    __param(4, (0, type_graphql_1.Arg)("message", () => String)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object, String]),
+    __metadata("design:paramtypes", [type_graphql_1.PubSubEngine, String, String, Object, String]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "createMessage", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => exports_1.messageStatus || exports_1.resolverError),
     __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
     __param(1, (0, type_graphql_1.Arg)("message", () => String)),
+    __param(2, (0, type_graphql_1.PubSub)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, type_graphql_1.PubSubEngine]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "updateMessage", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => exports_1.messageStatus || exports_1.resolverError),
     __param(0, (0, type_graphql_1.Arg)("id", () => String)),
+    __param(1, (0, type_graphql_1.PubSub)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, type_graphql_1.PubSubEngine]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "deleteMessage", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => exports_1.messageStatus || exports_1.resolverError),
     __param(0, (0, type_graphql_1.Arg)("id", () => String)),
+    __param(1, (0, type_graphql_1.PubSub)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, type_graphql_1.PubSubEngine]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "seeMessage", null);
 exports.MessageResolver = MessageResolver = __decorate([

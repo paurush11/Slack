@@ -3,41 +3,20 @@ import { commentStatus, resolverError } from "./exports";
 
 @Resolver()
 export class CommentResolver {
+  @Query(() => commentStatus)
+  async getAllPostComments() {}
+  @Query(() => commentStatus)
+  async getAllReplies() {}
+  @Mutation(() => commentStatus)
+  async createCommentOnPost() {}
+  @Mutation(() => commentStatus)
+  async editComment() {}
 
-    @Query(() => commentStatus)
-    async getAllPostComments(
+  @Mutation(() => commentStatus)
+  async createThread() {}
 
-    ) {
-
-    }
-    @Query(() => commentStatus)
-    async getAllReplies(
-
-    ) {
-
-    }
-    @Mutation(() => commentStatus)
-    async createCommentOnPost() {
-
-    }
-    @Mutation(() => commentStatus)
-    async editComment() {
-
-    }
-
-    @Mutation(() => commentStatus)
-    async createThread() {
-
-    }
-
-    @Mutation(() => Boolean || resolverError)
-    async deleteThread() {
-
-    }
-    @Mutation(() => Boolean || resolverError)
-    async deleteComment() {
-
-    }
-
-
+  @Mutation(() => Boolean || resolverError)
+  async deleteThread() {}
+  @Mutation(() => Boolean || resolverError)
+  async deleteComment() {}
 }

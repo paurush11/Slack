@@ -113,11 +113,11 @@ export class memberResolver {
     const user = await Member.findOne({
       where: usernameOrEmail.includes("@")
         ? {
-          email: usernameOrEmail,
-        }
+            email: usernameOrEmail,
+          }
         : {
-          username: usernameOrEmail,
-        },
+            username: usernameOrEmail,
+          },
       relations: [
         "channels",
         "messagesSent",

@@ -141,5 +141,5 @@ export {
   postStatus,
   userStatus,
   voteStatus,
-  commentStatus
+  commentStatus,
 };

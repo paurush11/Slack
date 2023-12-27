@@ -211,15 +211,14 @@ export class PostResolver {
   @Mutation(() => postStatus)
   async deletePost(
     @Arg("postId", () => String) postId: string,
-    @Ctx() ctx: myContext
+    @Ctx() ctx: myContext,
   ) {
-
     try {
       const post = await Post.findOne({
         where: {
-          _id: postId
-        }
-      })
+          _id: postId,
+        },
+      });
       const user = Member.findOne({
         where: {
           _id: ctx.req.session.user,
@@ -241,8 +240,8 @@ export class PostResolver {
       }
       if (post.memberId === ctx.req.session.user) {
         await Post.delete({
-          _id: postId
-        })
+          _id: postId,
+        });
         return {
           success: true,
         } as postStatus;
@@ -252,7 +251,6 @@ export class PostResolver {
           success: false,
           error: [errorMsg],
         } as postStatus;
-
       }
     } catch (e) {
       const errorMsg = throwResolverError(e);
@@ -261,8 +259,5 @@ export class PostResolver {
         resolverError: [errorMsg],
       } as postStatus;
     }
-
-
-
   }
 }

@@ -44,37 +44,9 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
     const theme = useTheme();
     const messageReceiver = useSelector((state: RootState) => state.myData.messageReceiverId)
     const channelId = useSelector((state: RootState) => state.myData.channelId);
-    const { data: newMessages, loading: newMessagesLoading, error: newMessagesError } = useSubscription(NewMessageSubscriptionDocument, {
-        variables: { channelId: channelId }
-    });
-    const { data: updatedMessages, loading: updatedMessagesLoading, error: updatedMessagesError } = useSubscription(MessageUpdatedSubscriptionDocument, {
-        variables: { channelId: channelId }
-    });
-    const { data: seenMessages, loading: seenMessagesLoading, error: seenMessagesError } = useSubscription(MessageSeenSubscriptionDocument, {
-        variables: { channelId: channelId }
-    });
+
     const [messages, setMessages] = useState<Message[]>([]);
-    console.log(newMessages)
-    useEffect(() => {
-        if (!newMessagesLoading && newMessages) {
-            console.log("here")
-            setMessages(prevMessages => [...prevMessages, newMessages.newMessage]);
-        }
-    }, [newMessages])
-    useEffect(() => {
-        if (updatedMessages) {
-            setMessages(prevMessages => prevMessages.map(msg =>
-                msg._id === (updatedMessages.messageUpdated as Message)._id ? (updatedMessages.messageUpdated as Message) : msg
-            ));
-        }
-    }, [updatedMessages])
-    useEffect(() => {
-        if (!seenMessagesError && seenMessages) {
-            setMessages(prevMessages => prevMessages.map(msg =>
-                msg._id === seenMessages.messageSeen._id ? { ...msg, receiverSeen: false } : msg
-            ));
-        }
-    }, [seenMessages])
+
 
     const [newMessage, { data, loading, error }] = useMutation(CreateMessageDocument)
     const onSubmit: SubmitHandler<{
@@ -90,8 +62,7 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
                 },
             });
             if (response.data?.createMessage.data?._id) {
-                console.log(response.data?.createMessage.data._id);
-                console.log(response.data.createMessage.data)
+               
                 return;
             } else if (response.data?.createMessage.resolverError) {
                 const val = response.data?.createMessage.resolverError;
@@ -241,9 +212,7 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
 
     return (
         <ChatView
-            seenMessages={seenMessages}
-            newMessages={newMessages}
-            updatedMessages={updatedMessages}
+
             messageField={messageField}
             submitButton={submitButton}
             resetButton={resetButton}

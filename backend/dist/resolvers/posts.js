@@ -195,8 +195,8 @@ let PostResolver = class PostResolver {
         try {
             const post = await Post_1.Post.findOne({
                 where: {
-                    _id: postId
-                }
+                    _id: postId,
+                },
             });
             const user = Member_1.Member.findOne({
                 where: {
@@ -219,7 +219,7 @@ let PostResolver = class PostResolver {
             }
             if (post.memberId === ctx.req.session.user) {
                 await Post_1.Post.delete({
-                    _id: postId
+                    _id: postId,
                 });
                 return {
                     success: true,
