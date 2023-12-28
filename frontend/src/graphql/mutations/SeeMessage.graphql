@@ -1,6 +1,18 @@
-subscription MessageSeenSubscription($channelId: String!) {
-  messageSeen(channelId: $channelId) {
-     _id
+mutation SeeMessage($seeMessageId: String!) {
+  seeMessage(id: $seeMessageId) {
+    success
+    resolverError {
+      message
+      code
+      detail
+      name
+    }
+    notFoundError {
+      message
+      item
+    }
+    data {
+       _id
     sender {
       _id
       lastName
@@ -21,5 +33,6 @@ subscription MessageSeenSubscription($channelId: String!) {
     receiverSeen
     receiverID
     channelID
+    }
   }
 }

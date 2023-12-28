@@ -31,9 +31,6 @@ class SubscriptionResolver {
     async messageDeleted(deletePayload, channelId) {
         return deletePayload;
     }
-    async messageSeen(deletePayload, channelId) {
-        return deletePayload;
-    }
 }
 exports.SubscriptionResolver = SubscriptionResolver;
 __decorate([
@@ -78,15 +75,4 @@ __decorate([
     __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
     __metadata("design:returntype", Promise)
 ], SubscriptionResolver.prototype, "messageDeleted", null);
-__decorate([
-    (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
-        topics: exports_1.MESSAGE_SEEN_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId,
-    }),
-    __param(0, (0, type_graphql_1.Root)()),
-    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
-    __metadata("design:returntype", Promise)
-], SubscriptionResolver.prototype, "messageSeen", null);
 //# sourceMappingURL=subscriptions.js.map

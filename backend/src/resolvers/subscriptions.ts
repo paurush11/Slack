@@ -3,8 +3,8 @@ import { Arg, Root, Subscription } from "type-graphql";
 import { MESSAGE_ADDED_TOPIC, MESSAGE_DELETED_TOPIC, MESSAGE_SEEN_TOPIC, MESSAGE_UPDATED_TOPIC } from "./exports";
 
 export class SubscriptionResolver {
-   ///Message added
-   @Subscription(() => DirectMessage, {
+  ///Message added
+  @Subscription(() => DirectMessage, {
     topics: MESSAGE_ADDED_TOPIC,
     filter: ({ payload, args }) => payload.channelID === args.channelId,
   })
@@ -15,7 +15,8 @@ export class SubscriptionResolver {
     console.log('Subscription payload received:', messagePayload);
     return messagePayload;
   }
-   @Subscription(() => DirectMessage, {
+  ///Message added new
+  @Subscription(() => DirectMessage, {
     topics: MESSAGE_ADDED_TOPIC,
   })
   async newMessageArrived(
@@ -41,17 +42,6 @@ export class SubscriptionResolver {
     filter: ({ payload, args }) => payload.channelID === args.channelId,
   })
   async messageDeleted(
-    @Root() deletePayload: DirectMessage,
-    @Arg("channelId", () => String) channelId: string,
-  ): Promise<DirectMessage> {
-    return deletePayload;
-  }
-  ///Message seen
-  @Subscription(() => DirectMessage, {
-    topics: MESSAGE_SEEN_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId,
-  })
-  async messageSeen(
     @Root() deletePayload: DirectMessage,
     @Arg("channelId", () => String) channelId: string,
   ): Promise<DirectMessage> {

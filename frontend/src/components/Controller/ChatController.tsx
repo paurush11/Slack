@@ -1,10 +1,10 @@
-import { CreateMessageDocument, GetMyMessagesInChannelDocument, MeQuery, MessageSeenSubscriptionDocument, MessageUpdatedSubscriptionDocument, NewMessageSubscriptionDocument, ResolverError } from '@/generated/output/graphql';
+import { CreateMessageDocument, GetMyMessagesInChannelDocument, MeQuery, MessageUpdatedSubscriptionDocument, NewMessageSubscriptionDocument, ResolverError } from '@/generated/output/graphql';
 import { RootState } from '@/store/store';
 import { emptyResolverError } from '@/utils/common';
 import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, IconButton, Stack, TextField, Typography, useTheme } from '@mui/material';
-import router from 'next/router';
+
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
@@ -58,7 +58,6 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(setLastMessageIndex(messages.length - 1));
-
     }, [messages])
     const lastMessageIndex = useSelector((state: RootState) => state.myData.lastMessageIndex)
 
@@ -117,9 +116,7 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
     const { data: updatedMessages, loading: updatedMessagesLoading, error: updatedMessagesError } = useSubscription(MessageUpdatedSubscriptionDocument, {
         variables: { channelId: channelId }
     });
-    const { data: seenMessages, loading: seenMessagesLoading, error: seenMessagesError } = useSubscription(MessageSeenSubscriptionDocument, {
-        variables: { channelId: channelId }
-    });
+
 
     useEffect(() => {
         if (!newMessagesLoading && newMessages) {
@@ -133,13 +130,7 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
             ));
         }
     }, [updatedMessages])
-    useEffect(() => {
-        if (!seenMessagesError && seenMessages) {
-            setMessages(prevMessages => prevMessages.map(msg =>
-                msg._id === seenMessages.messageSeen._id ? { ...msg, receiverSeen: false } : msg
-            ));
-        }
-    }, [seenMessages])
+
 
 
 

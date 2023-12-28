@@ -1,8 +1,10 @@
 import {
+  Exact,
   GetAllMessagesInChannelQuery,
   GetChannelQuery,
   GetMyMessagesInChannelQuery,
   MeQuery,
+  SeeMessageDocument,
 } from "@/generated/output/graphql";
 import { RootState } from "@/store/store";
 import {
@@ -25,9 +27,13 @@ import { Message, User } from "@/interfaces/allProps";
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { setsideLayoutData } from "@/store/sideLayoutDataSlice";
 import { ChatController } from "../Controller/ChatController";
+import { ApolloQueryResult, useMutation } from "@apollo/client";
 interface MessagesViewProps {
   messagesInChannel: Message[]
   setMessagesInChannel: React.Dispatch<React.SetStateAction<Message[]>>
+  refetch: (variables?: Partial<Exact<{
+    channelId: string;
+  }>> | undefined) => Promise<ApolloQueryResult<GetAllMessagesInChannelQuery>>
 }
 type UserStateRole = User & {
   isReceiver: boolean
@@ -39,11 +45,14 @@ type UserState = {
   [key: string]: UserStateRole;
 };
 
-const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessagesInChannel }) => {
+const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessagesInChannel, refetch }) => {
   const theme = useTheme();
   const userData = useSelector((state: RootState) => state.myData.data);
   const [friends, setFriends] = useState<FriendsState>({});
   const [users, setUsers] = useState<UserState>({});
+  const [SeeMessage] = useMutation(SeeMessageDocument)
+
+
 
   useEffect(() => {
     if (messagesInChannel && userData) {
@@ -86,9 +95,6 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
     }
   }, [messagesInChannel, userData]);
 
-
-
-
   const dispatch = useDispatch()
   return (
     <Box
@@ -105,13 +111,13 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
       </Typography>
       <Divider />
 
-      {/* <Box display={"flex"} flexGrow={1} justifyContent={"center"} p={2}>
-                <Tabs variant='fullWidth'>
-                    <Tab label={"My Chats"}></Tab>
-                    <Tab label={"Groups"}></Tab>
-                    <Tab label={"Archived"}></Tab>
-                </Tabs>
-            </Box> */}
+      {/* <Box display={"flex"} justifyContent={"center"} p={2}>
+        <Tabs variant='fullWidth'>
+          <Tab label={"My Chats"}></Tab>
+          <Tab label={"Groups"}></Tab>
+          <Tab label={"Archived"}></Tab>
+        </Tabs>
+      </Box> */}
       <Box maxHeight={"40vh"}>
         <Stack direction={"column"} gap={2}>
           {userData && Object.entries(friends)
@@ -119,10 +125,18 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
               messages = messages.map(msg => ({ ...msg, createdAt: new Date(msg.createdAt).getTime() })).sort((msgA, msgB) => msgA.createdAt - msgB.createdAt).map(msg => ({ ...msg, createdAt: new Date(msg.createdAt).toDateString() }));
 
               const lastMessage = messages[messages.length - 1];
-              const handleBoxClick = () => {
+              const handleBoxClick = async () => {
+
 
                 // Your logic here
                 console.log('Box clicked!');
+                // await SeeMessage({
+                //   variables: {
+                //     seeMessageId: lastMessage._id
+                //   }
+                // });
+                //display the message
+
                 dispatch(
                   setsideLayoutData(
                     <Box
@@ -135,6 +149,10 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
                     </Box>
                   )
                 )
+                //see the message
+
+
+
               };
 
               return (
@@ -145,6 +163,10 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
                   borderColor={"black"}
                   sx={{
                     borderBottom: { xs: "1px solid", md: "2px solid" },
+                    "&:hover": {
+                      backgroundColor: theme.palette.primary["400"],
+
+                    }
                   }}
                   alignItems={"center"}
                   p={2}
@@ -153,7 +175,8 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
                   <IconButton size="small">
                     <AccountCircleIcon
                       style={{
-                        color: theme.palette.primary[200],
+                        color: theme.palette.primary["main"],
+                        height: "max-content"
                       }}
                     />
                   </IconButton>
@@ -163,7 +186,9 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
                       flexDirection={"row"}
                       pt={2}
                     >
-                      <Typography pl={2} variant="h3">{users[friendId].firstName}</Typography>
+                      <Typography pl={2} variant="h3" sx={{
+
+                      }}>{users[friendId].firstName}</Typography>
                       <Typography pl={1} variant="h3">{users[friendId].lastName}</Typography>
 
                     </Stack>
@@ -173,7 +198,7 @@ const MessagesView: React.FC<MessagesViewProps> = ({ messagesInChannel, setMessa
 
                   </Stack>
                   <Box display={"flex"} flexGrow={1} />
-                  {lastMessage.senderId !== (userData as MeQuery).Me?.user?._id && <FiberManualRecordIcon style={{
+                  {lastMessage.senderId !== (userData as MeQuery).Me?.user?._id && !lastMessage.receiverSeen && <FiberManualRecordIcon style={{
                     height: 10
 
                   }} />}

@@ -54,5 +54,5 @@ export const MessagesController: React.FC<MessagesControllerProps> = ({ }) => {
 
 
 
-  return <MessagesView messagesInChannel={messagesInChannel} setMessagesInChannel={setMessagesInChannel} />;
+  return <MessagesView messagesInChannel={messagesInChannel} setMessagesInChannel={setMessagesInChannel} refetch={refetch} />;
 };
