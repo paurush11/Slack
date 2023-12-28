@@ -30,52 +30,7 @@ import { myContext } from "../utils/myContext";
 @Resolver()
 export class MessageResolver {
   /// This is for sockets
-  ///Message added
-  @Subscription(() => DirectMessage, {
-    topics: MESSAGE_ADDED_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId,
-  })
-  async newMessage(
-    @Root() messagePayload: DirectMessage,
-    @Arg("channelId", () => String) channelId: string,
-  ): Promise<DirectMessage> {
-    console.log('Subscription payload received:', messagePayload);
-    return messagePayload;
-  }
 
-  ///Message updated
-  @Subscription(() => DirectMessage, {
-    topics: MESSAGE_UPDATED_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId,
-  })
-  async messageUpdated(
-    @Root() updatePayload: DirectMessage,
-    @Arg("channelId", () => String) channelId: string,
-  ): Promise<DirectMessage> {
-    return updatePayload;
-  }
-  ///Message deleted
-  @Subscription(() => DirectMessage, {
-    topics: MESSAGE_DELETED_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId,
-  })
-  async messageDeleted(
-    @Root() deletePayload: DirectMessage,
-    @Arg("channelId", () => String) channelId: string,
-  ): Promise<DirectMessage> {
-    return deletePayload;
-  }
-  ///Message seen
-  @Subscription(() => DirectMessage, {
-    topics: MESSAGE_SEEN_TOPIC,
-    filter: ({ payload, args }) => payload.channelID === args.channelId,
-  })
-  async messageSeen(
-    @Root() deletePayload: DirectMessage,
-    @Arg("channelId", () => String) channelId: string,
-  ): Promise<DirectMessage> {
-    return deletePayload;
-  }
   @Query(() => [DirectMessage])
   async getAll() {
     const messages = await DirectMessage.find({
@@ -87,28 +42,39 @@ export class MessageResolver {
   @Query(() => [DirectMessage])
   async getAllReceivedMessages(
     @Arg("channelId", () => String) channelId: string,
-    @Arg("userId", () => String) userId: string,
+    @Ctx() ctx: myContext,
   ) {
     return await DirectMessage.find({
       where: {
         channelID: channelId,
-        receiverID: userId,
+        receiverID: ctx.req.session.user,
       },
       relations: ["sender", "receiver"],
     });
   }
   @Query(() => [DirectMessage])
-  async getAllSentMessages(
+  async getAllMessagesInChannel(
     @Arg("channelId", () => String) channelId: string,
-    @Arg("userId", () => String) userId: string,
+    @Ctx() ctx: myContext,
   ) {
-    return await DirectMessage.find({
+    const sentMessages = await DirectMessage.find({
       where: {
         channelID: channelId,
-        senderId: userId,
+        senderId: ctx.req.session.user,
       },
       relations: ["sender", "receiver"],
     });
+    const receivedMessages = await DirectMessage.find({
+      where: {
+        channelID: channelId,
+        receiverID: ctx.req.session.user,
+
+      },
+      relations: ["sender", "receiver"],
+    });
+
+    return [...sentMessages, ...receivedMessages];
+
   }
   @Query(() => [DirectMessage])
   async getMyMessagesInChannel(
@@ -124,7 +90,7 @@ export class MessageResolver {
       },
       relations: ["sender", "receiver"],
     });
-    const recievedMessages = await DirectMessage.find({
+    const receivedMessages = await DirectMessage.find({
       where: {
         channelID: channelId,
         receiverID: ctx.req.session.user,
@@ -132,7 +98,7 @@ export class MessageResolver {
       },
       relations: ["sender", "receiver"],
     });
-    return [...recievedMessages, ...sentMessages];
+    return [...receivedMessages, ...sentMessages];
   }
   @Query(() => [DirectMessage])
   async getUserMessages(

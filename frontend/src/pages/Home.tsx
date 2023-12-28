@@ -43,11 +43,7 @@ const Home: React.FC<HomeProps> = ({ }) => {
     setSelectedChannelValue,
     removeSelectedChannelValue,
   ] = useSessionStorage("selectedChannelValue", "null");
-  const [contentMainComponent, setContentMainComponent] =
-    useState<React.JSX.Element>(<Box></Box>);
-  const handleSideLayout = (content: React.JSX.Element) => {
-    setContentMainComponent(content);
-  };
+
 
   useEffect(() => {
     dispatch(fetchUserStart());
@@ -102,7 +98,7 @@ const Home: React.FC<HomeProps> = ({ }) => {
               <SmallSideLayout />
             ) : (
               <SideLayout
-                handleSideLayout={handleSideLayout}
+
                 setIsClickedInMainComp={setIsClickedInMainCompValue}
                 isClickedInMainComp={isClickedInMainCompValue}
                 selectedChannelValue={selectedChannelValue}
@@ -111,7 +107,7 @@ const Home: React.FC<HomeProps> = ({ }) => {
             )}
           </Grid>
           <Grid item xs={12 - sideBarSize}>
-            <MainComponent contentMainComponent={contentMainComponent} />
+            <MainComponent />
             {errors && (
               <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>

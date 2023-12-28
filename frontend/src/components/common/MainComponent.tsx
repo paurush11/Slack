@@ -1,15 +1,18 @@
 import { Box, useTheme } from "@mui/material";
 import React from "react";
 import { AddChannelController } from "../Controller/AddChannelController";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface MainComponentProps {
-  contentMainComponent: React.JSX.Element;
+  
 }
 
 const MainComponent: React.FC<MainComponentProps> = ({
-  contentMainComponent,
+ 
 }) => {
   const theme = useTheme();
+  const contentMainComponent = useSelector((state:RootState)=>state.sideLayoutData.sideLayoutData)
 
   return (
     <Box

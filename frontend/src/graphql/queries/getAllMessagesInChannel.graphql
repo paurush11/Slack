@@ -1,0 +1,25 @@
+query GetAllMessagesInChannel($channelId: String!) {
+  getAllMessagesInChannel(channelId: $channelId) {
+      _id
+    sender {
+      _id
+      lastName
+      firstName
+      isActive
+      username
+    }
+    receiver {
+       _id
+      lastName
+      firstName
+      isActive
+      username
+    }
+    TextMessage
+    createdAt
+    senderId
+    receiverSeen
+    receiverID
+    channelID
+  }
+}

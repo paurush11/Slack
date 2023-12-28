@@ -43,15 +43,15 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
     const [responseError, setResponseError] =
         useState<[ResolverError]>(emptyResolverError);
     const theme = useTheme();
-    const messageReceiver = useSelector((state: RootState) => state.myData.messageReceiverId)
+    const friendId = useSelector((state: RootState) => state.myData.messageReceiverId)
     const channelId = useSelector((state: RootState) => state.myData.channelId);
     const user = useSelector((state: RootState) => state.myData.data);
     const lastMessageRef = useRef<HTMLDivElement | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
-    const { data: GetMyMessagesInChannelData, loading: GetMyMessagesInChannelLoading, error: GetMyMessagesInChannelError } = useQuery(GetMyMessagesInChannelDocument, {
+    const { data: GetMyMessagesInChannelData, loading: GetMyMessagesInChannelLoading, error: GetMyMessagesInChannelError, refetch } = useQuery(GetMyMessagesInChannelDocument, {
         variables: {
             channelId: channelId,
-            friendId: messageReceiver
+            friendId: friendId
         }
     })
 
@@ -61,7 +61,6 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
 
     }, [messages])
     const lastMessageIndex = useSelector((state: RootState) => state.myData.lastMessageIndex)
-    console.log(lastMessageIndex)
 
     useEffect(() => {
         if (GetMyMessagesInChannelData && !GetMyMessagesInChannelLoading) {
@@ -91,16 +90,17 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
         message: string;
     }> = async (data) => {
 
-        if (channelId !== "" && messageReceiver !== "") {
+        if (channelId !== "" && friendId !== "") {
             const response = await newMessage({
                 variables: {
                     message: data.message,
                     channelId: channelId,
-                    receiverId: messageReceiver
+                    receiverId: friendId
                 },
             });
             if (response.data?.createMessage.data?._id) {
                 reset(defaultValues);
+                refetch()
                 return;
             } else if (response.data?.createMessage.resolverError) {
                 const val = response.data?.createMessage.resolverError;
@@ -233,11 +233,8 @@ export const ChatController: React.FC<ChatControllerProps> = ({ }) => {
                 {messages.map((msg, index) => (
                     <Box
                         ref={index === messages.length - 1 ? lastMessageRef : null}
-
                         display={"flex"}
-
                         flexDirection={msg.senderId === (user as MeQuery).Me?.user?._id ? "row-reverse" : "row"}
-
                         alignItems={"start"}
                     >
                         <Box

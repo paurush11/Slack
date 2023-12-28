@@ -86,6 +86,7 @@ const FindChannels: React.FC<FindChannelsProps> = ({
       if (response.data?.joinChannel === true) {
         setOpenSuccess(true);
         setTimeout(() => onClose(), 500);
+        dispatch(fetchMyChannelDataSuccess(response.data));
         router.reload();
       } else {
         dispatch(fetchMyChannelDataError(response.errors));

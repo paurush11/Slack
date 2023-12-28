@@ -4,6 +4,7 @@ import { memberResolver } from "./members";
 import { MessageResolver } from "./messages";
 import { PostResolver } from "./posts";
 import { VoteResolver } from "./vote";
+import { SubscriptionResolver } from "./subscriptions";
 
 const resolvers: NonEmptyArray<Function> = [
   memberResolver,
@@ -11,5 +12,6 @@ const resolvers: NonEmptyArray<Function> = [
   MessageResolver,
   PostResolver,
   VoteResolver,
+  SubscriptionResolver
 ];
 export default resolvers;

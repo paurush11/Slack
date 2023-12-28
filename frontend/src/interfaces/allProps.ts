@@ -7,7 +7,6 @@ export interface ChannelViewControllerProps { }
 export interface ChannelViewProps { }
 export interface NavbarProps { }
 export interface SideLayoutProps {
-  handleSideLayout: (content: React.JSX.Element) => void;
   setIsClickedInMainComp: Dispatch<SetStateAction<boolean>>;
   isClickedInMainComp: boolean;
   selectedChannelValue: string;
@@ -26,7 +25,7 @@ export interface AddChannelViewProps extends SubmitAndResetViewProps {
   handleClose: (event?: React.SyntheticEvent | Event, reason?: string) => void;
   open: boolean;
 }
-interface User {
+export interface User {
   _id: string;
   lastName: string;
   firstName: string;

@@ -5,11 +5,11 @@ import { LoginAndRegisterProps } from "@/interfaces/allProps";
 import { Box, Button, Stack, useTheme } from "@mui/material";
 import React, { useState } from "react";
 
-const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ toggleTheme }) => {
+const LoginAndRegister: React.FC<LoginAndRegisterProps> = ({ }) => {
   const theme = useTheme();
   const [selectedState, setSelectedState] = useState(1);
   return (
-    <Layout toggleTheme={toggleTheme}>
+    <Layout >
       <Box
         flexGrow={1}
         sx={{

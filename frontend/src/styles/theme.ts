@@ -55,6 +55,18 @@ const lightTheme = createTheme({
     h2: {
       fontSize: "2rem",
     },
+    h3: {
+      fontSize: "1.5rem",
+    },
+    h4: {
+      fontSize: "1rem",
+    },
+    h5: {
+      fontSize: "0.5rem",
+    },
+    h6: {
+      fontSize: "0.75rem",
+    },
     // ... other typography settings
   },
   spacing: 8, // The base unit of spacing. Defaults to 8px

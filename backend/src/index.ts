@@ -14,7 +14,8 @@ import { buildSchema } from "type-graphql";
 import { WebSocketServer } from "ws";
 import resolvers from "./resolvers";
 import { __prod__ } from "./utils/constants";
-import { printSchema } from "graphql";
+
+
 require("dotenv").config();
 
 const main = async () => {

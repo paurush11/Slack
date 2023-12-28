@@ -20,19 +20,6 @@ const commonFunctions_1 = require("../utils/commonFunctions");
 const Member_1 = require("../entity/Member");
 const Channel_1 = require("../entity/Channel");
 let MessageResolver = class MessageResolver {
-    async newMessage(messagePayload, channelId) {
-        console.log('Subscription payload received:', messagePayload);
-        return messagePayload;
-    }
-    async messageUpdated(updatePayload, channelId) {
-        return updatePayload;
-    }
-    async messageDeleted(deletePayload, channelId) {
-        return deletePayload;
-    }
-    async messageSeen(deletePayload, channelId) {
-        return deletePayload;
-    }
     async getAll() {
         const messages = await DirectMessage_1.DirectMessage.find({
             relations: ["sender", "receiver"],
@@ -40,23 +27,31 @@ let MessageResolver = class MessageResolver {
         console.log(messages);
         return messages;
     }
-    async getAllReceivedMessages(channelId, userId) {
+    async getAllReceivedMessages(channelId, ctx) {
         return await DirectMessage_1.DirectMessage.find({
             where: {
                 channelID: channelId,
-                receiverID: userId,
+                receiverID: ctx.req.session.user,
             },
             relations: ["sender", "receiver"],
         });
     }
-    async getAllSentMessages(channelId, userId) {
-        return await DirectMessage_1.DirectMessage.find({
+    async getAllMessagesInChannel(channelId, ctx) {
+        const sentMessages = await DirectMessage_1.DirectMessage.find({
             where: {
                 channelID: channelId,
-                senderId: userId,
+                senderId: ctx.req.session.user,
             },
             relations: ["sender", "receiver"],
         });
+        const receivedMessages = await DirectMessage_1.DirectMessage.find({
+            where: {
+                channelID: channelId,
+                receiverID: ctx.req.session.user,
+            },
+            relations: ["sender", "receiver"],
+        });
+        return [...sentMessages, ...receivedMessages];
     }
     async getMyMessagesInChannel(channelId, friendId, ctx) {
         const sentMessages = await DirectMessage_1.DirectMessage.find({
@@ -67,7 +62,7 @@ let MessageResolver = class MessageResolver {
             },
             relations: ["sender", "receiver"],
         });
-        const recievedMessages = await DirectMessage_1.DirectMessage.find({
+        const receivedMessages = await DirectMessage_1.DirectMessage.find({
             where: {
                 channelID: channelId,
                 receiverID: ctx.req.session.user,
@@ -75,7 +70,7 @@ let MessageResolver = class MessageResolver {
             },
             relations: ["sender", "receiver"],
         });
-        return [...recievedMessages, ...sentMessages];
+        return [...receivedMessages, ...sentMessages];
     }
     async getUserMessages(channelId, userId, senderId) {
         return await DirectMessage_1.DirectMessage.find({
@@ -281,50 +276,6 @@ let MessageResolver = class MessageResolver {
 };
 exports.MessageResolver = MessageResolver;
 __decorate([
-    (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
-        topics: exports_1.MESSAGE_ADDED_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId,
-    }),
-    __param(0, (0, type_graphql_1.Root)()),
-    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
-    __metadata("design:returntype", Promise)
-], MessageResolver.prototype, "newMessage", null);
-__decorate([
-    (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
-        topics: exports_1.MESSAGE_UPDATED_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId,
-    }),
-    __param(0, (0, type_graphql_1.Root)()),
-    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
-    __metadata("design:returntype", Promise)
-], MessageResolver.prototype, "messageUpdated", null);
-__decorate([
-    (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
-        topics: exports_1.MESSAGE_DELETED_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId,
-    }),
-    __param(0, (0, type_graphql_1.Root)()),
-    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
-    __metadata("design:returntype", Promise)
-], MessageResolver.prototype, "messageDeleted", null);
-__decorate([
-    (0, type_graphql_1.Subscription)(() => DirectMessage_1.DirectMessage, {
-        topics: exports_1.MESSAGE_SEEN_TOPIC,
-        filter: ({ payload, args }) => payload.channelID === args.channelId,
-    }),
-    __param(0, (0, type_graphql_1.Root)()),
-    __param(1, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [DirectMessage_1.DirectMessage, String]),
-    __metadata("design:returntype", Promise)
-], MessageResolver.prototype, "messageSeen", null);
-__decorate([
     (0, type_graphql_1.Query)(() => [DirectMessage_1.DirectMessage]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -333,19 +284,19 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Query)(() => [DirectMessage_1.DirectMessage]),
     __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __param(1, (0, type_graphql_1.Arg)("userId", () => String)),
+    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], MessageResolver.prototype, "getAllReceivedMessages", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [DirectMessage_1.DirectMessage]),
     __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
-    __param(1, (0, type_graphql_1.Arg)("userId", () => String)),
+    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
-], MessageResolver.prototype, "getAllSentMessages", null);
+], MessageResolver.prototype, "getAllMessagesInChannel", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [DirectMessage_1.DirectMessage]),
     __param(0, (0, type_graphql_1.Arg)("channelId", () => String)),
